@@ -1,5 +1,5 @@
 import { _decorator, Component, Node } from 'cc';
-import APIManager from './core/APIManager';
+import APIManager from '../../core/APIManager';
 import JSEncrypt from 'jsencrypt';
 
 const { ccclass, property } = _decorator;
