@@ -1,0 +1,22 @@
+{
+  "name": "sbb",
+  "uuid": "698e940e-d18a-455b-ab89-94e6358b770c",
+  "creator": {
+    "version": "3.7.4"
+  },
+  "version": "1.0.0",
+  "description": "sbb",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "sbb"
+  ],
+  "author": "andy",
+  "license": "ISC",
+  "dependencies": {
+    "crypto-es": "^2.0.4",
+    "jsencrypt": "^3.3.2"
+  }
+}
