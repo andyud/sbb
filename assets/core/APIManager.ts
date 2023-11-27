@@ -5,8 +5,6 @@ import { WordArray } from "crypto-es/lib/core";
 
 
 class APIManager {
-
-
     private static _instance: APIManager;
     static get instance () {
         if (this._instance) {
@@ -63,6 +61,16 @@ BfhZUWNOM6WQGMIJ53fwjXkhURECCgMLHOFuSBtkmbfj5tw=
                 "authorization":authorization
             },
             body: JSON.stringify(data),
+        });
+        return res;
+    }
+    public async doGet(api:string, authorization:string = ""):Promise<any>{
+        let res = await fetch(`${this.BASE_URL}/${api}`, {
+            method: "GET", // or 'PUT'
+            headers: {
+                "Content-Type": "application/json",
+                "authorization":authorization
+            }
         });
         return res;
     }
@@ -126,6 +134,29 @@ BfhZUWNOM6WQGMIJ53fwjXkhURECCgMLHOFuSBtkmbfj5tw=
         this.doPost("tokentest",{
             t:cipherDataB64
         },this.signinRes.authorization)
+        .then((response) => response.json())
+        .then((data) => {
+            console.log("Success:", data);
+        })
+        .catch((error) => {
+            console.error("Error:", error);
+        });
+    }
+
+    public getGameInfo(){
+        let api = 'games';
+        this.doGet(api,this.signinRes.authorization)
+        .then((response) => response.json())
+        .then((data) => {
+            console.log("Success:", data);
+        })
+        .catch((error) => {
+            console.error("Error:", error);
+        });
+    }
+    public getGameDetail(gameId: string){
+        let api = `game/${gameId}`;
+        this.doGet(api,this.signinRes.authorization)
         .then((response) => response.json())
         .then((data) => {
             console.log("Success:", data);

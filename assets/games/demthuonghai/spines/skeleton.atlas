@@ -1,0 +1,69 @@
+
+skeleton.png
+size: 1692,533
+format: RGBA8888
+filter: Linear,Linear
+repeat: none
+Beauty
+  rotate: false
+  xy: 1, 1
+  size: 1280, 531
+  orig: 1280, 531
+  offset: 0, 0
+  index: -1
+Beauty-hand
+  rotate: true
+  xy: 1528, 345
+  size: 106, 146
+  orig: 106, 146
+  offset: 0, 0
+  index: -1
+bar-bg
+  rotate: false
+  xy: 1282, 4
+  size: 120, 91
+  orig: 120, 91
+  offset: 0, 0
+  index: -1
+bar-light
+  rotate: false
+  xy: 1403, 6
+  size: 120, 89
+  orig: 120, 89
+  offset: 0, 0
+  index: -1
+bg-icon
+  rotate: false
+  xy: 1282, 96
+  size: 245, 436
+  orig: 245, 436
+  offset: 0, 0
+  index: -1
+hu-bg
+  rotate: false
+  xy: 1528, 452
+  size: 163, 80
+  orig: 163, 80
+  offset: 0, 0
+  index: -1
+text-bg
+  rotate: true
+  xy: 1606, 107
+  size: 237, 82
+  orig: 237, 82
+  offset: 0, 0
+  index: -1
+text-dem
+  rotate: false
+  xy: 1524, 13
+  size: 136, 82
+  orig: 136, 82
+  offset: 0, 0
+  index: -1
+text-thuong-hai
+  rotate: true
+  xy: 1528, 104
+  size: 240, 77
+  orig: 240, 77
+  offset: 0, 0
+  index: -1

@@ -1,0 +1,62 @@
+
+sloticon_chonman_tdk.png
+size: 2048,1024
+format: RGBA8888
+filter: Linear,Linear
+repeat: none
+7a5868da930f5ac5821a61a380a9df90e06376d71b0c5-TiHevd_fw658
+  rotate: false
+  xy: 2, 317
+  size: 650, 704
+  orig: 650, 704
+  offset: 0, 0
+  index: -1
+khung slot
+  rotate: true
+  xy: 893, 799
+  size: 222, 435
+  orig: 222, 435
+  offset: 0, 0
+  index: -1
+tdk  khungtext
+  rotate: false
+  xy: 2, 2
+  size: 225, 71
+  orig: 225, 71
+  offset: 0, 0
+  index: -1
+tdk Layer 67
+  rotate: true
+  xy: 1330, 800
+  size: 221, 435
+  orig: 221, 435
+  offset: 0, 0
+  index: -1
+tdk Rounded Rectangle 5 copy 3
+  rotate: true
+  xy: 2, 75
+  size: 240, 456
+  orig: 240, 456
+  offset: 0, 0
+  index: -1
+tdk Tây Du Ký
+  rotate: false
+  xy: 654, 545
+  size: 176, 45
+  orig: 176, 45
+  offset: 0, 0
+  index: -1
+tdk character
+  rotate: false
+  xy: 654, 592
+  size: 237, 429
+  orig: 237, 429
+  offset: 0, 0
+  index: -1
+tdk hand
+  rotate: false
+  xy: 460, 170
+  size: 161, 145
+  orig: 161, 145
+  offset: 0, 0
+  index: -1

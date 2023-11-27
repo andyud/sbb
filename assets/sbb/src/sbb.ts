@@ -1,4 +1,4 @@
-import { _decorator, Component, Node } from 'cc';
+import { _decorator, Component, EditBox, Node } from 'cc';
 import APIManager from '../../core/APIManager';
 import JSEncrypt from 'jsencrypt';
 
@@ -6,6 +6,8 @@ const { ccclass, property } = _decorator;
 
 @ccclass('sbb')
 export class sbb extends Component {
+@property({type:Node})
+public txtGameId:Node | null = null;
     start() {
 
     }
@@ -25,6 +27,15 @@ export class sbb extends Component {
 
     onTokenTest(event: Event, customEventData: string){
         APIManager.instance.tokentest();
+    }
+
+    onGetGameInfo(event: Event, customEventData: string){
+        APIManager.instance.getGameInfo();
+    }
+
+    onGetGameDetail(event: Event, customEventData: string){
+        let gameId = this.txtGameId.getComponent(EditBox).string;
+        APIManager.instance.getGameDetail(gameId);
     }
 }
 

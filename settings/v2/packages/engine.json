@@ -89,13 +89,13 @@
         "_value": true
       },
       "webview": {
-        "_value": true
+        "_value": false
       },
       "tween": {
         "_value": true
       },
       "websocket": {
-        "_value": false
+        "_value": true
       },
       "websocket-server": {
         "_value": false
@@ -139,7 +139,7 @@
       "tween",
       "ui",
       "video",
-      "webview"
+      "websocket"
     ],
     "noDeprecatedFeatures": {
       "value": false,
