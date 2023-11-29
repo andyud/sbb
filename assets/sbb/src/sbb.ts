@@ -1,5 +1,5 @@
-import { _decorator, Component, EditBox, Node } from 'cc';
-import APIManager from '../../core/APIManager';
+import { _decorator, Component, EditBox, Label, Node } from 'cc';
+import APIMgr from '../../core/APIMgr';
 import JSEncrypt from 'jsencrypt';
 
 const { ccclass, property } = _decorator;
@@ -8,6 +8,8 @@ const { ccclass, property } = _decorator;
 export class sbb extends Component {
 @property({type:Node})
 public txtGameId:Node | null = null;
+@property({type:Node})
+public lbStatus:Node | null = null;
     start() {
 
     }
@@ -16,26 +18,26 @@ public txtGameId:Node | null = null;
         
     }
 
-    onSignin(event: Event, customEventData: string){
-        // const node = event.target;
-        APIManager.instance.signin();
+    async onSignin(event: Event, customEventData: string){
+        await APIMgr.instance.signin();
+        this.lbStatus.getComponent(Label).string = JSON.stringify(APIMgr.instance.signinRes);
     }
 
     onRSATest(event: Event, customEventData: string){
-        APIManager.instance.rsaTest();
+        APIMgr.instance.rsaTest();
     }
 
     onTokenTest(event: Event, customEventData: string){
-        APIManager.instance.tokentest();
+        APIMgr.instance.tokentest();
     }
 
     onGetGameInfo(event: Event, customEventData: string){
-        APIManager.instance.getGameInfo();
+        APIMgr.instance.getGames();
     }
 
     onGetGameDetail(event: Event, customEventData: string){
         let gameId = this.txtGameId.getComponent(EditBox).string;
-        APIManager.instance.getGameDetail(gameId);
+        APIMgr.instance.getGameInfo(gameId);
     }
 }
 
