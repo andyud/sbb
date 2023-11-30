@@ -12,13 +12,13 @@ export class Notice extends Component {
     @property({type:Node})
     btnCloseNotice:Node | null = null;
     
-    private cb: Function = null;
+    public cb: (data:string)=>void;
 
     start() {
         this.btnCloseNotice.on(Button.EventType.CLICK,this.onClick,this);
         this.node.getComponent(UIOpacity).opacity = 0;
     }
-    show(data:any,cb:any){
+    show(data:any,cb:(data:string)=>void){
         this.lbTitle.string = data.title;
         this.lbContent.string = data.content;
         this.cb = cb;
@@ -29,15 +29,21 @@ export class Notice extends Component {
         .to(0.2,{opacity:255})
         .start()
     }
+	hide(){
+		this.node.getComponent(UIOpacity).opacity = 0;
+		this.node.setPosition(this.node.getComponent(UITransform).width, this.node.getComponent(UITransform).height,0);
+		this.node.setScale(0,0,0)
+	}
     onClick(button: Button) {
+		if(this.node.getComponent(UIOpacity).opacity===0)return;
         switch(button.node.name){
             case "btnCloseNotice":
                 tween(this.node)
-                .to(0.4,{position:new Vec3(this.node.getComponent(UITransform).width, this.node.getComponent(UITransform).height,0),scale: new Vec3(0.1,0.1,0.1)})
+                .to(0.4,{position:new Vec3(this.node.getComponent(UITransform).width, this.node.getComponent(UITransform).height,0),scale: new Vec3(0,0,0)})
                 .start()
                 tween(this.node.getComponent(UIOpacity))
                 .to(0.2,{opacity:0})
-                .call(()=>this.cb())
+                .call(()=>this.cb(''))
                 .start()
                 break;
         }
