@@ -56,7 +56,6 @@ export class Lobby extends Component {
         //         break;
         // }
         director.loadScene(button.node.name);
-        APIMgr.instance.setCurrentGame(button.node.name);
     }
     // update(deltaTime: number) {
         

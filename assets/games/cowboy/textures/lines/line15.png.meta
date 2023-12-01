@@ -39,7 +39,7 @@
     "6c48a": {
       "importer": "texture",
       "uuid": "fd572114-97b0-4317-9e61-4d609388dbfe@6c48a",
-      "displayName": "08252cfe-6bda-4759-8d7c-4dbae022a5f8",
+      "displayName": "line15",
       "id": "6c48a",
       "name": "texture",
       "userData": {
@@ -63,7 +63,7 @@
     "f9941": {
       "importer": "sprite-frame",
       "uuid": "fd572114-97b0-4317-9e61-4d609388dbfe@f9941",
-      "displayName": "08252cfe-6bda-4759-8d7c-4dbae022a5f8",
+      "displayName": "line15",
       "id": "f9941",
       "name": "spriteFrame",
       "userData": {

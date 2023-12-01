@@ -54,13 +54,34 @@ class GameMgr {
         var e = t.match(/\d+/g);
         return e ? e.join("") : ""
     }
-    shuffle(array: number[]){ 
+    public shuffle(array: number[]){ 
         for (let i = array.length - 1; i > 0; i--) { 
           const j = Math.floor(Math.random() * (i + 1)); 
           [array[i], array[j]] = [array[j], array[i]]; 
         } 
         return array; 
-      }; 
+    }
+    public numberTo(obj, start, end, duration){
+        clearInterval(obj.timer);
+        var range = end - start;
+        var minTimer = 50;
+        var stepTime = Math.abs(Math.floor(duration / range));
+        stepTime = Math.max(stepTime, minTimer);
+        var startTime = new Date().getTime();
+        var endTime = startTime + duration;
+        let self = this;
+        obj.timer = setInterval(function(){
+            if (!!obj.node) {
+                var now = new Date().getTime();
+                var remaining = Math.max((endTime - now) / duration, 0);
+                var value = (end - (remaining * range));
+                obj.string = self.numberWithCommas(value);
+                if (value == end) {
+                    clearInterval(obj.timer);
+                }
+            }else clearInterval(obj.timer);
+        }, stepTime);
+    }
         
     // public numberToTime(t:number) {
     //     t < 0 && (t = 0),
