@@ -8,6 +8,7 @@ import { CowboyReel } from './CowboyReel';
 import { Notice } from '../../../prefabs/popups/scripts/Notice';
 import { CowboySpinBtn } from './CowboySpinBtn';
 import { CowboyItem } from './CowboyItem';
+import { CowboyBonusItem } from './CowboyBonusItem';
 const { ccclass, property } = _decorator;
 declare var io: any;
 
@@ -27,9 +28,11 @@ export class Cowboy extends Component {
     btnCloseJackpot: Node | null = null;
 
     @property({ type: Node })
-    bonusNode: Node | null = null;
+    bonusResNode: Node | null = null;
     @property({ type: Node })
-    btnCloseBonus: Node | null = null;
+    bonusPlayNode: Node | null = null;
+    @property({ type: Node })
+    btnCloseBonusRes: Node | null = null;
     @property({ type: Label })
     lbBonusWinCoin: Label | null = null;
 
@@ -53,6 +56,8 @@ export class Cowboy extends Component {
     bigWinNode: Node | null = null;
     @property({ type: Node })
     btnCloseBigWin: Node | null = null;
+    @property({ type: Label })
+    lbBigWinCoin: Label | null = null;
 
     @property({ type: Node })
     btnMission: Node | null = null;
@@ -70,8 +75,16 @@ export class Cowboy extends Component {
     btnSpin: Node | null = null;
     @property({ type: Node })
     btnAutoSpin: Node | null = null;
-    @property({type:Node})
-    btnFreeSpin:Node | null = null;
+    @property({ type: Node })
+    btnFreeSpin: Node | null = null;
+    //--bonus
+    @property({ type: Label })
+    lbBonusRemain: Label | null = null;
+    @property({ type: Label })
+    lbBonusReward: Label | null = null;
+    @property([Node])
+    arrPlayBonusItem: Node[] = []
+    private countBonusRemain = 0;
 
     //--top
     @property({ type: Node })
@@ -104,19 +117,28 @@ export class Cowboy extends Component {
     @property([AudioClip])
     arrAudioClips: AudioClip[] = []
 
+    //--debug
+    @property({ type: Node })
+    btnDbBigWin: Node | null = null;
+    @property({ type: Node })
+    btnDbBonus: Node | null = null;
+    @property({ type: Node })
+    btnDbFreeSpin: Node | null = null;
+    @property({ type: Node })
+    btnDbJackpot: Node | null = null;
+
+
     private readonly gameName = 'cowboy';
     private webSocket: WebSocket | null = null;
     private isAutoSpin = false;
-    private isSpeed = false;
     private isSpin = false;//void press spin more time
-    private isBigWin = false;
     private isFreeSpin = false;
     private iTotalWinFreeSpin = 0;
-    private isJackpot = false;
+
     //--update
     private countUpdate = 0;
     private isUpdateLineWin = false;
-    private isFirstBalance = true;
+    private isFirstStart = true;
     //--
     private loginRes = {
         "pid": "loginRes",
@@ -165,7 +187,15 @@ export class Cowboy extends Component {
         "linebet": 100,
         "prevBalance": 997722,
         "totalWinBalance": 0,
-        "bonusPayout": [],
+        "bonusPayout": [
+            {
+                "balance": 100,
+                "bonusType": 'bonus',
+                "extendData": [50, 10, 60],
+                "matchCount": 3,
+                "symbolName": 'bonus'
+            }
+        ],
         "pick": {},
         "reelList": [8, 15, 29, 8, 16],
         "mission": [],
@@ -285,6 +315,7 @@ export class Cowboy extends Component {
         [2, 0, 2, 0, 2],//23
         [0, 2, 0, 2, 0]//24
     ];
+    //1. init ---------------------------------------------------------------------------------------------
     start() {
         this.webSocket = null;
         APIMgr.instance.setCurrentGame(this.gameName);
@@ -311,15 +342,17 @@ export class Cowboy extends Component {
             this.notice.getComponent(Notice).hide();
         }
         //button
-        this.btnCloseJackpot.on(Button.EventType.CLICK, this.buttonHandler, this);
+        this.btnCloseJackpot.on(Button.EventType.CLICK, this.onCloseEnd, this);
         this.jackpotNode.active = false;
-        this.btnCloseBonus.on(Button.EventType.CLICK, this.buttonHandler, this);
-        this.bonusNode.active = false;
-        this.btnCloseFreeSpin.on(Button.EventType.CLICK, this.buttonHandler, this);
+        this.btnCloseBonusRes.on(Button.EventType.CLICK, this.onCloseEnd, this);
+        this.bonusResNode.active = false;
+        this.bonusPlayNode.active = false;
+
+        this.btnCloseFreeSpin.on(Button.EventType.CLICK, this.onCloseContinue, this);
         this.freeSpinNode.active = false;
-        this.btnCloseBigWin.on(Button.EventType.CLICK, this.buttonHandler, this);
+        this.btnCloseBigWin.on(Button.EventType.CLICK, this.onCloseEnd, this);
         this.bigWinNode.active = false;
-        this.btnCloseFreeSpinRes.on(Button.EventType.CLICK, this.buttonHandler, this);
+        this.btnCloseFreeSpinRes.on(Button.EventType.CLICK, this.onCloseEnd, this);
         this.freeSpinResNode.active = false;
 
         //--
@@ -332,21 +365,50 @@ export class Cowboy extends Component {
         this.btnSpin.getComponent(CowboySpinBtn).init((val) => {
             if (val == 0) {
             } else if (val == 1) {
-                this.onSpin();
+                this.spin(false, []);
             } else if (val == 2) {
                 this.setAutoSpin(true);
             }
         });
         this.btnAutoSpin.on(Button.EventType.CLICK, this.buttonHandler, this);
+        //--debug
+        this.btnDbBigWin.on(Button.EventType.CLICK, this.onClick, this);
+        this.btnDbBonus.on(Button.EventType.CLICK, this.onClick, this);
+        this.btnDbFreeSpin.on(Button.EventType.CLICK, this.onClick, this);
+        this.btnDbJackpot.on(Button.EventType.CLICK, this.onClick, this);
 
-        //--init reels
-        this.initReels();
-        //--
-        this.prepareSpin();
-        this.isFirstBalance = false;
-        //
-        AudioMgr.inst.play(this.arrAudioClips[0]);
+        //--set temp reels
+        let arr = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 0, 10, 1, 2, 3, 4, 5, 6];
+        arr = GameMgr.instance.shuffle(arr);
+        for (let i = 0; i < this.reels.length; i++) {
+            arr = GameMgr.instance.shuffle(arr);
+            this.reels[i].getComponent(CowboyReel).init(arr, this.items);
+            this.reels[i].getComponent(CowboyReel).setReelCallback(this.endSpin.bind(this));
+        }
+        //--bonus
+        for (let i = 0; i < this.arrPlayBonusItem.length; i++) {
+            this.arrPlayBonusItem[i].getComponent(CowboyBonusItem).init((idx: number) => {
+                //count to end
+                this.countBonusRemain--;
+                if (this.countBonusRemain == 0) {//end
+                    const timeout = setTimeout(() => {
+                        clearTimeout(timeout);
+                        this.bonusPlayNode.active = false;
+                        this.bonusResNode.active = true;
+                        GameMgr.instance.numberTo(this.lbBonusWinCoin, 0, this.spinRes.totalWinBalance, 2000);
+                        // AudioMgr.inst.playOneShot(this.arrAudioClips[3]);
+                    }, 2000);
+                } else {
+                    this.lbBonusRemain.string = `${this.countBonusRemain}`;
+                    let val = this.spinRes.bonusPayout[0].extendData[this.countBonusRemain - 1];
+                    this.arrPlayBonusItem[idx].getComponent(CowboyBonusItem).setValue(val);
+                }
+            }, i);
+        }
+        this.isFirstStart = false;
+        // AudioMgr.inst.play(this.arrAudioClips[0]);
     }
+    //2. network -------------------------------------------------------------------------------------------
     private disconnect() {
         let wsk = this.webSocket;
         if (wsk) {
@@ -357,7 +419,6 @@ export class Cowboy extends Component {
             wsk.close();
         }
     }
-
     private connect(url: string) {
         const self = this;
         // this.webSocket = new WebSocket(`wss://slotk0w9ukeg.777invegas.com:8202`);
@@ -391,7 +452,6 @@ export class Cowboy extends Component {
             self.webSocket = null;
         };
     }
-
     sendMessgage(data: string) {
         console.log(`WebSocket: sent: ${data}`);
         if (!this.webSocket) { return; }
@@ -415,67 +475,14 @@ export class Cowboy extends Component {
         const str = APIMgr.instance.encodeData(JSON.stringify(data));
         this.sendMessgage(str);
     }
-    wsJackpot() {
-        //--repair spin
-        this.prepareSpin();
-        AudioMgr.inst.playOneShot(this.arrAudioClips[9]);
-        Tween.stopAll();
-        this.isSpin = true;
-        this.setButtonInteractable(false);
-        //--
-        let data = {
-            pid: "key_J",
-            lineBet: this.spinRes.linebet
-        }
-        const str = APIMgr.instance.encodeData(JSON.stringify(data));
-        this.sendMessgage(str);
-    }
-    wsFreeSpin() {
-        //--repair spin
-        this.prepareSpin();
-        AudioMgr.inst.playOneShot(this.arrAudioClips[9]);
-        Tween.stopAll();
-        this.isSpin = true;
-        this.setButtonInteractable(false);
-        //--
-        let data = {
-            pid: "key_S",
-            lineBet: this.spinRes.linebet
-        }
-        const str = APIMgr.instance.encodeData(JSON.stringify(data));
-        this.sendMessgage(str);
-    }
-    wsBonus() {
-        //--repair spin
-        this.prepareSpin();
-        AudioMgr.inst.playOneShot(this.arrAudioClips[9]);
-        Tween.stopAll();
-        this.isSpin = true;
-        this.setButtonInteractable(false);
-        //--
-        let data = {
-            pid: "key_B",
-            lineBet: this.spinRes.linebet
-        }
-        const str = APIMgr.instance.encodeData(JSON.stringify(data));
-        this.sendMessgage(str);
-    }
     hideLoading() {
         this.loading.getComponent(Loading).hide();
     }
-    wsSpinDebug() {
+    wsSpinDebug(arr: any) {
         let data = {
             pid: "spinDebug",
             lineBet: 100,
-            line: [0, 0, 0, 0, 0]
-        }
-        const str = APIMgr.instance.encodeData(JSON.stringify(data));
-        this.sendMessgage(str);
-    }
-    wsJackpotPool() {
-        let data = {
-            pid: "jackpotPool",
-            lineBet: 100,
+            line: arr
         }
         const str = APIMgr.instance.encodeData(JSON.stringify(data));
         this.sendMessgage(str);
@@ -488,20 +495,121 @@ export class Cowboy extends Component {
                 this.lbBalance.string = GameMgr.instance.numberWithCommas(this.loginRes.balance);
                 // this.lbLevel.string = `lv: ${this.loginRes.level}`;
                 this.lbTotalBet.string = GameMgr.instance.numberWithCommas(this.loginRes.lineBet * 25);
-                this.initNormalReels();
+                //clear & add new
+                if (this.loginRes && this.loginRes.reelInfo && this.loginRes.reelInfo.normal && this.loginRes.reelInfo.normal.length > 0) {
+                    let arr = this.loginRes.reelInfo.normal[0];
+                    for (let i = 0; i < arr.length; i++) {
+                        this.reels[i].removeAllChildren();
+                        let arrStr = arr[i].split(',');
+                        let arrTemp = [];
+                        for (let j = 0; j < arrStr.length; j++) {
+                            arrTemp.push(parseInt(arrStr[j]));
+                        }
+                        this.reels[i].getComponent(CowboyReel).init(GameMgr.instance.shuffle(arrTemp), this.items);
+                    }
+                }
                 break;
             case "spinRes":
                 this.spinRes = data;
-                this.runReels();
+                //runReels
+                let self = this;
+                //--add result
+                if (this.spinRes && this.spinRes.lineKeys && this.spinRes.lineKeys.length > 0) {
+                    for (let i = 0; i < this.spinRes.lineKeys.length; i++) {
+                        let arr = this.spinRes.lineKeys[i];
+                        let startIdx = this.reels[i].children.length - 1;
+                        for (let j = 0; j < arr.length; j++) {
+                            const texId = arr[j]
+                            const tex = this.icons[texId];
+                            this.reels[i].children[startIdx - j].getComponent(CowboyItem).setTexture(tex);
+                        }
+                    }
+                }
+                Promise.all(self.reels.map(function (reel, index) {
+                    reel.getComponent(CowboyReel).spin(index, 1);
+                }))
                 break;
             case "spinDebug":
                 this.spinRes = data;
                 break;
-
         }
         this.loading.getComponent(Loading).hide();
     }
+    //3. action ---------------------------------------------------------------------------------
+    onCloseEnd(button: Button) {
+        switch (button.node.name) {
+            case 'btnCloseJackpot':
+                this.jackpotNode.active = false;
+                break;
+            case 'btnCloseBonusRes':
+                this.bonusResNode.active = false;
+                break;
+            case 'btnCloseBigWin':
+                this.bigWinNode.active = false;
+                break;
+            case 'btnCloseFreeSpinRes':
+                this.freeSpinResNode.active = false;
+                this.btnFreeSpin.active = false;
+                this.setAutoSpin(true);
+                break;
+        }
+        this.preSpin();
+    }
 
+    onCloseContinue(button: Button) {
+        switch (button.node.name) {
+            case 'btnCloseFreeSpin':
+                this.freeSpinNode.active = false;
+                this.setAutoSpin(true);
+                this.preSpin();
+                break;
+        }
+    }
+    onClick(button: Button) {
+        // AudioMgr.inst.playOneShot(this.arrAudioClips[1]);
+        switch (button.node.name) {
+            case 'btnDbBigWin':
+                this.spin(true, [9, 7, 20, 6, 8]);
+                break;
+            case 'btnDbBonus':
+                this.spin(true, [9, 7, 20, 6, 8]);
+                break;
+            case 'btnDbFreeSpin':
+                this.spin(true, [3, 10, 17, 13, 15]);
+                break;
+            case 'btnDbJackpot':
+                this.spin(true, [18, 3, 2, 2, 2]);
+                break;
+        }
+    }
+    buttonHandler(button: Button) {
+        // AudioMgr.inst.playOneShot(this.arrAudioClips[1]);
+        switch (button.node.name) {
+            case 'btnBack':
+                this.disconnect();
+                director.loadScene('lobby');
+                break;
+            case 'btnBetMinus':
+                this.setBettingLine(false);
+                break;
+            case 'btnBetPlus':
+                this.setBettingLine(true);
+                break;
+            case 'btnMaxBet':
+                this.loginRes.lineBet = this.loginRes.betOptions[this.loginRes.betOptions.length - 1];
+                this.lbTotalBet.string = GameMgr.instance.numberWithCommas(this.loginRes.lineBet * 25);
+                break;
+            case 'btnAutoSpin':
+                this.setAutoSpin(false);
+                break;
+            case 'btnFreeSpin':
+                this.spin(false, []);
+                break
+        }
+    }
+    setButtonInteractable(isDisable: boolean) {
+        this.btnSpin.getComponent(Button).interactable = isDisable;
+    }
     setBettingLine(isPlus: boolean) {
         let currentIndex = -1;
         for (let i = 0; i < this.loginRes.betOptions.length; i++) {
@@ -525,74 +633,9 @@ export class Cowboy extends Component {
         this.lbTotalBet.string = GameMgr.instance.numberWithCommas(this.loginRes.betOptions[currentIndex] * 25);
         this.loginRes.lineBet = this.loginRes.betOptions[currentIndex];
     }
-    initReels() {
-        let arr = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 0, 10, 1, 2, 3, 4, 5, 6];
-        arr = GameMgr.instance.shuffle(arr);
-        for (let i = 0; i < this.reels.length; i++) {
-            arr = GameMgr.instance.shuffle(arr);
-            this.reels[i].getComponent(CowboyReel).init(arr, this.items);
-            this.reels[i].getComponent(CowboyReel).setReelCallback(this.spinDone.bind(this));
-        }
-    }
-    initNormalReels() {
-        //clear & add new
-        if (this.loginRes && this.loginRes.reelInfo && this.loginRes.reelInfo.normal && this.loginRes.reelInfo.normal.length > 0) {
-            let arr = this.loginRes.reelInfo.normal[0];
-            for (let i = 0; i < arr.length; i++) {
-                this.reels[i].removeAllChildren();
-                let arrStr = arr[i].split(',');
-                let arrTemp = [];
-                for (let j = 0; j < arrStr.length; j++) {
-                    arrTemp.push(parseInt(arrStr[j]));
-                }
-                this.reels[i].getComponent(CowboyReel).init(arrTemp, this.items);
-            }
-        }
-    }
-    buttonHandler(button: Button) {
-        AudioMgr.inst.playOneShot(this.arrAudioClips[1]);
-        switch (button.node.name) {
-            case 'btnCloseJackpot':
-                this.jackpotNode.active = false;
-                break;
-            case 'btnCloseBonus':
-                this.bonusNode.active = false;
-                break;
-            case 'btnCloseFreeSpin':
-                this.freeSpinNode.active = false;
-                break;
-            case 'btnCloseFreeSpinRes':
-                this.freeSpinResNode.active = false;
-                this.btnFreeSpin.active = false;
-                this.setAutoSpin(true);
-                this.resetSpin();
-                break;
-            case 'btnCloseBigWin':
-                this.bigWinNode.active = false;
-                break;
-            case 'btnBack':
-                this.disconnect();
-                director.loadScene('lobby');
-                break;
-            case 'btnBetMinus':
-                this.setBettingLine(false);
-                break;
-            case 'btnBetPlus':
-                this.setBettingLine(true);
-                break;
-            case 'btnMaxBet':
-                this.loginRes.lineBet = this.loginRes.betOptions[this.loginRes.betOptions.length - 1];
-                this.lbTotalBet.string = GameMgr.instance.numberWithCommas(this.loginRes.lineBet * 25);
-                break;
-            case 'btnAutoSpin':
-                this.setAutoSpin(false);
-                break;
-            case 'btnFreeSpin':
-                this.onSpin();
-                break
-        }
-    }
-    updateMainBalance(){
+
+
+    updateMainBalance() {
         this.lbBalance.string
     }
     setAutoSpin(isAuto: boolean) {
@@ -600,14 +643,77 @@ export class Cowboy extends Component {
         this.btnSpin.active = !isAuto;
         this.btnAutoSpin.active = isAuto;
     }
-    onSpin() {
-        //--repair spin
-        this.prepareSpin();
-        if (this.isFreeSpin) {//not - balance
 
-        } else {
-            if (this.isFirstBalance) {
-                this.isFirstBalance = false;
+    onNoticeClose(data: string = "") {
+
+    }
+
+    updateLineWinEffect() {
+        if(this.isUpdateLineWin){
+            let timeout1 = setTimeout(()=>{//hide 500 -> show 500*2
+                clearTimeout(timeout1);
+                for (let i = 0; i < this.lineEffects.length; i++) {
+                    this.lineEffects[i].active = false;
+                }
+            },500);
+            
+            let timeOut2 = setTimeout(()=>{
+                clearTimeout(timeOut2);
+                if(this.lineEffectsIdx<this.lineEffects.length){
+                    this.lineEffects[this.lineEffectsIdx].active = true;
+                    this.lineEffectsIdx++;
+                    if (this.lineEffectsIdx >= this.lineEffects.length) {
+                        this.lineEffectsIdx = 0;
+                    }
+                    this.updateLineWinEffect();
+                }
+            },1000)
+        }
+    }
+
+
+    //4. core gameplay
+    preSpin() {
+        //active button spin
+        this.isSpin = false;
+        this.setButtonInteractable(true);
+        //
+        if (this.isAutoSpin) {
+            const timeOut = setTimeout(() => {
+                clearTimeout(timeOut);
+                this.freeSpinNode.active = false;
+                this.bigWinNode.active = false;
+                this.bonusResNode.active = false;
+                this.jackpotNode.active = false;
+                this.spin(false, []);
+            }, 2000)
+        }
+    }
+    spin(isDebug: boolean = false, data: any) {
+        //1--clear result
+        //line effect
+        this.isUpdateLineWin = false;
+        for (let i = 0; i < this.lineEffects.length; i++) {
+            this.lineEffects[i].active = false;
+        }
+        this.lineEffects = [];
+
+        //hide line
+        for (let i = 0; i < this.lines.length; i++) {
+            this.lines[i].active = false;
+        }
+
+        //eff
+        this.lbCoinEff.getComponent(UIOpacity).opacity = 0;
+        
+        if (this.spinRes && this.spinRes.freeSpin && this.spinRes.freeSpin.remain && this.spinRes.freeSpin.remain > 1) {
+            this.lbFreeSpinCount.string = `${this.spinRes.freeSpin.remain}`;
+        }
+
+        //2. update balance
+        if (!this.isFreeSpin) {
+            if (this.isFirstStart) {
+                this.isFirstStart = false;
                 let newBalance = this.loginRes.balance - this.loginRes.lineBet * 25;
                 this.lbBalance.string = GameMgr.instance.numberWithCommas(newBalance);
             } else {
@@ -616,47 +722,24 @@ export class Cowboy extends Component {
             }
         }
 
-        //--check balance
+        //check balance
         if (this.loginRes.balance < this.loginRes.lineBet) {
             this.notice.getComponent(Notice).show({ title: 'Notice', content: 'Not enough balance' }, this.onNoticeClose.bind(this));
+            return;
         }
         if (!this.isSpin) {
-            AudioMgr.inst.playOneShot(this.arrAudioClips[9]);
-            Tween.stopAll();
             this.isSpin = true;
-            this.setButtonInteractable(false);
-            this.wsSpin();
-        }
-    }
-    setButtonInteractable(isDisable: boolean) {
-        this.btnSpin.getComponent(Button).interactable = isDisable;
-    }
-    onNoticeClose(data: string = "") {
-
-    }
-    runReels() {
-        let self = this;
-        //--add result
-        if (this.spinRes && this.spinRes.lineKeys && this.spinRes.lineKeys.length > 0) {
-            for (let i = 0; i < this.spinRes.lineKeys.length; i++) {
-                let arr = this.spinRes.lineKeys[i];
-                let startIdx = this.reels[i].children.length - 1;
-                for (let j = 0; j < arr.length; j++) {
-                    const texId = arr[j]
-                    const tex = this.icons[texId];
-                    this.reels[i].children[startIdx - j].getComponent(CowboyItem).setTexture(tex);
-                }
+            if (isDebug) {
+                this.wsSpinDebug(data);
+            } else {
+                this.wsSpin();
             }
+            this.setButtonInteractable(false);
+            // AudioMgr.inst.playOneShot(this.arrAudioClips[9]);
         }
-        Promise.all(self.reels.map(function (reel, index) {
-            if (self.isSpeed)
-                reel.getComponent(CowboyReel).spin(index, 0.25);
-            else
-                reel.getComponent(CowboyReel).spin(index, 1);
-        }))
-        this.isSpeed = false;
     }
-    spinDone() {
+    endSpin() {
+        //1. set icon result (effect same icon -> move -> it not changed)
         if (this.spinRes && this.spinRes.lineKeys && this.spinRes.lineKeys.length > 0) {
             for (let i = 0; i < this.spinRes.lineKeys.length; i++) {
                 let arr = this.spinRes.lineKeys[i];
@@ -669,325 +752,93 @@ export class Cowboy extends Component {
                 this.reels[i].setPosition(this.reels[i].getPosition().x, 20);
             }
 
-            // this.H_line_win = data.line_win;
-            // this.H_win      = data.win;
-            // this.H_free     = data.free;
-            // this.isBonus    = data.isBonus;
-            // this.isNoHu     = data.isNoHu;
-            // this.isBigWin   = data.isBigWin;
-            // this.isFree     = data.isFree;
-            // this.isFreeSpin = !!data.free;
-
-
-            //--show result
-            // this.RedT.hieuUng();
-            this.showResult();
-            this.resetSpin();
+        } else {
+            console.error('result error')
         }
-    }
-    showResult() {
-        //main balance
+        //2. show result
+        //--main balance
         let totalWin = GameMgr.instance.numberWithCommas(this.spinRes.totalWinBalance);
         this.lbWin.string = totalWin;
         this.lbBalance.string = GameMgr.instance.numberWithCommas(this.spinRes.balance);
 
-        //win type
-        switch (this.spinRes.winType) {
-            case 'Jackpot':
-                this.showJackpot();
-                break;
-            // case 'Big Win':
-            //     this.showBigWin();
-            // break;
-            // case 'Ultra', 'Mega Win''', ''Super Win'
-            default:
-                //1. line effect
-                this.showLineWin();
-
-                //2. coin effect
-                if (this.spinRes.totalWinBalance > 0) {
-                    this.lbCoinEff.getComponent(Label).string = `+${totalWin}`;
-                    this.lbCoinEff.getComponent(Animation).play();
-                }
-                //2. freespin > 1
-                if (this.spinRes.freeSpin && this.spinRes.freeSpin.remain && this.spinRes.freeSpin.remain > 0) {
-                    if (this.spinRes.freeSpin.count === this.spinRes.freeSpin.remain) {//First
-                        this.showFreeSpin();
-                        this.iTotalWinFreeSpin = 0;
-                    } else {
-                        this.iTotalWinFreeSpin += this.spinRes.totalWinBalance;
-                        if(this.btnFreeSpin.active==false){
-                            this.btnFreeSpin.active = true;
-                            this.btnSpin.active = false;
-                            this.btnAutoSpin.active = false;
-                        }
-                    }
-                    this.lbFreeSpinCount.string = `${this.spinRes.freeSpin.remain}`;
-                    this.isFreeSpin = true;
-                } else if (this.isFreeSpin && this.spinRes.freeSpin.remain == 0) { //end free spin
-                    this.showEndFreeSpin();
-                    this.isFreeSpin = false;
-                }
-                else if (this.spinRes.bonusList && this.spinRes.bonusList.coin != null && this.spinRes.bonusList.coin.length > 0 && this.spinRes.totalWinBalance > 0) {
-                    this.showBonus();
-                }
-                break;
+        //coin effect
+        if (this.spinRes.totalWinBalance > 0) {
+            this.lbCoinEff.getComponent(Label).string = `+${totalWin}`;
+            this.lbCoinEff.getComponent(Animation).play();
         }
 
-
-        // if(this.isFreeSpin)
-        // this.buttonSpin.active     = !this.H_free;
-        // this.buttonSpinSpeed.active     = !this.H_free;
-        // this.freeLabel.string      = 'Free: ' + this.H_free;
-        // this.freeLabel.node.active = !!this.H_free
-    }
-    showFreeSpin() {
-        this.freeSpinNode.active = true;
-        AudioMgr.inst.playOneShot(this.arrAudioClips[5]);
-        this.lbFreeSpinEff.string = `${this.spinRes.freeSpin.remain}`;
-        this.lbFreeSpinCount.string = `${this.spinRes.freeSpin.remain}`;
-        this.btnFreeSpin.active = true;
-        this.btnSpin.active = false;
-        this.btnAutoSpin.active = false;
-    }
-    showEndFreeSpin() {
-        this.freeSpinResNode.active = true;
-        AudioMgr.inst.playOneShot(this.arrAudioClips[5]);
-        GameMgr.instance.numberTo(this.lbFreeSpinWon, 0, this.iTotalWinFreeSpin, 2000);
-    }
-    showBonus() {
-        this.bonusNode.active = true;
-        GameMgr.instance.numberTo(this.lbBonusWinCoin, 0, this.spinRes.totalWinBalance, 2000);
-        AudioMgr.inst.playOneShot(this.arrAudioClips[3]);
-    }
-    showJackpot() {
-        this.isJackpot = true;
-        this.jackpotNode.active = true;
-        GameMgr.instance.numberTo(this.lbJackpotWinCoin, 0, this.spinRes.totalWinBalance, 2000);
-        AudioMgr.inst.playOneShot(this.arrAudioClips[6]);
-    }
-    showLineWin() {
+        //line win
         this.lineEffects = [];
         for (let i = 0; i < this.spinRes.payoutList.length; i++) {
             const lineIdx = this.spinRes.payoutList[i].lineNum;
             const line = this.lines[lineIdx];
             this.lineEffects.push(line);
-            line.getComponent(UIOpacity).opacity = 255;
+            line.active = true;
         }
         //--run effect
         if (this.lineEffects.length > 0) {
             this.lineEffectsIdx = 0;
             this.isUpdateLineWin = true;
+            this.updateLineWinEffect();
         }
-
-
-
-
-
-        // efLineWin: function(bool){
-        //     if (this.H_line_win.length) {
-        //         this.node.stopAllActions();
-        //         var self = this;
-
-        //         if (void 0 === this.H_line_win[this.eflineN]) {
-        //             this.eflineN = 0;
-        //         }
-        //         this.efOneLineWin(this.eflineN, true);
-        //         var next = cc.callFunc(function() {
-        //             this.efOneLineWin(this.eflineN, false);
-        //             this.eflineN += 1;
-        //             this.efLineWin();
-        //         }, this);
-        //         this.node.runAction(cc.sequence(cc.delayTime(1.5), next));
-        //     }
-        // },
-        // efOneLineWin: function(number, bool){
-        //     var self = this;
-        //     number = this.H_line_win[this.eflineN].line;
-        //     let TRed = this.Line.mainLines[number-1];
-        //     if (bool) {
-        //         TRed.ef = true;
-        //         TRed.onShow();
-        //     }else{
-        //         TRed.ef = false;
-        //         TRed.onHidden();
-        //     }
-        // },
-
-    }
-    updateLineWinEffect() {
-        for (let i = 0; i < this.lineEffects.length; i++) {
-            tween(this.lineEffects[i].getComponent(UIOpacity))
-                .to(0.2, { opacity: 0 }).start()
-
-        }
-        tween(this.lineEffects[this.lineEffectsIdx].getComponent(UIOpacity))
-            .delay(1.5)
-            .to(0.2, { opacity: 255 }).start()
-        this.lineEffectsIdx++;
-        if (this.lineEffectsIdx >= this.lineEffects.length) {
-            this.lineEffectsIdx = 0;
-        }
-    }
-    prepareSpin() {
-        //1-line effect
-        for (let i = 0; i < this.lineEffects.length; i++) {
-            this.lineEffects[i].getComponent(UIOpacity).opacity = 0;
-        }
-        this.lineEffects = [];
-
-        //2-hide line
-        for (let i = 0; i < this.lines.length; i++) {
-            this.lines[i].getComponent(UIOpacity).opacity = 0;
-        }
-
-        //eff
-        this.lbCoinEff.getComponent(UIOpacity).opacity = 0;
-        this.isBigWin = false;
-        this.isJackpot = false;
-        this.isUpdateLineWin = false;
-        if (this.spinRes && this.spinRes.freeSpin && this.spinRes.freeSpin.remain && this.spinRes.freeSpin.remain > 1) {
-            this.lbFreeSpinCount.string = `${this.spinRes.freeSpin.remain}`;
-        }
-    }
-    resetSpin() {
-        // if (this.isAuto) {
-        //     this.onAuto();
-        // }
-        this.isJackpot = false;
-        this.isSpin = false;
-        this.isSpeed = false;
-        this.setButtonInteractable(true);
-
-        if (this.isAutoSpin) {
-            const timeOut = setTimeout(() => {
-                clearTimeout(timeOut);
-                this.freeSpinNode.active = false;
-                this.bigWinNode.active = false;
-                this.bonusNode.active = false;
-                this.jackpotNode.active = false;
-                this.onSpin();
-            }, 1500)
-        }
-
-        // this.buttonLine.resumeSystemEvents();
-        // this.buttonSpin.resumeSystemEvents();
-        // this.buttonSpinSpeed.resumeSystemEvents();
-        // this.buttonBet.resumeSystemEvents();
-    }
-    /*
-	
-
-        switch(this.spinRes.winType){
-            
+        //--result type
+        switch (this.spinRes.winType) {
+            case 'Jackpot':
+                this.jackpotNode.active = true;
+                GameMgr.instance.numberTo(this.lbJackpotWinCoin, 0, this.spinRes.totalWinBalance, 2000);
+                // AudioMgr.inst.playOneShot(this.arrAudioClips[6]);
                 break;
-        }
-        //     if (this.isBigWin && !this.isNoHu) {
-        //         // Big Win
-        //         this.BigWin.node.active = true;
-        //         this.BigWin.play();
-        //         this.oldBigWin = true;
-        //     }else if (this.isNoHu){
-        //         // Nổ Hũ
-        //         this.NoHu.node.active = true;
-        //         this.NoHu.play();
-        //     }else if (!!this.isBonus){
-        //         // Bonus
-        //         this.EF_Bonus.node.active = true;
-        //         this.EF_Bonus.play();
-        //         cc.RedT.audio.playEf('bonus');
-        //     }else if (this.isFree){
-        //         // Free
-        //         this.EF_Free.node.active = true;
-        //         this.EF_Free.play();
-        //     }else if (this.H_win > 0){
-        //         var temp = new cc.Node;
-        //         temp.addComponent(cc.Label);
-        //         temp = temp.getComponent(cc.Label);
-        //         temp.string = '+'+ helper.numberWithCommas(this.H_win);
-        //         temp.font = cc.RedT.util.fontCong;
-        //         temp.lineHeight = 130;
-        //         temp.fontSize   = 25;
-        //         temp.node.position = cc.v2(0, 21);
-        //         this.nodeNotice.addChild(temp.node);
-        //         !this.oldBigWin && this._playSFX(this.audioWin);
-        //         temp.node.runAction(cc.sequence(cc.moveTo(1.2, cc.v2(0, 105)), cc.callFunc(function(){
-        //             this.speed = 0;
-        //             temp.node.destroy();
-        //             this.hieuUng();
-        //             this.showLineWin(false);
-        //         }, this)));
-        //         this.H_win = 0;
-        //         this.oldBigWin = false;
-        //     }else{
-        //         if (this.isAuto || this.isFreeSpin) {
-        //             this.timeOut = setTimeout(function(){
-        //                 this.onAutoSpin();
-        //                 this.speed = 400;
-        //             }
-        //             .bind(this), this.speed);
-        //         }else{
-        //             this.resetSpin();
-        //         }
-        //     }
-        
-    }*/
-    // onAuto: function(){
-    // 		this.isAuto = !this.isAuto;
-    // 		if (this.isAuto) {
-    // 			this.buttonAuto.color = cc.Color.WHITE;
-    // 		}else{
-    // 			this.buttonAuto.color = this.buttonAuto.color.fromHEX('#8A8A8A');
-    // 		}
-    // 	},
-
-    // 	onClickSpinSpeed: function(){
-    // 		this.isSpeed = true;
-    // 		if(this.isAuto) this.isForceSpeed = true;
-    // 		this.onSpin();
-    // 	},
-    // 	onAutoSpin: function(){
-    // 		this._playSFX(this.audioClickSpin);
-    // 		this.onGetSpin();
-    // 	},
-
-
-
-    // 	runReels: function(isSpeed){
-    // 		var self = this;
-    // 		Promise.all(this.reels.map(function(reel, index) {
-    // 			if(isSpeed || self.isForceSpeed)
-    // 				reel.spin(index,0.25);
-    // 			else
-    // 				reel.spin(index,1);
-    // 		}));
-    // 		this.isSpeed = false;
-    // 	},
-    // 	copy: function(){
-    // 		Promise.all(this.reels.map(function(reel){
-    // 			reel.icons[reel.icons.length-1].setIcon(reel.icons[2].data);
-    // 			reel.icons[reel.icons.length-2].setIcon(reel.icons[1].data);
-    // 			reel.icons[reel.icons.length-3].setIcon(reel.icons[0].data);
-    // 		}));
-    // 	},
-    // 	onGetSpin: function(){
-    // 		cc.RedT.send({g:{zeus:{spin:{cuoc: helper.getOnlyNumberInString(this.bet.string), line: this.Line.data}}}});
-    // 	},
-    // 	addNotice:function(text){
-    // 		var notice = cc.instantiate(this.prefabNotice)
-    // 		var noticeComponent = notice.getComponent('mini_warning')
-    // 		noticeComponent.text.string = text;
-    // 		this.nodeNotice.addChild(notice);
-    // 	},
-
-    update(deltaTime: number) {
-        this.countUpdate++;
-        if (this.countUpdate > 100) {
-            this.countUpdate = 0;
-            //--1. guideline
-            if (this.isUpdateLineWin) {
-                this.updateLineWinEffect();
-            }
+            case 'Big Win':
+            case 'Ultra':
+            case 'Mega Win':
+            case 'Super Win':
+                this.bigWinNode.active = true;
+                GameMgr.instance.numberTo(this.lbBigWinCoin, 0, this.spinRes.totalWinBalance, 2000);
+                // AudioMgr.inst.playOneShot(this.arrAudioClips[6]);
+                break;
+            default:
+                //freespin
+                if (this.spinRes.freeSpin && this.spinRes.freeSpin.remain && this.spinRes.freeSpin.remain > 0) {
+                    this.lbFreeSpinCount.string = `${this.spinRes.freeSpin.remain}`;
+                    this.isFreeSpin = true;
+                    if (this.spinRes.freeSpin.count === this.spinRes.freeSpin.remain) {//First
+                        this.iTotalWinFreeSpin = 0;
+                        this.freeSpinNode.active = true;
+                        this.lbFreeSpinEff.string = `${this.spinRes.freeSpin.remain}`;
+                        this.btnFreeSpin.active = true;
+                        this.btnSpin.active = false;
+                        this.btnAutoSpin.active = false;
+                        // AudioMgr.inst.playOneShot(this.arrAudioClips[5]);
+                    } else {
+                        this.iTotalWinFreeSpin += this.spinRes.totalWinBalance;
+                        if (this.btnFreeSpin.active == false) {
+                            this.btnFreeSpin.active = true;
+                            this.btnSpin.active = false;
+                            this.btnAutoSpin.active = false;
+                            if(!this.isAutoSpin){
+                                this.setAutoSpin(true)
+                            }
+                        }
+                        this.preSpin();
+                    }
+                } else if (this.isFreeSpin && this.spinRes.freeSpin.remain == 0) { //end free spin
+                    this.isFreeSpin = false;
+                    this.freeSpinResNode.active = true;
+                    GameMgr.instance.numberTo(this.lbFreeSpinWon, 0, this.iTotalWinFreeSpin, 2000);
+                    // AudioMgr.inst.playOneShot(this.arrAudioClips[5]);
+                }
+                else if (this.spinRes.bonusPayout && this.spinRes.bonusPayout.length>0 && this.spinRes.bonusPayout[0].extendData) {
+                    this.bonusPlayNode.active = true;
+                    this.countBonusRemain = this.spinRes.bonusPayout[0].extendData.length;
+                    this.lbBonusRemain.string = `${this.countBonusRemain}`;
+                    this.lbBonusReward.string = `${this.spinRes.bonusPayout[0].balance}`;
+                    for(let i=0;i<this.arrPlayBonusItem.length;i++){
+                        this.arrPlayBonusItem[i].getComponent(CowboyBonusItem).reset();
+                    }
+                } else {
+                    this.preSpin();
+                }
+                break;
         }
     }
 }

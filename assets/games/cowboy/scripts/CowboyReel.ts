@@ -35,29 +35,7 @@ export class CowboyReel extends Component {
             if(index==4){//final reels
                 this.callback();
             }
-        }).start();
-        
-
-        // if (index === 4){
-        //     var EF = cc.callFunc(function() {
-        //         this.RedT.EF_vuathang();
-        //         this.node.y = 0;
-        //         this.RedT.random();
-        //         this.RedT.hieuUng();
-        //     }, this);
-        //     this.node.runAction(cc.sequence(cc.delayTime(index*0.1), d, EF));
-        // } else
-        //     this.node.runAction(cc.sequence(cc.delayTime(index*0.1), d, p2));
-
-        // EF_vuathang: function(){
-        //     this.showLineWin(true);
-        //     this.vuathang.string       = helper.numberWithCommas(this.H_win);
-        //     this.buttonSpin.active     = !this.H_free;
-        //     this.buttonSpinSpeed.active     = !this.H_free;
-        //     this.freeLabel.string      = 'Free: ' + this.H_free;
-        //     this.freeLabel.node.active = !!this.H_free
-        // },
-        
+        }).start(); 
     }
     stop(){
         Tween.stopAll();
