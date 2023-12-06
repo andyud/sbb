@@ -74,6 +74,7 @@ export class AudioMgr {
     play(sound: AudioClip | string, volume: number = 1.0) {
         if (sound instanceof AudioClip) {
             this._audioSource.clip = sound;
+            this._audioSource.loop = true;
             this._audioSource.play();
             this.audioSource.volume = volume;
         }
