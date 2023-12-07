@@ -290,14 +290,16 @@ export class Cowboy extends Component {
     };
     private errorMessage = { "message": "Spin Transaction - not Login:", "code": 1, "data": "{}", "currentPid": "spin" };
     private tableMatrix = [
-        [2, 2, 2, 2, 2],
+        [0, 0, 0, 0, 0],
         [1, 1, 1, 1, 1],
-        [0, 0, 0, 0, 0]
+        [2, 2, 2, 2, 2]
     ];
     private serverMatrix = [
         [0, 3, 6, 9, 12],
         [1, 4, 7, 10, 13],
         [2, 5, 8, 11, 14]
+        //reel  0, 1, 2,  3, 4
+        //2x1,0x2
     ]
     private lineMatrix = [
         [1, 1, 1, 1, 1],//0
@@ -379,6 +381,7 @@ export class Cowboy extends Component {
                 this.spin(false, []);
             } else if (val == 2) {
                 this.setAutoSpin(true);
+                this.preSpin();
             }
         });
         this.btnAutoSpin.on(Button.EventType.CLICK, this.onCloseEnd, this);
@@ -408,7 +411,8 @@ export class Cowboy extends Component {
                         this.bonusPlayNode.active = false;
                         this.bonusResNode.active = true;
                         GameMgr.instance.numberTo(this.lbBonusWinCoin, 0, this.spinRes.totalWinBalance, 2000);
-                        AudioMgr.inst.playOneShot(this.arrAudioClips[13]);
+                        AudioMgr.inst.stop();
+                        AudioMgr.inst.playOneShot(this.arrAudioClips[26]);
                     }, 2000);
                 } else {
                     this.lbBonusRemain.string = `${this.countBonusRemain}`;
@@ -417,8 +421,8 @@ export class Cowboy extends Component {
                 }
             }, i);
         }
-        AudioMgr.inst.stop();
-        AudioMgr.inst.play(this.arrAudioClips[0]);
+        // AudioMgr.inst.stop();
+        // AudioMgr.inst.play(this.arrAudioClips[0]);
     }
     //2. network -------------------------------------------------------------------------------------------
     private disconnect() {
@@ -537,7 +541,7 @@ export class Cowboy extends Component {
                 this.spinRes = data;
                 //runReels
                 let self = this;
-                AudioMgr.inst.playOneShot(this.arrAudioClips[4])
+                AudioMgr.inst.playOneShot(this.arrAudioClips[3])
                 //--add result
                 if (this.spinRes && this.spinRes.lineKeys && this.spinRes.lineKeys.length > 0) {
                     for (let i = 0; i < this.spinRes.lineKeys.length; i++) {
@@ -572,18 +576,21 @@ export class Cowboy extends Component {
         switch (button.node.name) {
             case 'btnCloseJackpot':
                 this.jackpotNode.active = false;
-                AudioMgr.inst.playOneShot(this.arrAudioClips[9])
+                this.playCoinEffect();
                 break;
             case 'btnCloseBonusRes':
                 this.bonusResNode.active = false;
+                this.playCoinEffect();
                 break;
             case 'btnCloseBigWin':
                 this.bigWinNode.active = false;
+                this.playCoinEffect();
                 break;
             case 'btnCloseFreeSpinRes':
                 this.freeSpinResNode.active = false;
                 this.btnFreeSpin.active = false;
                 this.setAutoSpin(false);
+                this.playCoinEffect();
                 break;
             case 'btnAutoSpin':
                 this.setAutoSpin(false);
@@ -608,7 +615,7 @@ export class Cowboy extends Component {
                 this.spin(true, [3, 10, 17, 13, 15]);
                 break;
             case 'btnDbJackpot':
-                this.spin(true, [33, 22, 29, 25, 24]);
+                this.spin(true, [32, 21, 28, 24, 23]);
                 break;
             case 'btnFreeSpin':
                 this.spin(false, []);
@@ -630,7 +637,7 @@ export class Cowboy extends Component {
                 break;
             case 'btnRunDebugData':
                 let strData = this.edDebugData.getComponent(EditBox).string;
-                if(strData == null || strData.length<1){
+                if (strData == null || strData.length < 1) {
                     return;
                 }
                 let dataTemp = []
@@ -638,7 +645,7 @@ export class Cowboy extends Component {
                 for (let j = 0; j < arrStr.length; j++) {
                     dataTemp.push(parseInt(arrStr[j]));
                 }
-                this.spin(true,dataTemp);
+                this.spin(true, dataTemp);
                 break;
         }
     }
@@ -721,11 +728,18 @@ export class Cowboy extends Component {
         }
     }
     spin(isDebug: boolean = false, data: any) {
+        AudioMgr.inst.stop();
+        AudioMgr.inst.play(this.arrAudioClips[21]);
         //1--clear result
         //line effect
         this.isUpdateLineWin = false;
         for (let i = 0; i < this.lineEffects.length; i++) {
             this.lineEffects[i].active = false;
+        }
+        for (let i = 0; i < this.reels.length; i++) {
+            for (let j = 0; j < this.reels[i].children.length; j++) {
+                this.reels[i].children[j].getComponent(CowboyItem).stopZoomAnim();
+            }
         }
         this.lineEffects = [];
 
@@ -760,12 +774,15 @@ export class Cowboy extends Component {
                 this.wsSpin();
             }
             this.setButtonInteractable(false);
-            // AudioMgr.inst.playOneShot(this.arrAudioClips[9]);
         }
     }
     endSpin() {
         //1. set icon result (effect same icon -> move -> it not changed)
-        AudioMgr.inst.playOneShot(this.arrAudioClips[5]);
+        if(!this.isFreeSpin){
+            AudioMgr.inst.stop();
+        }
+        
+        AudioMgr.inst.playOneShot(this.arrAudioClips[4]);
         if (this.spinRes && this.spinRes.lineKeys && this.spinRes.lineKeys.length > 0) {
             for (let i = 0; i < this.spinRes.lineKeys.length; i++) {
                 let arr = this.spinRes.lineKeys[i];
@@ -774,6 +791,12 @@ export class Cowboy extends Component {
                     const texId = arr[j]
                     const tex = this.icons[texId];
                     this.reels[i].children[startIdx - j].getComponent(CowboyItem).setTexture(tex);
+                    if(texId==0 || texId==1 || texId==3 || texId==10){
+                        this.reels[i].children[startIdx - j].getComponent(CowboyItem).runSpecialEff();
+                    }
+                    if(texId==1){//wild
+                        AudioMgr.inst.playOneShot(this.arrAudioClips[24]);
+                    }
                 }
                 this.reels[i].setPosition(this.reels[i].getPosition().x, 20);
             }
@@ -781,32 +804,6 @@ export class Cowboy extends Component {
         } else {
             console.error('result error')
         }
-        //2. show result
-        //--main balance
-        if (this.spinRes.totalWinBalance > 0) {
-            let totalWin = GameMgr.instance.numberWithCommas(this.spinRes.totalWinBalance);
-            GameMgr.instance.numberTo(this.lbWin, 0, totalWin, 2000);
-            //--coin effect move
-
-
-            let ef = Math.floor(Math.random() * 5) + 3;
-            let startPos = this.cointPos1.position; //.parent.parent.position;
-            let endPos = this.cointPos2.position; //.parent.parent.parent.position;
-            for (let i = 0; i < ef; i++) {
-                var coint = instantiate(this.pfCointEff);
-                this.node.parent.addChild(coint);
-                coint.getComponent(CowboyCoinEff).init(startPos, endPos);
-            }
-            let timeout3 = setTimeout(() => {
-                clearTimeout(timeout3)
-                this.lbBalance.string = GameMgr.instance.numberWithCommas(this.spinRes.balance);
-            }, 1500)
-        }
-        //coin effect old
-        // if (this.spinRes.totalWinBalance > 0) {
-        //     this.lbCoinEff.getComponent(Label).string = `+${totalWin}`;
-        //     this.lbCoinEff.getComponent(Animation).play();
-        // }
 
         //line win
         this.lineEffects = [];
@@ -815,6 +812,22 @@ export class Cowboy extends Component {
             const line = this.lines[lineIdx];
             this.lineEffects.push(line);
             line.active = true;
+            //--
+            let coord = this.spinRes.payoutList[i].winPosition;
+            for (let kk = 0; kk < coord.length; kk++) {
+                let val1 = coord[kk];
+                for (let ii = 0; ii < this.serverMatrix.length; ii++) {
+                    let row = this.serverMatrix[ii];
+                    for (let jj = 0; jj < row.length; jj++) {
+                        let val2 = row[jj];
+                        if (val1 == val2) {
+                            this.reels[jj].children[2 - ii].getComponent(CowboyItem).zoomAnim();
+                            console.log(`anim [${jj},${2 - ii} val: ${val1}]`)
+                        }
+                    }
+                }
+            }
+
         }
         //--run effect
         if (this.lineEffects.length > 0) {
@@ -827,7 +840,7 @@ export class Cowboy extends Component {
             case 'Jackpot':
                 this.jackpotNode.active = true;
                 GameMgr.instance.numberTo(this.lbJackpotWinCoin, 0, this.spinRes.totalWinBalance, 2000);
-                AudioMgr.inst.playOneShot(this.arrAudioClips[8]);
+                AudioMgr.inst.playOneShot(this.arrAudioClips[27]);
                 break;
             case 'Big Win':
             case 'Ultra':
@@ -835,7 +848,7 @@ export class Cowboy extends Component {
             case 'Super Win':
                 this.bigWinNode.active = true;
                 GameMgr.instance.numberTo(this.lbBigWinCoin, 0, this.spinRes.totalWinBalance, 2000);
-                AudioMgr.inst.playOneShot(this.arrAudioClips[14]);
+                AudioMgr.inst.playOneShot(this.arrAudioClips[12]);
                 break;
             default:
                 //freespin
@@ -849,7 +862,8 @@ export class Cowboy extends Component {
                         this.btnFreeSpin.active = true;
                         this.btnSpin.active = false;
                         this.btnAutoSpin.active = false;
-                        AudioMgr.inst.playOneShot(this.arrAudioClips[17]);
+                        AudioMgr.inst.stop();
+                        AudioMgr.inst.play(this.arrAudioClips[23]);
                     } else {
                         this.iTotalWinFreeSpin += this.spinRes.totalWinBalance;
                         if (this.btnFreeSpin.active == false) {
@@ -866,7 +880,8 @@ export class Cowboy extends Component {
                     this.isFreeSpin = false;
                     this.freeSpinResNode.active = true;
                     GameMgr.instance.numberTo(this.lbFreeSpinWon, 0, this.iTotalWinFreeSpin, 2000);
-                    AudioMgr.inst.playOneShot(this.arrAudioClips[15]);
+                    AudioMgr.inst.stop();
+                    AudioMgr.inst.playOneShot(this.arrAudioClips[25]);
                 }
                 else if (this.spinRes.bonusPayout && this.spinRes.bonusPayout.length > 0 && this.spinRes.bonusPayout[0].extendData) {
                     this.bonusPlayNode.active = true;
@@ -876,14 +891,44 @@ export class Cowboy extends Component {
                     for (let i = 0; i < this.arrPlayBonusItem.length; i++) {
                         this.arrPlayBonusItem[i].getComponent(CowboyBonusItem).reset();
                     }
-                    AudioMgr.inst.playOneShot(this.arrAudioClips[6]);
+                    AudioMgr.inst.stop();
+                    AudioMgr.inst.play(this.arrAudioClips[22]);
                 } else {
                     this.preSpin();
-                    if (this.spinRes.totalWinBalance > 0) {
-                        AudioMgr.inst.playOneShot(this.arrAudioClips[12])
+                    if (this.spinRes.totalWinBalance > 0) {//normal win
+                        AudioMgr.inst.playOneShot(this.arrAudioClips[11]);
+                        GameMgr.instance.numberTo(this.lbWin, 0, this.spinRes.totalWinBalance, 2000);
                     }
                 }
                 break;
         }
+    }
+    playCoinEffect(){
+        if (this.spinRes.totalWinBalance > 0) {
+            GameMgr.instance.numberTo(this.lbWin, 0, this.spinRes.totalWinBalance, 2000);
+            AudioMgr.inst.playOneShot(this.arrAudioClips[2]);
+            //--coin effect move
+            let ef = Math.floor(Math.random() * 5) + 3;
+            let startPos = this.cointPos1.position; //.parent.parent.position;
+            let endPos = this.cointPos2.position; //.parent.parent.parent.position;
+            let timeout4 = setTimeout(()=>{
+                clearTimeout(timeout4);
+                for (let i = 0; i < ef; i++) {
+                    var coint = instantiate(this.pfCointEff);
+                    this.node.parent.addChild(coint);
+                    coint.getComponent(CowboyCoinEff).init(startPos, endPos);
+                }
+            },1000)
+            
+            let timeout3 = setTimeout(() => {
+                clearTimeout(timeout3)
+                this.lbBalance.string = GameMgr.instance.numberWithCommas(this.spinRes.balance);
+            }, 2000)
+        }
+        //coin effect old
+        // if (this.spinRes.totalWinBalance > 0) {
+        //     this.lbCoinEff.getComponent(Label).string = `+${totalWin}`;
+        //     this.lbCoinEff.getComponent(Animation).play();
+        // }
     }
 }

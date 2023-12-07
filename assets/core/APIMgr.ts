@@ -41,8 +41,8 @@ BfhZUWNOM6WQGMIJ53fwjXkhURECCgMLHOFuSBtkmbfj5tw=
     //--mockup data ----------------------------------------------
     public signinRes = {
         statusCode: 0,
-        user_id: 211,
-        token: "asdasdasd",
+        user_id: 210,
+        token: "asdasdasda",
         nick_name: null,
         balance: 1000222,
         level: 1,
@@ -128,7 +128,7 @@ BfhZUWNOM6WQGMIJ53fwjXkhURECCgMLHOFuSBtkmbfj5tw=
             exponent: "aaa",
             gameId: 1,
             app: "dev",
-            token: "asdasdasd", //no space
+            token: "asdasdasda", //no space
             email: "",
             appversion: "1"
         }).then((response) => response.json())

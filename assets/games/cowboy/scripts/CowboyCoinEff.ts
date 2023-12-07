@@ -12,8 +12,8 @@ export class CowboyCoinEff extends Component {
 		this.startPos = startPos;
 		this.endPos = endPos;
 		this.coint.on(dragonBones.EventObject.LOOP_COMPLETE, this.COMPLETE, this);
-		let x = startPos.x + Math.floor(Math.random()*(endPos.x*1.2+1))-endPos.x;
-		let y = startPos.y + Math.floor(Math.random()*(endPos.y*1.2+1))-endPos.y;
+		let x = startPos.x + Math.random()*100 - Math.random()*100;
+		let y = startPos.y + Math.random()*100;
 		this.changer = false;
 		this.node.setPosition(x,y);
 	}
