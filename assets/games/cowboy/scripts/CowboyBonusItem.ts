@@ -1,4 +1,5 @@
-import { _decorator, Component, Node, Label } from 'cc';
+import { _decorator, Component, Node, Label, Game } from 'cc';
+import GameMgr from '../../../core/GameMgr';
 const { ccclass, property } = _decorator;
 
 @ccclass('CowboyBonusItem')
@@ -28,10 +29,13 @@ export class CowboyBonusItem extends Component {
         this.callback(this.idx);
     }
     setValue(val: number) {
-        let str = `${val}`
+        if(val == null || val == 0){
+            this.lb.string = '';
+        } else {
+            this.lb.string = GameMgr.instance.numberWithCommas(val);
+        }
         this.sp.active = false;
         this.lb.node.active = true;
-        this.lb.string = str.length > 0 ? `+${val}` : '';
     }
 }
 

@@ -29,8 +29,8 @@ export class CowboyReel extends Component {
         console.log(`Reel h=${this.h}, parentH = ${this.parentH}`)
         let self = this;
         tween(this.node)
-        .delay(index*0.1)
-        .to(speed,{position: new Vec3(this.x,-(this.h-this.parentH))},{easing:"elasticInOut"})
+        // .delay(index*0.1)
+        .to(speed,{position: new Vec3(this.x,-(this.h-this.parentH))})//,{easing:'backIn'})
         .call(()=>{
             if(index==4){//final reels
                 this.callback();

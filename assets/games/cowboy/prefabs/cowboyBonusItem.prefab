@@ -209,7 +209,7 @@
       "__id__": 1
     },
     "_children": [],
-    "_active": false,
+    "_active": true,
     "_components": [
       {
         "__id__": 9
@@ -263,8 +263,8 @@
     },
     "_contentSize": {
       "__type__": "cc.Size",
-      "width": 136.88,
-      "height": 60
+      "width": 0,
+      "height": 20
     },
     "_anchorPoint": {
       "__type__": "cc.Vec2",
@@ -298,13 +298,13 @@
       "b": 255,
       "a": 255
     },
-    "_string": "100",
+    "_string": "",
     "_horizontalAlign": 1,
     "_verticalAlign": 1,
-    "_actualFontSize": 60,
-    "_fontSize": 60,
+    "_actualFontSize": 20,
+    "_fontSize": 20,
     "_fontFamily": "Arial",
-    "_lineHeight": 60,
+    "_lineHeight": 20,
     "_overflow": 0,
     "_enableWrapText": true,
     "_font": {
