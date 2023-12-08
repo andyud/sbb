@@ -328,6 +328,13 @@ export class Cowboy extends Component {
         [2, 0, 2, 0, 2],//23
         [0, 2, 0, 2, 0]//24
     ];
+    //----------------------------------------------------------------------------------------------------
+    private cowboyConfig = {
+        reelsSpeed:1,//1s
+        autoSpinDelayNoWin:500,//0.5s
+        autoSpinDelayWin:1500,
+    }
+    private lastTimeUpdate = new Date().getTime();
     //1. init ---------------------------------------------------------------------------------------------
     start() {
         this.webSocket = null;
@@ -724,7 +731,7 @@ export class Cowboy extends Component {
                 this.bonusResNode.active = false;
                 this.jackpotNode.active = false;
                 this.spin(false, []);
-            }, 2000)
+            }, this.spinRes.totalWinBalance>0 ? this.cowboyConfig.autoSpinDelayWin : this.cowboyConfig.autoSpinDelayNoWin)
         }
     }
     spin(isDebug: boolean = false, data: any) {
