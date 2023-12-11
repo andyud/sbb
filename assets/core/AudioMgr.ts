@@ -17,6 +17,7 @@ export class AudioMgr {
 
     private _audioSource: AudioSource;
     public soundIdx: number = -1;
+    public isPause:boolean = false;
     constructor() {
         //@en create a node as audioMgr
         //@zh 创建一个节点作为 audioMgr
@@ -73,9 +74,14 @@ export class AudioMgr {
      * @param volume 
      */
     play(sound: AudioClip | string, soundIdx:number, volume: number = 1.0) {
-        if(this.soundIdx == soundIdx) return;
+        if(this.soundIdx == soundIdx){
+            if(this.isPause){
+                this._audioSource.play();
+            }
+            return;
+        } 
+        this._audioSource.stop();
         this.soundIdx = soundIdx;
-
         if (sound instanceof AudioClip) {
             this._audioSource.clip = sound;
             this._audioSource.loop = true;
@@ -107,6 +113,7 @@ export class AudioMgr {
      * pause the audio play
      */
     pause() {
+        this.isPause = true;
         this._audioSource.pause();
     }
 

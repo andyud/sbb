@@ -8,8 +8,9 @@ export class CowboyItem extends Component {
     @property({type:Node})
     hlNode:Node | null = null;
     idx:number = 0;//item id
-    setTexture(tex:SpriteFrame){
+    setTexture(tex:SpriteFrame,idx:number){
         this.sprite.spriteFrame = tex;
+        this.idx = idx;
     }
     zoomAnim(){
         this.sprite.node.getComponent(Animation).play('icon-zoom');
