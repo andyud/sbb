@@ -7,8 +7,8 @@ export class CowboyReel extends Component {
     private w:number = 0;
     private h:number = 0;
     private parentH:number = 0;
-    callback:()=>void;
-    setReelCallback(cb:()=>void){
+    callback:(idx:number)=>void;
+    setReelCallback(cb:(idx:number)=>void){
         this.callback = cb;
     }
     getSize() {
@@ -29,12 +29,10 @@ export class CowboyReel extends Component {
         console.log(`Reel h=${this.h}, parentH = ${this.parentH}`)
         let self = this;
         tween(this.node)
-        // .delay(index*0.1)
+        // .delay(index*0.2)
         .to(speed,{position: new Vec3(this.x,-(this.h-this.parentH))})//,{easing:'backIn'})
         .call(()=>{
-            if(index==4){//final reels
-                this.callback();
-            }
+            this.callback(index);
         }).start(); 
     }
     stop(){

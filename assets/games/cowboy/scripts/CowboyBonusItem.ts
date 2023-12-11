@@ -1,4 +1,4 @@
-import { _decorator, Component, Node, Label, Game } from 'cc';
+import { _decorator, Component, Node, Label, Game, Button, tween, Vec3 } from 'cc';
 import GameMgr from '../../../core/GameMgr';
 const { ccclass, property } = _decorator;
 
@@ -21,6 +21,8 @@ export class CowboyBonusItem extends Component {
     reset() {
         this.sp.active = true;
         this.lb.node.active = false;
+        this.setTouchEnable(true);
+        this.sp.scale = new Vec3(1,1,1);
     }
     setIdx(idx: number) {
         this.idx = idx;
@@ -34,8 +36,14 @@ export class CowboyBonusItem extends Component {
         } else {
             this.lb.string = GameMgr.instance.numberWithCommas(val);
         }
-        this.sp.active = false;
         this.lb.node.active = true;
+        tween(this.sp).to(0.2,{scale:new Vec3(-1,1,1)})
+        .call(()=>{
+            this.sp.active = false;
+        }).start()
+    }
+    setTouchEnable(isEnable:boolean){
+        this.node.getComponent(Button).interactable = isEnable;
     }
 }
 

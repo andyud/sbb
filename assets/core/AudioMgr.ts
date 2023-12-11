@@ -16,6 +16,7 @@ export class AudioMgr {
     }
 
     private _audioSource: AudioSource;
+    public soundIdx: number = -1;
     constructor() {
         //@en create a node as audioMgr
         //@zh 创建一个节点作为 audioMgr
@@ -71,7 +72,10 @@ export class AudioMgr {
      * @param sound clip or url for the sound
      * @param volume 
      */
-    play(sound: AudioClip | string, volume: number = 1.0) {
+    play(sound: AudioClip | string, soundIdx:number, volume: number = 1.0) {
+        if(this.soundIdx == soundIdx) return;
+        this.soundIdx = soundIdx;
+
         if (sound instanceof AudioClip) {
             this._audioSource.clip = sound;
             this._audioSource.loop = true;
