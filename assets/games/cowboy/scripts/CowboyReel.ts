@@ -30,7 +30,10 @@ export class CowboyReel extends Component {
         let self = this;
         tween(this.node)
         // .delay(index*0.2)
-        .to(speed,{position: new Vec3(this.x,-(this.h-this.parentH))})//,{easing:'backIn'})
+        .to(speed,{position: new Vec3(this.x,-(this.h-this.parentH))}
+        // ,{easing:'quadOut'}
+        ,{easing:'sineOut'}
+        )
         .call(()=>{
             this.callback(index);
         }).start(); 

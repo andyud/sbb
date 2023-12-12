@@ -128,7 +128,7 @@ BfhZUWNOM6WQGMIJ53fwjXkhURECCgMLHOFuSBtkmbfj5tw=
             exponent: "aaa",
             gameId: 1,
             app: "dev",
-            token: "asdasdasdaaa", //no space
+            token: "asdasdasdaab", //no space
             email: "",
             appversion: "1"
         }).then((response) => response.json())

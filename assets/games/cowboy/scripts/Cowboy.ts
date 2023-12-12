@@ -81,8 +81,8 @@ export class Cowboy extends Component {
     //--bonus
     @property({ type: Node })
     bonusInfoNode: Node | null = null;
-    @property({ type: Label })
-    lbBonusInfo: Label | null = null;
+    @property({ type: Node })
+    lbBonusInfo: Node | null = null;
     @property({ type: Node })
     btnBonusInfo: Node | null = null;
     @property({ type: Label })
@@ -130,7 +130,8 @@ export class Cowboy extends Component {
     cointPos1: Node | null = null;
     @property({ type: Node })
     cointPos2: Node | null = null;
-
+    @property({ type: Node })
+    arrTensionEff:Node | null = null;
 
     //--debug
     @property({ type: Node })
@@ -145,7 +146,7 @@ export class Cowboy extends Component {
     btnRunDebugData: Node | null = null;
     @property({ type: Node })
     edDebugData: Node | null = null;
-    
+
 
     private readonly gameName = 'cowboy';
     private webSocket: WebSocket | null = null;
@@ -338,9 +339,9 @@ export class Cowboy extends Component {
     ];
     //----------------------------------------------------------------------------------------------------
     private cowboyConfig = {
-        reelsSpeed: 1,//1s
-        showResultDelay:1500,
-        showResultNotDelay:500,
+        reelsSpeed: 0.015,//per symbol
+        showResultDelay: 1500,
+        showResultNotDelay: 500,
     }
     private lastTimeUpdate = new Date().getTime();
     //1. init ---------------------------------------------------------------------------------------------
@@ -395,10 +396,14 @@ export class Cowboy extends Component {
         this.btnSpin.getComponent(CowboySpinBtn).init((val) => {
             if (val == 0) {
             } else if (val == 1) {
-                this.spin(false, []);
+                if (!this.isAutoSpin) {
+                    this.spin(false, []);
+                }
             } else if (val == 2) {
-                this.setAutoSpin(true);
-                this.preSpin();
+                if (!this.isAutoSpin) {
+                    this.setAutoSpin(true);
+                    this.preSpin();
+                }
             }
         });
         this.btnAutoSpin.on(Button.EventType.CLICK, this.onCloseEnd, this);
@@ -420,28 +425,28 @@ export class Cowboy extends Component {
         //--bonus
         for (let i = 0; i < this.arrPlayBonusItem.length; i++) {
             this.arrPlayBonusItem[i].getComponent(CowboyBonusItem).init((idx: number) => {
-                if(this.countBonusRemain<=0) return;
+                if (this.countBonusRemain <= 0) return;
                 AudioMgr.inst.playOneShot(this.arrAudioClips[1]);
                 //count to end
                 this.countBonusRemain--;
                 this.lbBonusRemain.string = `${this.countBonusRemain}`;
                 let val = this.spinRes.bonusPayout[0].extendData[this.countBonusRemain];
-                let currVal = val*this.loginRes.lineBet;
+                let currVal = val * this.loginRes.lineBet;
                 this.arrPlayBonusItem[idx].getComponent(CowboyBonusItem).setValue(currVal);
-                this.totalBonusWin+=currVal;
-                GameMgr.instance.numberTo(this.lbBonusReward,this.totalBonusWin-currVal,this.totalBonusWin,500);
-                if(this.countBonusRemain==0){ //--disable touch
-                    for(let k=0;k<this.arrPlayBonusItem.length;k++){
+                this.totalBonusWin += currVal;
+                GameMgr.instance.numberTo(this.lbBonusReward, this.totalBonusWin - currVal, this.totalBonusWin, 500);
+                if (this.countBonusRemain == 0) { //--disable touch
+                    for (let k = 0; k < this.arrPlayBonusItem.length; k++) {
                         this.arrPlayBonusItem[k].getComponent(CowboyBonusItem).setTouchEnable(false);
                     }
                 }
                 const timeout1 = setTimeout(() => {
                     clearTimeout(timeout1);
-                    if(this.countBonusRemain>0){
-                        for(let k=0;k<this.arrPlayBonusItem.length;k++){
+                    if (this.countBonusRemain > 0) {
+                        for (let k = 0; k < this.arrPlayBonusItem.length; k++) {
                             this.arrPlayBonusItem[k].getComponent(CowboyBonusItem).setTouchEnable(true);
                         }
-                    } else if(this.countBonusRemain==0) {
+                    } else if (this.countBonusRemain == 0) {
                         this.countBonusRemain = -1;
                         this.bonusPlayNode.active = false;
                         this.bonusResNode.active = true;
@@ -562,6 +567,8 @@ export class Cowboy extends Component {
                             arrTemp.push(parseInt(arrStr[j]));
                         }
                         arrTemp = arrTemp.concat(arrTemp);
+                        arrTemp = arrTemp.concat(arrTemp);
+                        arrTemp = arrTemp.concat(arrTemp);//x4
                         this.reels[i].getComponent(CowboyReel).init(GameMgr.instance.shuffle(arrTemp), this.items);
                     }
                 }
@@ -570,6 +577,36 @@ export class Cowboy extends Component {
                 this.spinRes = data;
                 //run reels
                 let self = this;
+                //--check reels tension -> add more item and expend times
+                let countSpecialSymbol = 0;
+                let lineId = -1;
+                for (let i = 0; i < 4; i++) {
+                    let line = this.spinRes.lineKeys[i];
+                    for (let j = 0; j < line.length; j++) {
+                        if (line[j] == 0 || line[j] == 1 || line[j] == 3 || line[j] == 10) {
+                            countSpecialSymbol++;
+                            if(countSpecialSymbol==2){
+                                lineId = i;
+                            }
+                        }
+                    }
+                }
+                let reelsRunTime = [0.5,1,1.5,2,2.5,3];
+                const extraTime = 2;
+                if(lineId!=-1){
+                    if(lineId==3){
+                        reelsRunTime[4]+=extraTime*3;
+                    } else if(lineId==2){
+                        reelsRunTime[3]+=extraTime*2;
+                        reelsRunTime[4]+=extraTime*3;
+                    } else if(lineId==1){
+                        reelsRunTime[2]+=extraTime*1;
+                        reelsRunTime[3]+=extraTime*2;
+                        reelsRunTime[4]+=extraTime*3;
+                    }
+                }
+                //--prepare reel data
+
                 //--add result
                 if (this.spinRes && this.spinRes.lineKeys && this.spinRes.lineKeys.length > 0) {
                     for (let i = 0; i < this.spinRes.lineKeys.length; i++) {
@@ -578,12 +615,12 @@ export class Cowboy extends Component {
                         for (let j = 0; j < arr.length; j++) {
                             const texId = arr[j]
                             const tex = this.icons[texId];
-                            this.reels[i].children[startIdx - j].getComponent(CowboyItem).setTexture(tex,texId);
+                            this.reels[i].children[startIdx - j].getComponent(CowboyItem).setTexture(tex, texId);
                         }
                     }
                 }
                 Promise.all(self.reels.map(function (reel, index) {
-                    reel.getComponent(CowboyReel).spin(index, 1 + index*1);//1s
+                    reel.getComponent(CowboyReel).spin(index, reelsRunTime[index]);//1s
                 }))
                 break;
             case "spinDebug":
@@ -634,7 +671,7 @@ export class Cowboy extends Component {
                 this.preSpin();
                 break;
         }
-       
+
     }
     onClick(button: Button) {
         AudioMgr.inst.playOneShot(this.arrAudioClips[1]);
@@ -646,7 +683,7 @@ export class Cowboy extends Component {
                 this.spin(true, [9, 7, 20, 6, 8]);
                 break;
             case 'btnDbFreeSpin':
-                this.spin(true, [3, 10, 17, 18,12])//13, 15]);
+                this.spin(true, [3, 10, 17, 18, 12])//13, 15]);
                 break;
             case 'btnDbJackpot':
                 this.spin(true, [32, 21, 28, 24, 23]);
@@ -762,7 +799,7 @@ export class Cowboy extends Component {
         this.setButtonInteractable(true);
         //
         if (this.isAutoSpin) {
-            if(this.isFreeSpin && this.spinRes.freeSpin.remain==0) return;//skip for freespin
+            if (this.isFreeSpin && this.spinRes.freeSpin.remain == 0) return;//skip for freespin
             const timeOut4 = setTimeout(() => {
                 clearTimeout(timeOut4);
                 this.freeSpinNode.active = false;
@@ -774,10 +811,10 @@ export class Cowboy extends Component {
         }
     }
     spin(isDebug: boolean = false, data: any) {
-        if(!this.isFreeSpin){
-            AudioMgr.inst.play(this.arrAudioClips[21],21);
+        if (!this.isFreeSpin) {
+            AudioMgr.inst.play(this.arrAudioClips[21], 21);
         }
-        
+
         //1--clear result
         //line effect
         this.isUpdateLineWin = false;
@@ -822,63 +859,73 @@ export class Cowboy extends Component {
             this.setButtonInteractable(false);
         }
     }
-    endSpin(idx:number) {
+    endSpin(idx: number) {
         //--check the last reel
         let countScatter = 0;
-        let countWanted  = 0;
-        for(let i=0;i<this.spinRes.lineKeys[idx].length;i++){
-            if(this.spinRes.lineKeys[idx][i]==0){
+        let countWanted = 0;
+        for (let i = 0; i < this.spinRes.lineKeys[idx].length; i++) {
+            if (this.spinRes.lineKeys[idx][i] == 0) {
                 countScatter++;
-            } else if(this.spinRes.lineKeys[idx][i]==3){
+            } else if (this.spinRes.lineKeys[idx][i] == 3) {
                 countWanted++;
             }
         }
-        if(countScatter>=1){
-            if(idx==0){
+        if (countScatter >= 1) {
+            if (idx == 0) {
                 AudioMgr.inst.playOneShot(this.arrAudioClips[5]);
-            } else if(idx==1){
+            } else if (idx == 1) {
                 AudioMgr.inst.playOneShot(this.arrAudioClips[6]);
-            } else if(idx==2){
+            } else if (idx == 2) {
                 AudioMgr.inst.playOneShot(this.arrAudioClips[7]);
-            } else if(idx==3){
+            } else if (idx == 3) {
                 AudioMgr.inst.playOneShot(this.arrAudioClips[8]);
-            } else if(idx==4){
+            } else if (idx == 4) {
                 AudioMgr.inst.playOneShot(this.arrAudioClips[9]);
             }
-        } else if(countWanted>=1){
+        } else if (countWanted >= 1) {
             AudioMgr.inst.playOneShot(this.arrAudioClips[10]);
         } else {
             AudioMgr.inst.playOneShot(this.arrAudioClips[4]);//reel stop sound
         }
-        
 
-        //--check icon scatter and wanted
-        if(idx>=1 && idx<4){//start check from reel 2
+
+        //--check icon scatter and wanted -> reels tension
+        this.arrTensionEff.children[0].active = false;
+        this.arrTensionEff.children[1].active = false;
+        this.arrTensionEff.children[2].active = false;
+        if (idx >= 1 && idx < 4) {//start check from reel 2
             let countSpecialSymbol = 0;
-            for(let i=0;i<=idx;i++){
+            for (let i = 0; i <= idx; i++) {
                 let line = this.spinRes.lineKeys[i];
-                for(let j=0;j<line.length;j++){
-                    if(line[j]==0 || line[j]==1 || line[j]==3 || line[j]==10){
+                for (let j = 0; j < line.length; j++) {
+                    if (line[j] == 0 || line[j] == 1 || line[j] == 3 || line[j] == 10) {
                         countSpecialSymbol++;
                     }
                 }
             }
-            if(countSpecialSymbol>=2){//reels tension
-                AudioMgr.inst.play(this.arrAudioClips[3],3);
+            if (countSpecialSymbol >= 2) {//reels tension
+                AudioMgr.inst.play(this.arrAudioClips[3], 3);
+                if(idx==1){
+                    this.arrTensionEff.children[0].active = true;
+                } else if(idx==2){
+                    this.arrTensionEff.children[1].active = true;
+                } else if(idx==3){
+                    this.arrTensionEff.children[2].active = true;
+                }
             }
         }
-        
-        if(idx<4){
+
+        if (idx < 4) {
             return;
         }
         //1. set icon result (effect same icon -> move -> it not changed)
-        if (this.spinRes.totalWinBalance>0) {
+        if (this.spinRes.totalWinBalance > 0) {
             AudioMgr.inst.pause();//stop when have win results
         } else {//restart sound
-            if(this.isFreeSpin){
-                AudioMgr.inst.play(this.arrAudioClips[23],23);
+            if (this.isFreeSpin) {
+                AudioMgr.inst.play(this.arrAudioClips[23], 23);
             } else {
-                AudioMgr.inst.play(this.arrAudioClips[21],21);
+                AudioMgr.inst.play(this.arrAudioClips[21], 21);
             }
         }
         if (this.spinRes && this.spinRes.lineKeys && this.spinRes.lineKeys.length > 0) {
@@ -888,10 +935,10 @@ export class Cowboy extends Component {
                 for (let j = 0; j < arr.length; j++) {
                     const texId = arr[j]
                     const tex = this.icons[texId];
-                    this.reels[i].children[startIdx - j].getComponent(CowboyItem).setTexture(tex,texId);
+                    this.reels[i].children[startIdx - j].getComponent(CowboyItem).setTexture(tex, texId);
                     if (texId == 0 || texId == 1 || texId == 3 || texId == 10) {
                         this.reels[i].children[startIdx - j].getComponent(CowboyItem).runSpecialEff();
-                        if(texId==0){//scatter
+                        if (texId == 0) {//scatter
                             this.reels[i].children[startIdx - j].getComponent(CowboyItem).runScatter(this.items)
                         }
                     }
@@ -939,20 +986,30 @@ export class Cowboy extends Component {
         // auto spin| -> time
         let wintype = this.getWinType();
         if (wintype == 'bonus') {
-            
+
             let timeout5 = setTimeout(() => {
                 clearTimeout(timeout5);
                 this.bonusInfoNode.active = true;
-                this.lbBonusInfo.string = `Pick ${this.spinRes.bonusPayout[0].matchCount}`;
+                this.lbBonusInfo.children[0].active = false;
+                this.lbBonusInfo.children[1].active = false;
+                this.lbBonusInfo.children[2].active = false;
+                if (this.spinRes.bonusPayout[0].matchCount == 3) {
+                    this.lbBonusInfo.children[0].active = true;
+                } else if (this.spinRes.bonusPayout[0].matchCount == 4) {
+                    this.lbBonusInfo.children[1].active = true;
+                } else {
+                    this.lbBonusInfo.children[2].active = true;
+                }
+
                 AudioMgr.inst.playOneShot(this.arrAudioClips[15]);
-                AudioMgr.inst.play(this.arrAudioClips[22],22);
+                AudioMgr.inst.play(this.arrAudioClips[22], 22);
             }, this.cowboyConfig.showResultDelay);
         } else {//normal
             this.showWinResult(true);
         }
     }
-    showWinResult(isDelay:boolean) {
-        if(this.isFreeSpin){
+    showWinResult(isDelay: boolean) {
+        if (this.isFreeSpin) {
             this.iTotalWinFreeSpin += this.spinRes.totalWinBalance;
             this.lbFreeSpinCount.string = `${this.spinRes.freeSpin.remain}`;
         }
@@ -964,7 +1021,7 @@ export class Cowboy extends Component {
                     this.jackpotNode.active = true;
                     GameMgr.instance.numberTo(this.lbJackpotWinCoin, 0, this.spinRes.totalWinBalance, 2000);
                     AudioMgr.inst.playOneShot(this.arrAudioClips[13]);
-                },isDelay ? this.cowboyConfig.showResultDelay : this.cowboyConfig.showResultNotDelay);
+                }, isDelay ? this.cowboyConfig.showResultDelay : this.cowboyConfig.showResultNotDelay);
                 break;
             case 'Big Win':
             case 'Ultra':
@@ -984,7 +1041,7 @@ export class Cowboy extends Component {
                     let timeout8 = setTimeout(() => {
                         clearTimeout(timeout8);
                         this.lbFreeSpinCount.string = `${this.spinRes.freeSpin.remain}`;
-                        if(this.isFreeSpin==false){
+                        if (this.isFreeSpin == false) {
                             this.isFreeSpin = true;
                             this.iTotalWinFreeSpin = 0;
                             this.freeSpinNode.active = true;
@@ -993,13 +1050,13 @@ export class Cowboy extends Component {
                             this.btnSpin.active = false;
                             this.btnAutoSpin.active = false;
                             AudioMgr.inst.playOneShot(this.arrAudioClips[14]);
-                            AudioMgr.inst.play(this.arrAudioClips[23],23);
+                            AudioMgr.inst.play(this.arrAudioClips[23], 23);
                         } else {
                             this.preSpin();
                         }
-                    }, (isDelay && this.spinRes.totalWinBalance>0) ? this.cowboyConfig.showResultDelay : this.cowboyConfig.showResultNotDelay);
+                    }, (isDelay && this.spinRes.totalWinBalance > 0) ? this.cowboyConfig.showResultDelay : this.cowboyConfig.showResultNotDelay);
                 } else {//normal
-                    if(this.spinRes.totalWinBalance>0){
+                    if (this.spinRes.totalWinBalance > 0) {
                         AudioMgr.inst.playOneShot(this.arrAudioClips[11]);//normal win
                     }
                     this.playCoinEffect();
@@ -1008,9 +1065,9 @@ export class Cowboy extends Component {
                 this.showEndFreeSpin();
                 break;
         }
-        
+
     }
-    showEndFreeSpin(){
+    showEndFreeSpin() {
         if (this.isFreeSpin && this.spinRes.freeSpin.remain == 0) { //end free spin
             let timeout9 = setTimeout(() => {
                 clearTimeout(timeout9);
@@ -1019,7 +1076,7 @@ export class Cowboy extends Component {
                 GameMgr.instance.numberTo(this.lbFreeSpinWon, 0, this.iTotalWinFreeSpin, 2000);
                 AudioMgr.inst.playOneShot(this.arrAudioClips[16]);
             }, this.cowboyConfig.showResultDelay);
-        } 
+        }
     }
     getWinType() {
         if (this.spinRes.bonusPayout && this.spinRes.bonusPayout.length > 0 && this.spinRes.bonusPayout[0].extendData) {
@@ -1033,13 +1090,13 @@ export class Cowboy extends Component {
     }
     playCoinEffect() {
         if (this.spinRes.totalWinBalance > 0) {
-            if(this.isFreeSpin){
+            if (this.isFreeSpin) {
                 let startVal = this.iTotalWinFreeSpin - this.spinRes.totalWinBalance;
                 GameMgr.instance.numberTo(this.lbWin, startVal, this.iTotalWinFreeSpin, 500);
             } else {
                 GameMgr.instance.numberTo(this.lbWin, 0, this.spinRes.totalWinBalance, 1000);
             }
-            
+
             //--coin effect move
             let ef = Math.floor(Math.random() * 5) + 3;
             let startPos = this.cointPos1.position; //.parent.parent.position;
@@ -1051,16 +1108,16 @@ export class Cowboy extends Component {
                     this.node.parent.addChild(coint);
                     coint.getComponent(CowboyCoinEff).init(startPos, endPos);
                 }
-                AudioMgr.inst.play(this.arrAudioClips[2],2);
+                AudioMgr.inst.play(this.arrAudioClips[2], 2);
             }, 1000)
 
             let timeout11 = setTimeout(() => {
                 clearTimeout(timeout11)
                 this.lbBalance.string = GameMgr.instance.numberWithCommas(this.spinRes.balance);
-                if(this.isFreeSpin){
-                    AudioMgr.inst.play(this.arrAudioClips[23],23);
+                if (this.isFreeSpin) {
+                    AudioMgr.inst.play(this.arrAudioClips[23], 23);
                 } else {
-                    AudioMgr.inst.play(this.arrAudioClips[21],21);
+                    AudioMgr.inst.play(this.arrAudioClips[21], 21);
                 }
             }, 2000)
         }
