@@ -1,5 +1,6 @@
-import { _decorator, Button, Component, director, Label, Node } from 'cc';
+import { _decorator, Button, Component, director, Label, Node,AudioClip } from 'cc';
 import APIMgr from '../../core/APIMgr';
+import { AudioMgr } from '../../core/AudioMgr';
 const { ccclass, property } = _decorator;
 
 @ccclass('Lobby')
@@ -15,6 +16,8 @@ export class Lobby extends Component {
 
     @property([Node])
     arrGames: Node[] = []
+    @property([AudioClip])
+    arrAudioClips: AudioClip[] = [];
     start() {
         //--add listener
         for(let i=0;i<this.arrGames.length;i++){
@@ -32,7 +35,7 @@ export class Lobby extends Component {
         await APIMgr.instance.getGames();
     }
     gameClickHandler(button: Button) {
-        // SoundMgr.instance.playButtonClick();
+        AudioMgr.inst.playOneShot(this.arrAudioClips[1]);
         // console.log(button.node.name);
         switch (button.node.name) {
             case 'demthuonghai':

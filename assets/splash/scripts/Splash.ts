@@ -14,7 +14,7 @@ export class Splash extends Component {
     }
     async signinToServer(){
         await APIMgr.instance.signin();
-        director.loadScene('lobby');
+        director.loadScene('login');
     }
     private updateProgress(){
         if(this.loadingBar && this.loadingBar.parent){

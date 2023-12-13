@@ -14,8 +14,30 @@ export class AudioMgr {
         }
         return this._inst;
     }
+    //--main bgm
+    bgm:AudioSource = null;
+    bgmNode:Node = null;
 
-    private _audioSource: AudioSource;
+    //--spin
+    bgmSpin:AudioSource = null;
+    bgmSpinNode:Node = null;
+
+    //--tension
+    bgmTension:AudioSource = null;
+    bgmTensionNode:Node = null;
+
+    //--coin
+    bgmCoin:AudioSource = null;
+    bgmCoinNode:Node = null;
+
+    //--freeSpin
+    bgmFreeSpin:AudioSource = null;
+    bgmFreeSpinNode:Node = null;
+    
+    //--bonus
+    bgmBonus:AudioSource = null;
+    bgmBonusNode:Node = null;
+
     public soundIdx: number = -1;
     public isPause:boolean = false;
     constructor() {
@@ -34,13 +56,72 @@ export class AudioMgr {
 
         //@en add AudioSource componrnt to play audios.
         //@zh 添加 AudioSource 组件，用于播放音频。
-        this._audioSource = audioMgr.addComponent(AudioSource);
+        
+
+        //--main
+        this.bgmNode = new Node();
+        this.bgm = this.bgmNode.addComponent(AudioSource);
+        audioMgr.addChild(this.bgmNode);
+
+        //--spin
+        this.bgmSpinNode = new Node();
+        this.bgmSpin = this.bgmSpinNode.addComponent(AudioSource);
+        audioMgr.addChild(this.bgmSpinNode);
+  
+        //--tension
+        this.bgmTensionNode = new Node();
+        this.bgmTension = this.bgmTensionNode.addComponent(AudioSource);
+        audioMgr.addChild(this.bgmTensionNode);
+
+        //--coin
+        this.bgmCoinNode = new Node();
+        this.bgmCoin = this.bgmCoinNode.addComponent(AudioSource);
+        audioMgr.addChild(this.bgmCoinNode);
+
+        //--freeSpin
+        this.bgmFreeSpinNode = new Node();
+        this.bgmFreeSpin = this.bgmFreeSpinNode.addComponent(AudioSource);
+        audioMgr.addChild(this.bgmFreeSpinNode);
+    
+        //--bonus
+        this.bgmBonusNode = new Node();
+        this.bgmBonus = this.bgmBonusNode.addComponent(AudioSource);
+        audioMgr.addChild(this.bgmBonusNode);
     }
 
     public get audioSource() {
-        return this._audioSource;
+        return this.bgm;
     }
 
+    public setAudioSouce(src:string,sound: AudioClip){
+        switch(src){
+            case 'main':
+                this.bgm.clip = sound;
+                this.bgm.loop = true;
+                break;
+            case 'spin':
+                this.bgmSpin.clip = sound;
+                this.bgmSpin.loop = true;
+                break;
+            case 'freespin':
+                this.bgmFreeSpin.clip = sound;
+                this.bgmFreeSpin.loop = true;
+                break;
+            case 'bonus':
+                this.bgmBonus.clip = sound;
+                this.bgmBonus.loop = true;
+                break;
+            case 'tension':
+                this.bgmTension.clip = sound;
+                this.bgmTension.loop = true;
+                break;
+            case 'coin':
+                this.bgmCoin.clip = sound;
+                this.bgmCoin.loop = true;
+                break;
+        }
+    }
+    
     /**
      * @en
      * play short audio, such as strikes,explosions
@@ -51,7 +132,7 @@ export class AudioMgr {
      */
     playOneShot(sound: AudioClip | string, volume: number = 1.0) {
         if (sound instanceof AudioClip) {
-            this._audioSource.playOneShot(sound, volume);
+            this.bgm.playOneShot(sound, volume);
         }
         else {
             resources.load(sound, (err, clip: AudioClip) => {
@@ -59,7 +140,7 @@ export class AudioMgr {
                     console.log(err);
                 }
                 else {
-                    this._audioSource.playOneShot(clip, volume);
+                    this.bgm.playOneShot(clip, volume);
                 }
             });
         }
@@ -76,17 +157,17 @@ export class AudioMgr {
     play(sound: AudioClip | string, soundIdx:number, volume: number = 1.0) {
         if(this.soundIdx == soundIdx){
             if(this.isPause){
-                this._audioSource.play();
+                this.bgm.play();
             }
             return;
         } 
-        this._audioSource.stop();
+        this.bgm.stop();
         this.soundIdx = soundIdx;
         if (sound instanceof AudioClip) {
-            this._audioSource.clip = sound;
-            this._audioSource.loop = true;
-            this._audioSource.play();
-            this.audioSource.volume = volume;
+            this.bgm.clip = sound;
+            this.bgm.loop = true;
+            this.bgm.play();
+            this.bgm.volume = volume;
         }
         else {
             resources.load(sound, (err, clip: AudioClip) => {
@@ -94,9 +175,9 @@ export class AudioMgr {
                     console.log(err);
                 }
                 else {
-                    this._audioSource.clip = clip;
-                    this._audioSource.play();
-                    this.audioSource.volume = volume;
+                    this.bgm.clip = clip;
+                    this.bgm.play();
+                    this.bgm.volume = volume;
                 }
             });
         }
@@ -106,7 +187,12 @@ export class AudioMgr {
      * stop the audio play
      */
     stop() {
-        this._audioSource.stop();
+        this.bgm.stop();
+        this.bgmBonus.stop();
+        this.bgmFreeSpin.stop();
+        this.bgmSpin.stop();
+        this.bgmCoin.stop();
+        this.bgmTension.stop();
     }
 
     /**
@@ -114,13 +200,68 @@ export class AudioMgr {
      */
     pause() {
         this.isPause = true;
-        this._audioSource.pause();
+        this.bgm.pause();
     }
 
     /**
      * resume the audio play
      */
     resume(){
-        this._audioSource.play();
+        this.bgm.play();
+    }
+
+    setVolumn(val:number){
+        this.bgm.volume = val;
+        this.bgmBonus.volume = val;
+        this.bgmCoin.volume = val;
+        this.bgmFreeSpin.volume = val;
+        this.bgmTension.volume = val;
+        this.bgmSpin.volume = val;
+    }
+
+    playSpin(){
+        if(this.bgmSpin.playing){
+            this.bgmSpin.volume = 1;
+        } else {
+            this.bgmSpin.play();
+        }
+    }
+    pauseSpin(){
+        this.bgmSpin.pause();
+    }
+    playTension(){
+        this.bgmTension.play();
+    }
+    pauseTension(){
+        this.bgmTension.pause();
+    }
+    playBonus(){
+        this.bgmBonus.play();
+    }
+    pauseBonus(){
+        this.bgmBonus.pause();
+    }
+    playFreeSpin(){
+        if(this.bgmFreeSpin.playing){
+            this.bgmFreeSpin.volume = 1;
+        } else {
+            this.bgmFreeSpin.play();
+        }
+    }
+    pauseFreeSpin(){
+        this.bgmFreeSpin.pause();
+    }
+    playCoin(){
+        this.bgmCoin.play();
+    }
+    pauseCoin(){
+        this.bgmCoin.pause();
+    }
+    pauseAllBgm(){
+        this.bgmBonus.pause();
+        this.bgmFreeSpin.pause();
+        this.bgmSpin.pause();
+        this.bgmCoin.pause();
+        this.bgmTension.pause();
     }
 }

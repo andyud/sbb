@@ -1,0 +1,244 @@
+
+Wild.png
+size: 512,155
+format: RGBA8888
+filter: Linear,Linear
+repeat: none
+D
+  rotate: true
+  xy: 414, 14
+  size: 24, 34
+  orig: 24, 34
+  offset: 0, 0
+  index: -1
+I
+  rotate: true
+  xy: 2, 10
+  size: 15, 34
+  orig: 15, 34
+  offset: 0, 0
+  index: -1
+L
+  rotate: true
+  xy: 476, 16
+  size: 21, 34
+  orig: 21, 34
+  offset: 0, 0
+  index: -1
+Shape 1
+  rotate: false
+  xy: 2, 27
+  size: 155, 126
+  orig: 155, 126
+  offset: 0, 0
+  index: -1
+Wild_divided_00001
+  rotate: false
+  xy: 486, 120
+  size: 8, 7
+  orig: 101, 46
+  offset: 6, 32
+  index: -1
+Wild_divided_00002
+  rotate: false
+  xy: 159, 69
+  size: 18, 20
+  orig: 101, 46
+  offset: 5, 21
+  index: -1
+Wild_divided_00003
+  rotate: false
+  xy: 193, 26
+  size: 30, 31
+  orig: 101, 46
+  offset: 3, 11
+  index: -1
+Wild_divided_00004
+  rotate: false
+  xy: 354, 57
+  size: 38, 42
+  orig: 101, 46
+  offset: 4, 2
+  index: -1
+Wild_divided_00005
+  rotate: true
+  xy: 442, 57
+  size: 45, 44
+  orig: 101, 46
+  offset: 5, 1
+  index: -1
+Wild_divided_00006
+  rotate: true
+  xy: 442, 104
+  size: 49, 42
+  orig: 101, 46
+  offset: 9, 2
+  index: -1
+Wild_divided_00007
+  rotate: true
+  xy: 309, 100
+  size: 53, 42
+  orig: 101, 46
+  offset: 11, 2
+  index: -1
+Wild_divided_00008
+  rotate: true
+  xy: 265, 97
+  size: 56, 42
+  orig: 101, 46
+  offset: 19, 2
+  index: -1
+Wild_divided_00009
+  rotate: true
+  xy: 220, 97
+  size: 56, 43
+  orig: 101, 46
+  offset: 29, 1
+  index: -1
+Wild_divided_00010
+  rotate: true
+  xy: 353, 101
+  size: 52, 42
+  orig: 101, 46
+  offset: 40, 2
+  index: -1
+Wild_divided_00011
+  rotate: true
+  xy: 397, 103
+  size: 50, 43
+  orig: 101, 46
+  offset: 46, 1
+  index: -1
+Wild_divided_00012
+  rotate: false
+  xy: 309, 57
+  size: 43, 41
+  orig: 101, 46
+  offset: 54, 2
+  index: -1
+Wild_divided_00013
+  rotate: false
+  xy: 185, 59
+  size: 33, 37
+  orig: 101, 46
+  offset: 64, 3
+  index: -1
+Wild_divided_00014
+  rotate: true
+  xy: 225, 19
+  size: 23, 30
+  orig: 101, 46
+  offset: 73, 5
+  index: -1
+Wild_divided_00015
+  rotate: false
+  xy: 496, 69
+  size: 14, 17
+  orig: 101, 46
+  offset: 81, 7
+  index: -1
+front_sleeve
+  rotate: false
+  xy: 220, 55
+  size: 39, 40
+  orig: 39, 40
+  offset: 0, 0
+  index: -1
+glow
+  rotate: false
+  xy: 306, 25
+  size: 30, 30
+  orig: 32, 32
+  offset: 1, 1
+  index: -1
+gun_back
+  rotate: 270
+  xy: 326, 4
+  size: 24, 33
+  orig: 24, 33
+  offset: 0, 0
+  index: -1
+gun_front
+  rotate: 270
+  xy: 267, 13
+  size: 28, 37
+  orig: 28, 37
+  offset: 0, 0
+  index: -1
+hand
+  rotate: true
+  xy: 338, 29
+  size: 27, 34
+  orig: 27, 34
+  offset: 0, 0
+  index: -1
+hat_back
+  rotate: true
+  xy: 488, 88
+  size: 66, 18
+  orig: 66, 18
+  offset: 0, 0
+  index: -1
+hat_front
+  rotate: false
+  xy: 239, 32
+  size: 66, 28
+  orig: 66, 28
+  offset: 0, 0
+  index: -1
+head
+  rotate: false
+  xy: 372, 27
+  size: 40, 30
+  orig: 40, 32
+  offset: 0, 2
+  index: -1
+index_finger
+  rotate: false
+  xy: 435, 44
+  size: 16, 12
+  orig: 16, 12
+  offset: 0, 0
+  index: -1
+inner
+  rotate: false
+  xy: 397, 40
+  size: 37, 61
+  orig: 41, 61
+  offset: 0, 0
+  index: -1
+left_outer
+  rotate: false
+  xy: 159, 91
+  size: 60, 63
+  orig: 60, 63
+  offset: 0, 0
+  index: -1
+muzzle flash
+  rotate: false
+  xy: 159, 25
+  size: 32, 32
+  orig: 32, 32
+  offset: 0, 0
+  index: -1
+right_outer
+  rotate: true
+  xy: 452, 29
+  size: 33, 58
+  orig: 33, 58
+  offset: 0, 0
+  index: -1
+thumb
+  rotate: false
+  xy: 461, 12
+  size: 12, 18
+  orig: 12, 18
+  offset: 0, 0
+  index: -1
+w
+  rotate: false
+  xy: 262, 61
+  size: 35, 34
+  orig: 35, 34
+  offset: 0, 0
+  index: -1
