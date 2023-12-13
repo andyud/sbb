@@ -996,6 +996,7 @@ export class Cowboy extends Component {
                 AudioMgr.inst.playSpin();
             }
         }
+        //set icon win animation --
         if (this.spinRes && this.spinRes.lineKeys && this.spinRes.lineKeys.length > 0) {
             for (let i = 0; i < this.spinRes.lineKeys.length; i++) {
                 let arr = this.spinRes.lineKeys[i];
@@ -1005,14 +1006,14 @@ export class Cowboy extends Component {
                     const tex = this.icons[texId];
                     this.reels[i].children[startIdx - j].getComponent(CowboyItem).setTexture(tex, texId);
                     if (texId == 0 || texId == 1 || texId == 3 || texId == 10) {
-                        this.reels[i].children[startIdx - j].getComponent(CowboyItem).runSpecialEff();
-                        if (texId == 0) {//scatter
-                            this.reels[i].children[startIdx - j].getComponent(CowboyItem).runScatter(this.items);
-                        } else if(texId==1){
+                        // this.reels[i].children[startIdx - j].getComponent(CowboyItem).runSpecialEff();
+                        if (texId == 0 && this.spinRes.freeSpin && this.spinRes.freeSpin.remain && this.spinRes.freeSpin.remain == this.spinRes.freeSpin.count) {//scatter
+                            this.reels[i].children[startIdx - j].getComponent(CowboyItem).runScatter(this.items); 
+                        } else if(texId==1){//wild
                             this.reels[i].children[startIdx - j].getComponent(CowboyItem).runWild(this.items);
-                        } else if(texId==3){
+                        } else if(texId==3 && this.spinRes.bonusPayout && this.spinRes.bonusPayout.length > 0 && this.spinRes.bonusPayout[0].extendData){//bonus
                             this.reels[i].children[startIdx - j].getComponent(CowboyItem).runWanted(this.items);
-                        } else if(texId==10){
+                        } else if(texId==10 && this.spinRes.winType=='Jackpot'){//jackpot
                             this.reels[i].children[startIdx - j].getComponent(CowboyItem).runJackpot(this.items);
                         }
                     }
@@ -1047,7 +1048,6 @@ export class Cowboy extends Component {
                     }
                 }
             }
-
         }
         //--run effect
         if (this.lineEffects.length > 0) {

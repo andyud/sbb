@@ -36,27 +36,7 @@ export class Lobby extends Component {
     }
     gameClickHandler(button: Button) {
         AudioMgr.inst.playOneShot(this.arrAudioClips[1]);
-        // console.log(button.node.name);
-        switch (button.node.name) {
-            case 'demthuonghai':
-                director.loadScene('demthuonghai')
-                APIMgr.instance.setCurrentGame('demthuonghai');
-                break;
-        //     case 'cowboy':
-        //         director.loadScene('cowboy')
-        //         APIMgr.instance.setCurrentGame('demthuonghai');
-        //         APIMgr.instance.getGameInfo(`${APIMgr.instance.gamesRes.list[0].id}`);
-        //         break;
-            case 'panda':
-                director.loadScene('cowboy')
-                APIMgr.instance.setCurrentGame('demthuonghai');
-                break;
-            case 'tayduky':
-                director.loadScene('cowboy')
-                APIMgr.instance.setCurrentGame('demthuonghai');
-                break;
-        }
-        director.loadScene(button.node.name);
+        director.loadScene('cowboy');
     }
     // update(deltaTime: number) {
         
