@@ -9,8 +9,12 @@ export class Splash extends Component {
     @property({type:Node})
     star:Node | null = null;
     private percent = 0;
+    
     start() {
         this.signinToServer();
+        // if(sys.os == sys.OS.ANDROID && sys.isNative){
+        //     native.reflection.callStaticMethod("com/cocos/game/Test", "sum", "(I)I", 3);
+        // }
     }
     async signinToServer(){
         await APIMgr.instance.signin();

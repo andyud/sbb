@@ -461,7 +461,7 @@ export class Cowboy extends Component {
                         },2000)
                         
                     }
-                }, this.cowboyConfig.showResultDelay);
+                }, this.cowboyConfig.showResultDelay + 1500);
             }, i);
         }
         //--init sound
@@ -1150,6 +1150,7 @@ export class Cowboy extends Component {
                 AudioMgr.inst.playOneShot(this.arrAudioClips[16]);
             }, this.cowboyConfig.showResultDelay);
         }
+        
     }
     getWinType() {
         if (this.spinRes.bonusPayout && this.spinRes.bonusPayout.length > 0 && this.spinRes.bonusPayout[0].extendData) {
