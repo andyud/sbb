@@ -1,6 +1,7 @@
 import { _decorator, Button, Component, director, Label, Node,AudioClip } from 'cc';
 import APIMgr from '../../core/APIMgr';
 import { AudioMgr } from '../../core/AudioMgr';
+import GameMgr from '../../core/GameMgr';
 const { ccclass, property } = _decorator;
 
 @ccclass('Lobby')
@@ -13,6 +14,9 @@ export class Lobby extends Component {
 
     @property({type:Label})
     lbLevel:Label | null = null;
+
+    @property({type:Label})
+    lbDbDeviceId:Label | null = null;
 
     @property([Node])
     arrGames: Node[] = []
@@ -28,7 +32,8 @@ export class Lobby extends Component {
         this.connectLobby();
     }
     loadPlayerInfo(){
-        this.lbBalance.string = `${APIMgr.instance.signinRes.balance}`;
+        this.lbDbDeviceId.string = `Device Id: ${APIMgr.instance.deviceId}`
+        this.lbBalance.string = GameMgr.instance.numberWithCommas(APIMgr.instance.signinRes.balance);
         this.lbLevel.string = `${APIMgr.instance.signinRes.level}`;
     }
     async connectLobby(){

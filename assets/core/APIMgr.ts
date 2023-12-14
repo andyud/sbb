@@ -120,7 +120,7 @@ BfhZUWNOM6WQGMIJ53fwjXkhURECCgMLHOFuSBtkmbfj5tw=
             console.log('Something went wrong....');
         }
     }
-
+    public deviceId = 'asdasdasdaabb';
     async signin() {
         let modulus = btoa(this.PUB_KEY);
         await this.doPost("signin", {
@@ -128,7 +128,7 @@ BfhZUWNOM6WQGMIJ53fwjXkhURECCgMLHOFuSBtkmbfj5tw=
             exponent: "aaa",
             gameId: 1,
             app: "dev",
-            token: "asdasdasdaabb", //no space
+            token: this.deviceId, //no space
             email: "",
             appversion: "1"
         }).then((response) => response.json())

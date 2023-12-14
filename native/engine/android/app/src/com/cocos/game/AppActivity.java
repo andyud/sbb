@@ -27,12 +27,12 @@ package com.cocos.game;
 import android.os.Bundle;
 import android.content.Intent;
 import android.content.res.Configuration;
+import android.provider.Settings;
 
 import com.cocos.service.SDKWrapper;
 import com.cocos.lib.CocosActivity;
 
 public class AppActivity extends CocosActivity {
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -121,5 +121,14 @@ public class AppActivity extends CocosActivity {
     public void onLowMemory() {
         SDKWrapper.shared().onLowMemory();
         super.onLowMemory();
+    }
+
+    public static String andyGetDeviceId(){
+        if(SDKWrapper.shared().getActivity()!=null){
+            String android_id = Settings.Secure.getString(SDKWrapper.shared().getActivity().getContentResolver(), Settings.Secure.ANDROID_ID);
+            return android_id;
+        } else {
+            return "ababab";
+        }
     }
 }

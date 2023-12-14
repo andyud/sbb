@@ -1,4 +1,4 @@
-import { _decorator, Component, director, Node, UITransform, Vec3 } from 'cc';
+import { _decorator, Component, director, Node, UITransform, Vec3, sys, native } from 'cc';
 import APIMgr from '../../core/APIMgr';
 const { ccclass, property } = _decorator;
 
@@ -11,10 +11,15 @@ export class Splash extends Component {
     private percent = 0;
     
     start() {
-        this.signinToServer();
-        // if(sys.os == sys.OS.ANDROID && sys.isNative){
-        //     native.reflection.callStaticMethod("com/cocos/game/Test", "sum", "(I)I", 3);
-        // }
+        if(sys.os == sys.OS.ANDROID && sys.isNative){
+            let str = native.reflection.callStaticMethod("com/cocos/game/AppActivity", "andyGetDeviceId", "()Ljava/lang/String;");
+            console.log(`oke ${str}`);
+            APIMgr.instance.deviceId = str;
+            this.signinToServer();
+        } else {
+            //web, ios
+            this.signinToServer();
+        }
     }
     async signinToServer(){
         await APIMgr.instance.signin();
