@@ -29,8 +29,25 @@ import android.content.Intent;
 import android.content.res.Configuration;
 import android.provider.Settings;
 
+import com.android.billingclient.api.BillingClient;
+import com.android.billingclient.api.BillingClientStateListener;
+import com.android.billingclient.api.BillingFlowParams;
+import com.android.billingclient.api.BillingResult;
+import com.android.billingclient.api.ProductDetails;
+import com.android.billingclient.api.ProductDetailsResponseListener;
+import com.android.billingclient.api.Purchase;
+import com.android.billingclient.api.PurchasesUpdatedListener;
+import com.android.billingclient.api.QueryProductDetailsParams;
+import com.cocos.lib.JsbBridge;
+import com.cocos.lib.JsbBridgeWrapper;
 import com.cocos.service.SDKWrapper;
 import com.cocos.lib.CocosActivity;
+import com.google.common.collect.ImmutableList;
+
+import org.json.JSONException;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class AppActivity extends CocosActivity {
     @Override
@@ -38,7 +55,49 @@ public class AppActivity extends CocosActivity {
         super.onCreate(savedInstanceState);
         // DO OTHER INITIALIZATION BELOW
         SDKWrapper.shared().init(this);
+        //--callback from javascript
+        JsbBridge.setCallback(new JsbBridge.ICallback() {
+            @Override
+            public void onScript(String arg0, String arg1) {
+                //TO DO
+                if(arg0.equals("get_products")){
+                    getProducts();
+                }
+            }
+        });
+        JsbBridgeWrapper jbw = JsbBridgeWrapper.getInstance();
+        jbw.addScriptEventListener("javascript_to_java", arg ->{
+            System.out.print("@JAVA: here is the argument transport in" + arg);
+            jbw.dispatchEventToScript("java_response","Hello from java");
+        });
 
+
+        //--in app purchase ------------------------------------------------------------------------
+        AppActivity self = this;
+        billingClient = BillingClient.newBuilder(this)
+        .setListener(purchasesUpdatedListener)
+        .enablePendingPurchases()
+        .build();
+        if(billingClient!=null){
+            billingClient.startConnection(new BillingClientStateListener() {
+                @Override
+                public void onBillingSetupFinished(BillingResult billingResult) {
+                    if (billingResult.getResponseCode() ==  BillingClient.BillingResponseCode.OK) {
+                        self.isIAPCoonected = true;
+                        self.getProducts();
+                        System.out.println("IAP: num of products: "+self.products.size());
+                    }
+                }
+                @Override
+                public void onBillingServiceDisconnected() {
+                    // Try to restart the connection on the next request to
+                    // Google Play by calling the startConnection() method.
+                    System.out.println("IAP onBillingServiceDisconnected");
+                    isIAPCoonected = false;
+                }
+            });
+        }
+        //--end in app purchase --------------------------------------------------------------------
     }
 
     @Override
@@ -131,4 +190,73 @@ public class AppActivity extends CocosActivity {
             return "ababab";
         }
     }
+
+    /*in app purchase ------------------------------------------------------------------------------*/
+    private BillingClient billingClient = null;
+    private boolean isIAPCoonected = false;
+//    private List<ProductDetails> products = null;
+    public List<String> products = new ArrayList<String>();
+    private PurchasesUpdatedListener purchasesUpdatedListener = new PurchasesUpdatedListener() {
+        @Override
+        public void onPurchasesUpdated(BillingResult billingResult, List<Purchase> purchases) {
+            // To be implemented in a later section.
+            System.out.println("IAP onPurchasesUpdated");
+        }
+    };
+
+    public ArrayList<String> getProducts(){
+        ArrayList<String> arr = new ArrayList<>();
+        arr.add("aaaa");
+        arr.add("bbbb");
+        return arr;
+        /*
+//        AppActivity self = this;
+        // The BillingClient is ready. You can query purchases here.
+        QueryProductDetailsParams queryProductDetailsParams =
+                QueryProductDetailsParams.newBuilder()
+                        .setProductList(
+                                ImmutableList.of(
+                                        QueryProductDetailsParams.Product.newBuilder()
+                                                .setProductId("shop_chips_9.99")
+                                                .setProductType(BillingClient.ProductType.SUBS)
+                                                .build()))
+                        .build();
+
+        billingClient.queryProductDetailsAsync(
+                queryProductDetailsParams,
+                new ProductDetailsResponseListener() {
+                    public void onProductDetailsResponse(BillingResult billingResult,
+                                                         List<ProductDetails> productDetailsList) {
+                        // check billingResult
+                        // process returned productDetailsList
+                        System.out.println("IAP billingClient.queryProductDetailsAsyn");
+//                        self.products.add("product1");
+//                        self.products.add("product2");
+                    }
+                }
+        );
+        */
+
+    }
+    public void buyProduct(){
+        // Launch the billing flow
+        /*
+        ImmutableList productDetailsParamsList =
+                ImmutableList.of(
+                        BillingFlowParams.ProductDetailsParams.newBuilder()
+                                // retrieve a value for "productDetails" by calling queryProductDetailsAsync()
+                                .setProductDetails(productDetails)
+                                // to get an offer token, call ProductDetails.getSubscriptionOfferDetails()
+                                // for a list of offers that are available to the user
+                                .setOfferToken(selectedOfferToken)
+                                .build()
+                );
+        BillingFlowParams billingFlowParams = BillingFlowParams.newBuilder()
+                .setProductDetailsParamsList(productDetailsParamsList)
+                .build();
+        BillingResult billingResult = billingClient.launchBillingFlow(this, billingFlowParams);
+
+         */
+    }
+    /*in app purchase ------------------------------------------------------------------------------*/
 }

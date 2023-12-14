@@ -25,7 +25,7 @@ export class Login extends Component {
     onClick(button: Button) {
         AudioMgr.inst.playOneShot(this.arrAudioClips[1]);
         switch (button.node.name) {
-            case 'btnGuest':
+            case 'btnPlayAsGuest':
                 director.loadScene('lobby');
                 break;
             case 'btnFacebook':

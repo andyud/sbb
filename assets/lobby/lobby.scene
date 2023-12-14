@@ -3537,7 +3537,43 @@
     "arrAudioClips": [
       null,
       {
-        "__uuid__": "d1c72e5a-1869-47a6-8139-ae37ec2e91ec",
+        "__uuid__": "74cfbbbd-1c01-428b-8c3d-f7f16d172769",
+        "__expectedType__": "cc.AudioClip"
+      },
+      {
+        "__uuid__": "f6a3de7e-a180-42f8-8a59-74c8526d6391",
+        "__expectedType__": "cc.AudioClip"
+      },
+      {
+        "__uuid__": "339a6dcc-830c-4e41-aadf-59fcf8a3cb45",
+        "__expectedType__": "cc.AudioClip"
+      },
+      {
+        "__uuid__": "23bb799d-1e82-4027-bbe8-ed1c370c4690",
+        "__expectedType__": "cc.AudioClip"
+      },
+      {
+        "__uuid__": "3f55e525-4945-4e42-9e99-7b6be0fe5360",
+        "__expectedType__": "cc.AudioClip"
+      },
+      {
+        "__uuid__": "69068995-ca5c-4904-8685-28a59d68f01f",
+        "__expectedType__": "cc.AudioClip"
+      },
+      {
+        "__uuid__": "206cb546-3ff8-49a3-b103-87edbbe862b8",
+        "__expectedType__": "cc.AudioClip"
+      },
+      {
+        "__uuid__": "45d5a9a1-e1e8-45e3-9777-c02a4c5e8f6d",
+        "__expectedType__": "cc.AudioClip"
+      },
+      {
+        "__uuid__": "6048b6e3-898a-448a-b565-c23e9d513b47",
+        "__expectedType__": "cc.AudioClip"
+      },
+      {
+        "__uuid__": "9030d5ef-ebf9-4e86-9f4c-d821ca98f6ef",
         "__expectedType__": "cc.AudioClip"
       }
     ],
@@ -3589,7 +3625,7 @@
       "__id__": 2
     },
     "_children": [],
-    "_active": true,
+    "_active": false,
     "_components": [
       {
         "__id__": 108

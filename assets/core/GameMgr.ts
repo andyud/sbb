@@ -7,7 +7,7 @@ class GameMgr {
         this._instance = new GameMgr();
         return this._instance;
     }
-
+    public isDebugMode = false;
     //--format currency
     public isEmpty(str:string) {
         return (!str || 0 === str.length)

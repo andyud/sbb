@@ -148,7 +148,8 @@ export class Cowboy extends Component {
     btnRunDebugData: Node | null = null;
     @property({ type: Node })
     edDebugData: Node | null = null;
-
+    @property({ type: Node })
+    debugNode: Node | null = null;
 
     private readonly gameName = 'cowboy';
     private webSocket: WebSocket | null = null;
@@ -348,6 +349,11 @@ export class Cowboy extends Component {
     private lastTimeUpdate = new Date().getTime();
     //1. init ---------------------------------------------------------------------------------------------
     start() {
+        if(GameMgr.instance.isDebugMode){
+            this.debugNode.active = true;
+        } else {
+            this.debugNode.active = false;
+        }
         this.webSocket = null;
         APIMgr.instance.setCurrentGame(this.gameName);
         GameEvent.AddEventListener('START_CONNECT', (data: any) => {
@@ -470,6 +476,11 @@ export class Cowboy extends Component {
         AudioMgr.inst.setAudioSouce('bonus',this.arrAudioClips[22]);
         AudioMgr.inst.setAudioSouce('coin',this.arrAudioClips[2]);
         AudioMgr.inst.setAudioSouce('tension',this.arrAudioClips[3]);
+        // AudioMgr.inst.bgmBonus.volume = 1;
+        // AudioMgr.inst.bgmCoin.volume = 1;
+        // AudioMgr.inst.bgmFreeSpin.volume = 1;
+        // AudioMgr.inst.bgmSpin.volume = 1;
+        // AudioMgr.inst.bgmTension.volume = 1;
     }
     setMaskEnable(isEnable: boolean){
         this.reelMask.enabled = isEnable;
@@ -741,7 +752,16 @@ export class Cowboy extends Component {
             case 'btnBack':
                 this.disconnect();
                 AudioMgr.inst.stop();
-                director.loadScene('lobby');
+                AudioMgr.inst.bgmBonus.clip = null;
+                AudioMgr.inst.bgmCoin.clip = null;
+                AudioMgr.inst.bgmFreeSpin.clip = null;
+                AudioMgr.inst.bgmSpin.clip = null;
+                AudioMgr.inst.bgmTension.clip = null;
+                let timeout15 = setTimeout(()=>{
+                    clearTimeout(timeout15);
+                    director.loadScene('lobby');
+                },this.cowboyConfig.showResultDelay);
+                
                 break;
             case 'btnBetMinus':
                 this.setBettingLine(false);

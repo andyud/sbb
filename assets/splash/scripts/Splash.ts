@@ -20,6 +20,15 @@ export class Splash extends Component {
             //web, ios
             this.signinToServer();
         }
+
+        //--get iap
+        if(sys.os == sys.OS.ANDROID && sys.isNative){
+            native.jsbBridgeWrapper.addNativeEventListener("java_response",(usr: string)=>{
+                console.log(`iap ${usr}`);
+            })
+            native.bridge.sendToNative('get_products', "");
+            native.jsbBridgeWrapper.dispatchEventToNative('javascript_to_java',"");
+        }
     }
     async signinToServer(){
         await APIMgr.instance.signin();

@@ -30,6 +30,14 @@ export class Lobby extends Component {
 
         this.loadPlayerInfo();
         this.connectLobby();
+        if(GameMgr.instance.isDebugMode){
+            this.lbDbDeviceId.node.active = true;
+        } else {
+            this.lbDbDeviceId.node.active = false;
+        }
+        AudioMgr.inst.setAudioSouce('main',this.arrAudioClips[1]);
+        AudioMgr.inst.bgm.play();
+        AudioMgr.inst.bgm.volume = 1;
     }
     loadPlayerInfo(){
         this.lbDbDeviceId.string = `Device Id: ${APIMgr.instance.deviceId}`
@@ -40,8 +48,11 @@ export class Lobby extends Component {
         await APIMgr.instance.getGames();
     }
     gameClickHandler(button: Button) {
-        AudioMgr.inst.playOneShot(this.arrAudioClips[1]);
+        AudioMgr.inst.playOneShot(this.arrAudioClips[2]);
+        AudioMgr.inst.bgm.stop();
+        AudioMgr.inst.bgm.clip = null;
         director.loadScene('cowboy');
+
     }
     // update(deltaTime: number) {
         
