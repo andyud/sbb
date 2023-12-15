@@ -1,3 +1,6 @@
 <resources>
     <string name="app_name" translatable="false">Casino In The Forest</string>
+    <string name="facebook_app_id">2874091299400628</string>
+    <string name="fb_login_protocol_scheme">fb2874091299400628</string>
+    <string name="facebook_client_token">c8b3409d0808236efb110c35fe7b1fce</string>
 </resources>

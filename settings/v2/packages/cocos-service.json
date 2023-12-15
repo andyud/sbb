@@ -12,13 +12,20 @@
     },
     {
       "app_id": "624529133",
-      "config_id": "e11903"
+      "config_id": "b451e5"
     }
   ],
   "configs": [
     {
       "app_id": "UNKNOW",
       "config_id": "db53f4",
+      "config_name": "Default",
+      "config_remarks": "",
+      "services": []
+    },
+    {
+      "app_id": "624529133",
+      "config_id": "b451e5",
       "config_name": "Default",
       "config_remarks": "",
       "services": []

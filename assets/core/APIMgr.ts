@@ -121,7 +121,7 @@ BfhZUWNOM6WQGMIJ53fwjXkhURECCgMLHOFuSBtkmbfj5tw=
         }
     }
     public deviceId = 'asdasdasdaabb';
-    async signin() {
+    async signin(cb:(res:boolean)=>void) {
         let modulus = btoa(this.PUB_KEY);
         await this.doPost("signin", {
             modulus: modulus,
@@ -139,9 +139,11 @@ BfhZUWNOM6WQGMIJ53fwjXkhURECCgMLHOFuSBtkmbfj5tw=
                 decrypt.setPrivateKey(this.PRI_KEY);
                 let uncrypted = decrypt.decrypt(data.encrypt) as string;
                 this.keyPass = JSON.parse(uncrypted);
+                cb(true);
             })
             .catch((error) => {
                 console.error("Error:", error);
+                cb(false);
             });
     }
     public encodeData(data: string) {

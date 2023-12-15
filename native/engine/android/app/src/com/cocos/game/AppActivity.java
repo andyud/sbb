@@ -28,6 +28,7 @@ import android.os.Bundle;
 import android.content.Intent;
 import android.content.res.Configuration;
 import android.provider.Settings;
+import android.util.Log;
 
 import com.android.billingclient.api.BillingClient;
 import com.android.billingclient.api.BillingClientStateListener;
@@ -42,20 +43,49 @@ import com.cocos.lib.JsbBridge;
 import com.cocos.lib.JsbBridgeWrapper;
 import com.cocos.service.SDKWrapper;
 import com.cocos.lib.CocosActivity;
+import com.facebook.CallbackManager;
+import com.facebook.FacebookCallback;
+import com.facebook.FacebookException;
+import com.facebook.FacebookSdk;
+import com.facebook.appevents.AppEventsLogger;
+import com.facebook.login.LoginManager;
+import com.facebook.login.LoginResult;
+import com.google.android.gms.auth.api.signin.GoogleSignIn;
+import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
+import com.google.android.gms.auth.api.signin.GoogleSignInClient;
+import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
+import com.google.android.gms.common.api.ApiException;
+import com.google.android.gms.common.api.GoogleApiClient;
+import com.google.android.gms.tasks.Task;
 import com.google.common.collect.ImmutableList;
+import com.infomark.casinoforest.R;
 
 import org.json.JSONException;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
 import java.util.List;
 
 public class AppActivity extends CocosActivity {
+    //--facebook-
+    private CallbackManager callbackManager = null;
+    private String myDeviceId = "ababab";
+    private GoogleSignInOptions gso = null;
+    private GoogleSignInClient mGoogleSignInClient = null;
+    private final int GOOGLE_SIGNIN_CODE = 1111;
+    private final int FACEBOOK_SIGN_IN_CODE = 2222;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         // DO OTHER INITIALIZATION BELOW
         SDKWrapper.shared().init(this);
-        //--callback from javascript
+        this.myDeviceId = Settings.Secure.getString(this.getContentResolver(), Settings.Secure.ANDROID_ID);
+        gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
+                .requestEmail()
+                .build();
+
+        //---callback from javascript----------------------------------------------------------------------
         JsbBridge.setCallback(new JsbBridge.ICallback() {
             @Override
             public void onScript(String arg0, String arg1) {
@@ -65,12 +95,24 @@ public class AppActivity extends CocosActivity {
                 }
             }
         });
-        JsbBridgeWrapper jbw = JsbBridgeWrapper.getInstance();
-        jbw.addScriptEventListener("javascript_to_java", arg ->{
+        JsbBridgeWrapper.getInstance().addScriptEventListener("javascript_to_java", arg ->{
             System.out.print("@JAVA: here is the argument transport in" + arg);
-            jbw.dispatchEventToScript("java_response","Hello from java");
+            switch (arg) {
+                case "getdeviceid":
+                    JsbBridgeWrapper.getInstance().dispatchEventToScript("getdeviceid", this.myDeviceId);
+                    break;
+                case "getfacebookid":
+                    LoginManager.getInstance().logInWithReadPermissions(this,Arrays.asList("gaming_profile"));
+                    break;
+                case "getgoogleid":
+                    mGoogleSignInClient = GoogleSignIn.getClient(this, gso);
+                    Intent signInIntent = mGoogleSignInClient.getSignInIntent();
+                    startActivityForResult(signInIntent, GOOGLE_SIGNIN_CODE);
+//                    mGoogleSignInClient = GoogleSignIn.getClient(this, gso);
+                    break;
+            }
         });
-
+        //--javascript and java communicate --------------------------------------------------------
 
         //--in app purchase ------------------------------------------------------------------------
         AppActivity self = this;
@@ -98,6 +140,34 @@ public class AppActivity extends CocosActivity {
             });
         }
         //--end in app purchase --------------------------------------------------------------------
+        FacebookSdk.fullyInitialize();
+        AppEventsLogger.activateApp(this.getApplication());
+        callbackManager = CallbackManager.Factory.create();
+        LoginManager.getInstance().onActivityResult(FACEBOOK_SIGN_IN_CODE,null);
+        LoginManager.getInstance().registerCallback(callbackManager,
+                new FacebookCallback<LoginResult>() {
+                    @Override
+                    public void onSuccess(LoginResult loginResult) {
+                        // App code
+                        System.out.println("Facebook login success");
+                        JsbBridgeWrapper.getInstance().dispatchEventToScript("getfacebookid", "success");
+                    }
+
+                    @Override
+                    public void onCancel() {
+                        // App code
+                        System.out.println("Facebook login cancel");
+                        JsbBridgeWrapper.getInstance().dispatchEventToScript("getfacebookid", "cancel");
+                    }
+
+                    @Override
+                    public void onError(FacebookException exception) {
+                        // App code
+                        System.out.println("Facebook login error");
+                        JsbBridgeWrapper.getInstance().dispatchEventToScript("getfacebookid", "error");
+                    }
+                });
+        //--facebook signin-
     }
 
     @Override
@@ -124,10 +194,34 @@ public class AppActivity extends CocosActivity {
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-        SDKWrapper.shared().onActivityResult(requestCode, resultCode, data);
-    }
 
+        super.onActivityResult(requestCode, resultCode, data);
+
+        if (requestCode == GOOGLE_SIGNIN_CODE) {
+            // The Task returned from this call is always completed, no need to attach
+            // a listener.
+            Task<GoogleSignInAccount> task = GoogleSignIn.getSignedInAccountFromIntent(data);
+            handleSignInResult(task);
+        } else if(requestCode == FACEBOOK_SIGN_IN_CODE){
+            callbackManager.onActivityResult(requestCode, resultCode, data);
+        } else {
+            SDKWrapper.shared().onActivityResult(requestCode, resultCode, data);
+        }
+    }
+    private void handleSignInResult(Task<GoogleSignInAccount> completedTask) {
+        try {
+            GoogleSignInAccount account = completedTask.getResult(ApiException.class);
+            System.out.println("GOOGLE_SIGNIN SUCCESS");
+            // Signed in successfully, show authenticated UI.
+            JsbBridgeWrapper.getInstance().dispatchEventToScript("getgoogleid", account.getId());
+
+        } catch (ApiException e) {
+            // The ApiException status code indicates the detailed failure reason.
+            // Please refer to the GoogleSignInStatusCodes class reference for more information.
+            Log.w("GOOGLE_SIGNIN", "signInResult:failed code=" + e.getStatusCode());
+            JsbBridgeWrapper.getInstance().dispatchEventToScript("getgoogleid", "error");
+        }
+    }
     @Override
     protected void onNewIntent(Intent intent) {
         super.onNewIntent(intent);
@@ -182,14 +276,14 @@ public class AppActivity extends CocosActivity {
         super.onLowMemory();
     }
 
-    public static String andyGetDeviceId(){
-        if(SDKWrapper.shared().getActivity()!=null){
-            String android_id = Settings.Secure.getString(SDKWrapper.shared().getActivity().getContentResolver(), Settings.Secure.ANDROID_ID);
-            return android_id;
-        } else {
-            return "ababab";
-        }
-    }
+//    public static String andyGetDeviceId(){
+//        if(SDKWrapper.shared().getActivity()!=null){
+//            String android_id = Settings.Secure.getString(SDKWrapper.shared().getActivity().getContentResolver(), Settings.Secure.ANDROID_ID);
+//            return android_id;
+//        } else {
+//            return "ababab";
+//        }
+//    }
 
     /*in app purchase ------------------------------------------------------------------------------*/
     private BillingClient billingClient = null;
@@ -206,10 +300,6 @@ public class AppActivity extends CocosActivity {
 
     public ArrayList<String> getProducts(){
         ArrayList<String> arr = new ArrayList<>();
-        arr.add("aaaa");
-        arr.add("bbbb");
-        return arr;
-        /*
 //        AppActivity self = this;
         // The BillingClient is ready. You can query purchases here.
         QueryProductDetailsParams queryProductDetailsParams =
@@ -235,8 +325,7 @@ public class AppActivity extends CocosActivity {
                     }
                 }
         );
-        */
-
+        return arr;
     }
     public void buyProduct(){
         // Launch the billing flow
