@@ -23,7 +23,7 @@ export class Splash extends Component {
                 progress = w*0.975;
                 director.loadScene('login');
             }
-            this.star.position    =  new Vec3(progress - w/2 , 0);
+            this.star.position    =  new Vec3(progress - w/2, 0);
         } else {
             this.percent = 0;
         }

@@ -117,12 +117,12 @@ public class AppActivity extends CocosActivity {
         //--javascript and java communicate --------------------------------------------------------
 
         //--in app purchase ------------------------------------------------------------------------
-        AppActivity self = this;
+        AppActivity self = this; //setup google play billing
         billingClient = BillingClient.newBuilder(this)
         .setListener(purchasesUpdatedListener)
         .enablePendingPurchases()
         .build();
-        if(billingClient!=null){
+        if(billingClient!=null){ //connect to account
             billingClient.startConnection(new BillingClientStateListener() {
                 @Override
                 public void onBillingSetupFinished(BillingResult billingResult) {
@@ -315,7 +315,7 @@ public class AppActivity extends CocosActivity {
                         .setProductList(
                                 ImmutableList.of(
                                         QueryProductDetailsParams.Product.newBuilder()
-                                                .setProductId("shop_chips_9.99")
+                                                .setProductId("shop_chips_0.99")
                                                 .setProductType(BillingClient.ProductType.SUBS)
                                                 .build()))
                         .build();

@@ -292,7 +292,7 @@
     "_lpos": {
       "__type__": "cc.Vec3",
       "x": 0,
-      "y": -205.351,
+      "y": -444.28,
       "z": 0
     },
     "_lrot": {
@@ -345,7 +345,7 @@
     "_prefab": null,
     "_lpos": {
       "__type__": "cc.Vec3",
-      "x": -420.981,
+      "x": -783.541,
       "y": 0,
       "z": 0
     },
@@ -392,8 +392,8 @@
     "_prefab": null,
     "_lpos": {
       "__type__": "cc.Vec3",
-      "x": 2,
-      "y": 0,
+      "x": 5.539,
+      "y": 2.171,
       "z": 0
     },
     "_lrot": {
@@ -430,8 +430,8 @@
     "__prefab": null,
     "_contentSize": {
       "__type__": "cc.Size",
-      "width": 838,
-      "height": 27
+      "width": 1555,
+      "height": 20
     },
     "_anchorPoint": {
       "__type__": "cc.Vec2",
@@ -460,12 +460,12 @@
       "a": 255
     },
     "_spriteFrame": {
-      "__uuid__": "f81fe720-074f-4604-963b-3d64a89feffb@f9941",
+      "__uuid__": "ef0eb1c3-d49c-43d3-8f89-c3ba9cbaca05@f9941",
       "__expectedType__": "cc.SpriteFrame"
     },
     "_type": 0,
     "_fillType": 0,
-    "_sizeMode": 1,
+    "_sizeMode": 0,
     "_fillCenter": {
       "__type__": "cc.Vec2",
       "x": 0,
@@ -573,8 +573,8 @@
     "_prefab": null,
     "_lpos": {
       "__type__": "cc.Vec3",
-      "x": -408.827,
-      "y": 0,
+      "x": -765.554,
+      "y": 2.359,
       "z": 0
     },
     "_lrot": {
@@ -616,7 +616,7 @@
     },
     "_anchorPoint": {
       "__type__": "cc.Vec2",
-      "x": 0.5,
+      "x": 0,
       "y": 0.5
     },
     "_id": "1f8heBEQRJXabw6KL3mWzC"
@@ -670,8 +670,8 @@
     "__prefab": null,
     "_contentSize": {
       "__type__": "cc.Size",
-      "width": 868,
-      "height": 53
+      "width": 1576,
+      "height": 44
     },
     "_anchorPoint": {
       "__type__": "cc.Vec2",
@@ -679,6 +679,35 @@
       "y": 0.5
     },
     "_id": "6bHaU6w0VC7588jhwFate8"
+  },
+  {
+    "__type__": "cc.Widget",
+    "_name": "",
+    "_objFlags": 0,
+    "node": {
+      "__id__": 6
+    },
+    "_enabled": true,
+    "__prefab": null,
+    "_alignFlags": 18,
+    "_target": null,
+    "_left": 0,
+    "_right": 0,
+    "_top": 0,
+    "_bottom": 0,
+    "_horizontalCenter": 0,
+    "_verticalCenter": -444.28,
+    "_isAbsLeft": true,
+    "_isAbsRight": true,
+    "_isAbsTop": true,
+    "_isAbsBottom": true,
+    "_isAbsHorizontalCenter": true,
+    "_isAbsVerticalCenter": true,
+    "_originalWidth": 0,
+    "_originalHeight": 0,
+    "_alignMode": 2,
+    "_lockFlags": 0,
+    "_id": "fabSehutNCip67UpmONzmk"
   },
   {
     "__type__": "cc.Sprite",
@@ -700,12 +729,12 @@
       "a": 255
     },
     "_spriteFrame": {
-      "__uuid__": "97d4f872-856f-46ab-8ea5-958891e4eb6c@f9941",
+      "__uuid__": "c19f98d9-da46-4f95-aff9-afde91577279@f9941",
       "__expectedType__": "cc.SpriteFrame"
     },
-    "_type": 0,
+    "_type": 1,
     "_fillType": 0,
-    "_sizeMode": 1,
+    "_sizeMode": 0,
     "_fillCenter": {
       "__type__": "cc.Vec2",
       "x": 0,
@@ -716,36 +745,7 @@
     "_isTrimmedMode": true,
     "_useGrayscale": false,
     "_atlas": null,
-    "_id": "36vv8e479EH5dNLHzv++wT"
-  },
-  {
-    "__type__": "cc.Widget",
-    "_name": "",
-    "_objFlags": 0,
-    "node": {
-      "__id__": 6
-    },
-    "_enabled": true,
-    "__prefab": null,
-    "_alignFlags": 18,
-    "_target": null,
-    "_left": 0,
-    "_right": 0,
-    "_top": 0,
-    "_bottom": 0,
-    "_horizontalCenter": 0,
-    "_verticalCenter": -205.351,
-    "_isAbsLeft": true,
-    "_isAbsRight": true,
-    "_isAbsTop": true,
-    "_isAbsBottom": true,
-    "_isAbsHorizontalCenter": true,
-    "_isAbsVerticalCenter": true,
-    "_originalWidth": 0,
-    "_originalHeight": 0,
-    "_alignMode": 2,
-    "_lockFlags": 0,
-    "_id": "fabSehutNCip67UpmONzmk"
+    "_id": "f1QRfMcXtGCYkdhoDXQObb"
   },
   {
     "__type__": "cc.Node",
@@ -937,7 +937,7 @@
       "a": 255
     },
     "_spriteFrame": {
-      "__uuid__": "ff268fdc-4dcb-498e-8289-ffd54f88c97a@f9941",
+      "__uuid__": "cf4cb799-968e-452a-8c24-d7cdb1e2505c@f9941",
       "__expectedType__": "cc.SpriteFrame"
     },
     "_type": 0,

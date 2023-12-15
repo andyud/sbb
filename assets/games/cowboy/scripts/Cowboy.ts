@@ -16,6 +16,9 @@ declare var io: any;
 @ccclass('Cowboy')
 export class Cowboy extends Component {
     @property({ type: Prefab })
+    pfShop: Prefab | null = null;
+    private shop:Node = null;
+    @property({ type: Prefab })
     pfLoading: Prefab | null = null;
     private loading: Node = null;
     @property({ type: Prefab })
@@ -378,6 +381,12 @@ export class Cowboy extends Component {
             this.notice.getComponent(UITransform).setContentSize(this.node.getComponent(UITransform).width, this.node.getComponent(UITransform).height);
             this.notice.getComponent(Notice).hide();
         }
+        if (this.shop == null) {
+            this.shop = instantiate(this.pfShop);
+            this.node.addChild(this.shop);
+            this.shop.setPosition(0,0);
+            this.shop.active = false;
+        }
         //button
         this.btnCloseJackpot.on(Button.EventType.CLICK, this.onCloseEnd, this);
         this.jackpotNode.active = false;
@@ -421,6 +430,7 @@ export class Cowboy extends Component {
         this.btnDbFreeSpin.on(Button.EventType.CLICK, this.onClick, this);
         this.btnDbJackpot.on(Button.EventType.CLICK, this.onClick, this);
         this.btnRunDebugData.on(Button.EventType.CLICK, this.onClick, this);
+        this.btnShop.on(Button.EventType.CLICK, this.onClick, this);
 
         //--set temp reels
         let arr = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
@@ -748,7 +758,10 @@ export class Cowboy extends Component {
                 break;
             case 'btnFreeSpin':
                 this.spin(false, []);
-                break
+                break;
+            case 'btnShop':
+                this.shop.active = true;
+                break;
             case 'btnBack':
                 this.disconnect();
                 AudioMgr.inst.stop();
