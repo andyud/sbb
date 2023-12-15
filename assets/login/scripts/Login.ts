@@ -57,8 +57,7 @@ export class Login extends Component {
                 } else if(mydeviceid=='error'){
                     this.notice.getComponent(Notice).show({ title: 'Notice', content: "Login error!" }, () => {  });
                     this.loading.getComponent(Loading).hide();
-                } else if(mydeviceid=='success'){
-                    this.notice.getComponent(Notice).show({ title: 'Notice', content: "Login success!" }, () => {  });
+                } else {//success
                     APIMgr.instance.deviceId = mydeviceid;
                     this.signinToServer();
                 }

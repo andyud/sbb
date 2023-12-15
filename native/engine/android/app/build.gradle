@@ -110,5 +110,5 @@ dependencies {
     implementation "com.android.billingclient:billing:$billing_version"
     implementation 'com.google.guava:guava:24.1-jre'
     implementation 'com.google.android.gms:play-services-auth:20.7.0'
-    implementation 'com.facebook.android:facebook-login:latest.release'
+    implementation 'com.facebook.android:facebook-android-sdk:[8,9)'
 }

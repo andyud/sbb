@@ -43,6 +43,7 @@ import com.cocos.lib.JsbBridge;
 import com.cocos.lib.JsbBridgeWrapper;
 import com.cocos.service.SDKWrapper;
 import com.cocos.lib.CocosActivity;
+import com.facebook.AccessToken;
 import com.facebook.CallbackManager;
 import com.facebook.FacebookCallback;
 import com.facebook.FacebookException;
@@ -74,7 +75,7 @@ public class AppActivity extends CocosActivity {
     private GoogleSignInOptions gso = null;
     private GoogleSignInClient mGoogleSignInClient = null;
     private final int GOOGLE_SIGNIN_CODE = 1111;
-    private final int FACEBOOK_SIGN_IN_CODE = 2222;
+    private boolean isFacebookLogin = false;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -103,6 +104,7 @@ public class AppActivity extends CocosActivity {
                     break;
                 case "getfacebookid":
                     LoginManager.getInstance().logInWithReadPermissions(this,Arrays.asList("gaming_profile"));
+                    isFacebookLogin = true;
                     break;
                 case "getgoogleid":
                     mGoogleSignInClient = GoogleSignIn.getClient(this, gso);
@@ -143,14 +145,19 @@ public class AppActivity extends CocosActivity {
         FacebookSdk.fullyInitialize();
         AppEventsLogger.activateApp(this.getApplication());
         callbackManager = CallbackManager.Factory.create();
-        LoginManager.getInstance().onActivityResult(FACEBOOK_SIGN_IN_CODE,null);
         LoginManager.getInstance().registerCallback(callbackManager,
                 new FacebookCallback<LoginResult>() {
                     @Override
                     public void onSuccess(LoginResult loginResult) {
                         // App code
                         System.out.println("Facebook login success");
-                        JsbBridgeWrapper.getInstance().dispatchEventToScript("getfacebookid", "success");
+                        AccessToken accessToken = AccessToken.getCurrentAccessToken();
+                        boolean isLoggedIn = accessToken != null && !accessToken.isExpired();
+                        if(isLoggedIn){
+                            JsbBridgeWrapper.getInstance().dispatchEventToScript("getfacebookid", accessToken.getUserId());
+                        } else {
+                            JsbBridgeWrapper.getInstance().dispatchEventToScript("getfacebookid", "error");
+                        }
                     }
 
                     @Override
@@ -202,8 +209,9 @@ public class AppActivity extends CocosActivity {
             // a listener.
             Task<GoogleSignInAccount> task = GoogleSignIn.getSignedInAccountFromIntent(data);
             handleSignInResult(task);
-        } else if(requestCode == FACEBOOK_SIGN_IN_CODE){
+        } else if(isFacebookLogin){
             callbackManager.onActivityResult(requestCode, resultCode, data);
+            isFacebookLogin= false;
         } else {
             SDKWrapper.shared().onActivityResult(requestCode, resultCode, data);
         }
