@@ -8,6 +8,15 @@ class GameMgr {
         return this._instance;
     }
     public isDebugMode = false;
+    public IAB_PRODUCTS = [
+        {id:'shop_chips_9.99',name:'3,000,000 Chips',price:'$9.99 - 3,000,000 Chips(Shop)',discount:0},
+        {id:'shop_chips_0.99',name:'3,000,000 Chips',price:'$0.99 - 210,000 Chips(Shop)',discount:0},
+        {id:'shop_chips_99.99',name:'3,000,000 Chips',price:'$99.99 - 60,000,000 Chips(Shop)',discount:0},
+        {id:'shop_chips_49.99',name:'3,000,000 Chips',price:'$49.99 - 25,000,000 Chips(Shop)',discount:0},
+        {id:'shop_chips_4.99',name:'3,000,000 Chips',price:'$4.99 - 1,200,000 Chips(Shop)',discount:0},
+        {id:'shop_chips_19.99',name:'3,000,000 Chips',price:'$19.99 - 12,000,000 Chips(Shop)',discount:0}
+    ];
+    
     //--format currency
     public isEmpty(str:string) {
         return (!str || 0 === str.length)

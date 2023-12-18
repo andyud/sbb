@@ -30,10 +30,15 @@ import android.content.res.Configuration;
 import android.provider.Settings;
 import android.util.Log;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+
 import com.android.billingclient.api.BillingClient;
 import com.android.billingclient.api.BillingClientStateListener;
 import com.android.billingclient.api.BillingFlowParams;
 import com.android.billingclient.api.BillingResult;
+import com.android.billingclient.api.ConsumeParams;
+import com.android.billingclient.api.ConsumeResponseListener;
 import com.android.billingclient.api.ProductDetails;
 import com.android.billingclient.api.ProductDetailsResponseListener;
 import com.android.billingclient.api.Purchase;
@@ -68,7 +73,7 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 
-public class AppActivity extends CocosActivity {
+public class AppActivity extends CocosActivity implements PurchasesUpdatedListener {
     //--facebook-
     private CallbackManager callbackManager = null;
     private String myDeviceId = "ababab";
@@ -76,6 +81,10 @@ public class AppActivity extends CocosActivity {
     private GoogleSignInClient mGoogleSignInClient = null;
     private final int GOOGLE_SIGNIN_CODE = 1111;
     private boolean isFacebookLogin = false;
+    private List<String> productLists = new ArrayList<>();//java script send to java
+    private int iCurrentGetProductDetail = 0; //current get details
+    private List<ProductDetails> productDetailsList = new ArrayList<>();//after get detail store info of products
+    private String strProductDetails = "";
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -87,15 +96,6 @@ public class AppActivity extends CocosActivity {
                 .build();
 
         //---callback from javascript----------------------------------------------------------------------
-        JsbBridge.setCallback(new JsbBridge.ICallback() {
-            @Override
-            public void onScript(String arg0, String arg1) {
-                //TO DO
-                if(arg0.equals("get_products")){
-                    getProducts();
-                }
-            }
-        });
         JsbBridgeWrapper.getInstance().addScriptEventListener("javascript_to_java", arg ->{
             System.out.print("@JAVA: here is the argument transport in" + arg);
             switch (arg) {
@@ -114,12 +114,26 @@ public class AppActivity extends CocosActivity {
                     break;
             }
         });
+        JsbBridgeWrapper.getInstance().addScriptEventListener("getproductlist", arg -> {
+            String[] arr = arg.split("@");
+            if(this.productLists.isEmpty()){
+                for(int i=0;i<arr.length;i++){
+                    this.productLists.add(arr[i]);
+                }
+                this.strProductDetails = "";//store string for response to cocos creator
+                this.iCurrentGetProductDetail = 0;
+                this.getProductsDetail();
+            }
+        });
+        JsbBridgeWrapper.getInstance().addScriptEventListener("buyproduct", arg -> {
+            this.buyProduct(arg);
+        });
         //--javascript and java communicate --------------------------------------------------------
 
         //--in app purchase ------------------------------------------------------------------------
         AppActivity self = this; //setup google play billing
         billingClient = BillingClient.newBuilder(this)
-        .setListener(purchasesUpdatedListener)
+        .setListener(this)
         .enablePendingPurchases()
         .build();
         if(billingClient!=null){ //connect to account
@@ -128,14 +142,10 @@ public class AppActivity extends CocosActivity {
                 public void onBillingSetupFinished(BillingResult billingResult) {
                     if (billingResult.getResponseCode() ==  BillingClient.BillingResponseCode.OK) {
                         self.isIAPCoonected = true;
-                        self.getProducts();
-                        System.out.println("IAP: num of products: "+self.products.size());
                     }
                 }
                 @Override
                 public void onBillingServiceDisconnected() {
-                    // Try to restart the connection on the next request to
-                    // Google Play by calling the startConnection() method.
                     System.out.println("IAP onBillingServiceDisconnected");
                     isIAPCoonected = false;
                 }
@@ -176,7 +186,6 @@ public class AppActivity extends CocosActivity {
                 });
         //--facebook signin-
     }
-
     @Override
     protected void onResume() {
         super.onResume();
@@ -296,64 +305,121 @@ public class AppActivity extends CocosActivity {
     /*in app purchase ------------------------------------------------------------------------------*/
     private BillingClient billingClient = null;
     private boolean isIAPCoonected = false;
-//    private List<ProductDetails> products = null;
-    public List<String> products = new ArrayList<String>();
-    private PurchasesUpdatedListener purchasesUpdatedListener = new PurchasesUpdatedListener() {
-        @Override
-        public void onPurchasesUpdated(BillingResult billingResult, List<Purchase> purchases) {
-            // To be implemented in a later section.
-            System.out.println("IAP onPurchasesUpdated");
-        }
-    };
-
-    public ArrayList<String> getProducts(){
-        ArrayList<String> arr = new ArrayList<>();
-//        AppActivity self = this;
-        // The BillingClient is ready. You can query purchases here.
-        QueryProductDetailsParams queryProductDetailsParams =
-                QueryProductDetailsParams.newBuilder()
-                        .setProductList(
-                                ImmutableList.of(
-                                        QueryProductDetailsParams.Product.newBuilder()
-                                                .setProductId("shop_chips_0.99")
-                                                .setProductType(BillingClient.ProductType.SUBS)
-                                                .build()))
-                        .build();
-
-        billingClient.queryProductDetailsAsync(
-                queryProductDetailsParams,
-                new ProductDetailsResponseListener() {
-                    public void onProductDetailsResponse(BillingResult billingResult,
-                                                         List<ProductDetails> productDetailsList) {
-                        // check billingResult
-                        // process returned productDetailsList
-                        System.out.println("IAP billingClient.queryProductDetailsAsyn");
-//                        self.products.add("product1");
-//                        self.products.add("product2");
+    public void getProductsDetail(){
+        AppActivity self = this;
+        if(this.isIAPCoonected){
+            QueryProductDetailsParams queryProductDetailsParams =
+                    QueryProductDetailsParams.newBuilder().setProductList(
+                                    ImmutableList.of(
+                                            QueryProductDetailsParams.Product.newBuilder()
+                                                    .setProductId(this.productLists.get(this.iCurrentGetProductDetail))
+                                                    .setProductType(BillingClient.ProductType.INAPP)
+                                                    .build()))
+                            .build();
+            billingClient.queryProductDetailsAsync(
+                    queryProductDetailsParams,
+                    new ProductDetailsResponseListener() {
+                        public void onProductDetailsResponse(BillingResult billingResult,
+                                                             List<ProductDetails> productDetailsList) {
+                            if(self.iCurrentGetProductDetail<self.productLists.size()){
+                                for(int i=0;i<productDetailsList.size();i++){
+                                    ProductDetails pro = productDetailsList.get(i);
+                                    if(self.strProductDetails.length()>0){
+                                        self.strProductDetails += "@";
+                                    }
+                                    self.strProductDetails+=pro.getProductId()+"#"+pro.getName()+"#"+pro.getProductType()+"#"+pro.getDescription();
+                                    self.productDetailsList.add(pro);
+                                }
+                                self.iCurrentGetProductDetail++;
+                                if(self.iCurrentGetProductDetail>=self.productLists.size()){
+                                    JsbBridgeWrapper.getInstance().dispatchEventToScript("getproductlist", self.strProductDetails);
+                                } else {
+                                    self.getProductsDetail();
+                                }
+                            }
+                        }
                     }
-                }
-        );
-        return arr;
+            );
+        }
     }
-    public void buyProduct(){
+    public void buyProduct(String productId){
+        //--find item
+        ProductDetails pro = null;
+        AppActivity self = this;
+        for(int i=0;i<this.productDetailsList.size();i++){
+            if(this.productDetailsList.get(i).getProductId().compareTo(productId)==0){
+                pro = this.productDetailsList.get(i);
+                break;
+            }
+        }
+        if(pro==null){//purchase failed
+            JsbBridgeWrapper.getInstance().dispatchEventToScript("purchaseres", "failed");
+            return;
+        }
+//        String offerToken = "abababaaa";//pro.getSubscriptionOfferDetails().get(0).getOfferToken();
+
+
+//    String offerToken = pro.getSubscriptionOfferDetails()
+//                .get(0)
+//                .getOfferToken();
         // Launch the billing flow
-        /*
         ImmutableList productDetailsParamsList =
                 ImmutableList.of(
                         BillingFlowParams.ProductDetailsParams.newBuilder()
                                 // retrieve a value for "productDetails" by calling queryProductDetailsAsync()
-                                .setProductDetails(productDetails)
+                                .setProductDetails(pro)
                                 // to get an offer token, call ProductDetails.getSubscriptionOfferDetails()
                                 // for a list of offers that are available to the user
-                                .setOfferToken(selectedOfferToken)
+//                                .setOfferToken(offerToken)
                                 .build()
                 );
         BillingFlowParams billingFlowParams = BillingFlowParams.newBuilder()
                 .setProductDetailsParamsList(productDetailsParamsList)
                 .build();
         BillingResult billingResult = billingClient.launchBillingFlow(this, billingFlowParams);
+        System.out.println("buyProduct >>> ");
+    }
 
-         */
+    void handlePurchase(Purchase purchase) {
+        // Purchase retrieved from BillingClient#queryPurchasesAsync or your PurchasesUpdatedListener.
+//        Purchase purchase = ...;
+        System.out.println("handlePurchase done >>> ");
+        // Verify the purchase.
+        // Ensure entitlement was not already granted for this purchaseToken.
+        // Grant entitlement to the user.
+
+        ConsumeParams consumeParams =
+                ConsumeParams.newBuilder()
+                        .setPurchaseToken(purchase.getPurchaseToken())
+                        .build();
+
+        ConsumeResponseListener listener = new ConsumeResponseListener() {
+            @Override
+            public void onConsumeResponse(BillingResult billingResult, String purchaseToken) {
+                if (billingResult.getResponseCode() == BillingClient.BillingResponseCode.OK) {
+                    // Handle the success of the consume operation.
+                    System.out.println("onConsumeResponse done >>> ");
+                }
+            }
+        };
+
+        billingClient.consumeAsync(consumeParams, listener);
+    }
+
+    @Override
+    public void onPurchasesUpdated(@NonNull BillingResult billingResult, @Nullable List<Purchase> list) {
+        if(billingResult.getResponseCode() == BillingClient.BillingResponseCode.OK && list != null) {
+            for (Purchase purchase : list) {
+                handlePurchase(purchase);
+            }
+        } else if (billingResult.getResponseCode() == BillingClient.BillingResponseCode.USER_CANCELED) {
+                // Handle an error caused by a user cancelling the purchase flow.
+            JsbBridgeWrapper.getInstance().dispatchEventToScript("purchaseres", "failed");
+
+        } else {
+            // Handle any other error codes.
+            JsbBridgeWrapper.getInstance().dispatchEventToScript("purchaseres", "failed");
+        }
     }
     /*in app purchase ------------------------------------------------------------------------------*/
 }

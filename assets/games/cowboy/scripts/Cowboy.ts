@@ -19,9 +19,6 @@ export class Cowboy extends Component {
     pfShop: Prefab | null = null;
     private shop:Node = null;
     @property({ type: Prefab })
-    pfLoading: Prefab | null = null;
-    private loading: Node = null;
-    @property({ type: Prefab })
     pfNotice: Prefab | null = null;
     private notice: Node = null;
     @property({ type: Node })
@@ -164,6 +161,11 @@ export class Cowboy extends Component {
     //--update
     private countUpdate = 0;
     private isUpdateLineWin = false;
+    @property({type:Node})
+    loading:Node | null = null;
+    @property({type:Node})
+    loadingBar:Node | null = null;
+    private percent = 0;
     //--
     private loginRes = {
         "pid": "loginRes",
@@ -370,10 +372,8 @@ export class Cowboy extends Component {
         })
         //loading
         if (this.loading == null) {
-            this.loading = instantiate(this.pfLoading);
-            this.node.addChild(this.loading);
-            this.loading.getComponent(UITransform).setContentSize(this.node.getComponent(UITransform).width, this.node.getComponent(UITransform).height);
-            this.loading.getComponent(Loading).show();
+            this.percent = 0;
+            this.loading.active = true;
         }
         if (this.notice == null) {
             this.notice = instantiate(this.pfNotice);
@@ -578,7 +578,7 @@ export class Cowboy extends Component {
         this.sendMessgage(str);
     }
     hideLoading() {
-        this.loading.getComponent(Loading).hide();
+        this.loading.active = false;
     }
     wsSpinDebug(arr: any) {
         let data = {
@@ -699,7 +699,7 @@ export class Cowboy extends Component {
                 this.lbBalance.string = GameMgr.instance.numberWithCommas(this.spinRes.balance);
                 break;
         }
-        this.loading.getComponent(Loading).hide();
+        this.loading.active = false;
     }
     //3. action ---------------------------------------------------------------------------------
     onCloseEnd(button: Button) {
@@ -1237,5 +1237,23 @@ export class Cowboy extends Component {
         //     this.lbCoinEff.getComponent(Label).string = `+${totalWin}`;
         //     this.lbCoinEff.getComponent(Animation).play();
         // }
+    }
+    private updateProgress(){
+        if(this.loadingBar && this.loadingBar.parent){
+            let w = this.loadingBar.parent.getComponent(UITransform).width;
+            let progress = (this.percent/100) * w;
+            this.loadingBar.getComponent(UITransform).width = progress;
+            if(progress>w*0.99){
+                progress = w*0.99;
+            }
+        } else {
+            this.percent = 0;
+        }
+	}
+    update(deltaTime: number) {
+        if(this.percent<100){
+            this.percent++;
+            this.updateProgress()
+        }
     }
 }

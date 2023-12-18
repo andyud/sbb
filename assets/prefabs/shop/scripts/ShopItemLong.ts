@@ -4,13 +4,13 @@ const { ccclass, property } = _decorator;
 @ccclass('ShopItemLong')
 export class ShopItemLong extends Component {
     @property({ type: Label })
-    lbPrice: Label | null = null;
+    lbName: Label | null = null;
     @property({ type: Label })
-    lbOldPrice: Node | null = null;
+    lbOldPrice: Label | null = null;
     @property({ type: Node })
     iconLineThrough: Node | null = null;
     @property({ type: Label })
-    lbNewPrice: Node | null = null;
+    lbNewPrice: Label | null = null;
     @property({ type: Label })
     lbDiscountPercent: Label | null = null;
     @property({ type: Node })
@@ -21,12 +21,24 @@ export class ShopItemLong extends Component {
     bestValue: Node | null = null;
     @property({ type: Node })
     mostPopular: Node | null = null;
+    info = {id:'1',name:'',type:'',price:'',discount:0}
     start() {
 
     }
-
-    onClick(){
-
+    setInfo(info:any){
+        this.info = info;
+        this.lbName.string = info.name;
+        if(this.info.discount>0){
+            this.lbDiscountPercent.node.active = true;
+            this.lbDiscountPercent.string = `${info.discount}%`;
+            this.lbOldPrice.node.active = true;
+            this.lbOldPrice.string = `${info.price.replace(' Chips(Shop)','')}`;
+        } else {
+            this.lbDiscountPercent.node.active = false;
+            this.lbOldPrice.node.active = false;
+            // this.iconArrow.active = false;
+        }
+        this.lbNewPrice.string = `${info.price.replace(' Chips(Shop)','')}`;
     }
 }
 

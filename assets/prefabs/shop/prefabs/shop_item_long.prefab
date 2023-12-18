@@ -554,8 +554,8 @@
     },
     "_contentSize": {
       "__type__": "cc.Size",
-      "width": 186.27,
-      "height": 50.4
+      "width": 139.7,
+      "height": 37.8
     },
     "_anchorPoint": {
       "__type__": "cc.Vec2",
@@ -592,10 +592,10 @@
     "_string": "80.000.000",
     "_horizontalAlign": 1,
     "_verticalAlign": 1,
-    "_actualFontSize": 40,
-    "_fontSize": 40,
+    "_actualFontSize": 30,
+    "_fontSize": 30,
     "_fontFamily": "Arial",
-    "_lineHeight": 40,
+    "_lineHeight": 30,
     "_overflow": 0,
     "_enableWrapText": true,
     "_font": {
@@ -630,7 +630,7 @@
   },
   {
     "__type__": "cc.Node",
-    "_name": "lbPrice",
+    "_name": "lbName",
     "_objFlags": 0,
     "_parent": {
       "__id__": 1
@@ -962,8 +962,8 @@
     },
     "_contentSize": {
       "__type__": "cc.Size",
-      "width": 186.54,
-      "height": 50.4
+      "width": 139.91,
+      "height": 37.8
     },
     "_anchorPoint": {
       "__type__": "cc.Vec2",
@@ -1000,10 +1000,10 @@
     "_string": "60.000.000",
     "_horizontalAlign": 1,
     "_verticalAlign": 1,
-    "_actualFontSize": 40,
-    "_fontSize": 40,
+    "_actualFontSize": 30,
+    "_fontSize": 30,
     "_fontFamily": "Arial",
-    "_lineHeight": 40,
+    "_lineHeight": 30,
     "_overflow": 0,
     "_enableWrapText": true,
     "_font": {
@@ -1384,7 +1384,7 @@
     "__prefab": {
       "__id__": 61
     },
-    "lbPrice": {
+    "lbName": {
       "__id__": 29
     },
     "lbOldPrice": {
@@ -1471,7 +1471,7 @@
     "_pressedSprite": null,
     "_disabledSprite": null,
     "_duration": 0.1,
-    "_zoomScale": 1.2,
+    "_zoomScale": 1.1,
     "_target": null,
     "_id": ""
   },
