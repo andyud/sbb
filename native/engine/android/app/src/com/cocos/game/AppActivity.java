@@ -162,12 +162,7 @@ public class AppActivity extends CocosActivity implements PurchasesUpdatedListen
                         // App code
                         System.out.println("Facebook login success");
                         AccessToken accessToken = AccessToken.getCurrentAccessToken();
-                        boolean isLoggedIn = accessToken != null && !accessToken.isExpired();
-                        if(isLoggedIn){
-                            JsbBridgeWrapper.getInstance().dispatchEventToScript("getfacebookid", accessToken.getUserId());
-                        } else {
-                            JsbBridgeWrapper.getInstance().dispatchEventToScript("getfacebookid", "error");
-                        }
+                        JsbBridgeWrapper.getInstance().dispatchEventToScript("getfacebookid", accessToken.getUserId());
                     }
 
                     @Override
@@ -356,13 +351,14 @@ public class AppActivity extends CocosActivity implements PurchasesUpdatedListen
             JsbBridgeWrapper.getInstance().dispatchEventToScript("purchaseres", "failed");
             return;
         }
-//        String offerToken = "abababaaa";//pro.getSubscriptionOfferDetails().get(0).getOfferToken();
-
-
-//    String offerToken = pro.getSubscriptionOfferDetails()
-//                .get(0)
-//                .getOfferToken();
-        // Launch the billing flow
+        String offerToken = "";
+        if(pro.getSubscriptionOfferDetails()!=null && pro.getSubscriptionOfferDetails().size()>0){
+            offerToken = pro.getSubscriptionOfferDetails().get(0).getOfferToken();
+        }
+        else {
+            ProductDetails.OneTimePurchaseOfferDetails offer = pro.getOneTimePurchaseOfferDetails();
+            offerToken = offer.zza();
+        }
         ImmutableList productDetailsParamsList =
                 ImmutableList.of(
                         BillingFlowParams.ProductDetailsParams.newBuilder()
@@ -370,7 +366,7 @@ public class AppActivity extends CocosActivity implements PurchasesUpdatedListen
                                 .setProductDetails(pro)
                                 // to get an offer token, call ProductDetails.getSubscriptionOfferDetails()
                                 // for a list of offers that are available to the user
-//                                .setOfferToken(offerToken)
+                                .setOfferToken(offerToken)
                                 .build()
                 );
         BillingFlowParams billingFlowParams = BillingFlowParams.newBuilder()

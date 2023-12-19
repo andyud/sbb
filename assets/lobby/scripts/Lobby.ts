@@ -64,12 +64,15 @@ export class Lobby extends Component {
         AudioMgr.inst.playOneShot(this.arrAudioClips[2]);
         AudioMgr.inst.bgm.stop();
         AudioMgr.inst.bgm.clip = null;
-        director.loadScene('cowboy');
-
+        switch(button.node.name){
+            case 'cowboy':
+                director.loadScene('cowboy');
+                break;
+            case 'snow':
+                director.loadScene('snow');
+                break;
+        }
     }
-    // update(deltaTime: number) {
-        
-    // }
 
     onClick(button: Button) {
         AudioMgr.inst.playOneShot(this.arrAudioClips[2]);

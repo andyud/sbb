@@ -17,6 +17,7 @@ export class Notice extends Component {
     start() {
         this.btnCloseNotice.on(Button.EventType.CLICK,this.onClick,this);
         this.node.getComponent(UIOpacity).opacity = 0;
+		this.node.setPosition(0,-this.node.getComponent(UITransform).height);
     }
     show(data:any,cb:(data:string)=>void){
         this.lbTitle.string = data.title;
@@ -31,7 +32,7 @@ export class Notice extends Component {
     }
 	hide(){
 		this.node.getComponent(UIOpacity).opacity = 0;
-		this.node.setPosition(this.node.getComponent(UITransform).width, this.node.getComponent(UITransform).height,0);
+		this.node.setPosition(0, -this.node.getComponent(UITransform).height,0);
 		this.node.setScale(0,0,0)
 	}
     onClick(button: Button) {
@@ -39,7 +40,7 @@ export class Notice extends Component {
         switch(button.node.name){
             case "btnCloseNotice":
                 tween(this.node)
-                .to(0.4,{position:new Vec3(this.node.getComponent(UITransform).width, this.node.getComponent(UITransform).height,0),scale: new Vec3(0,0,0)})
+                .to(0.4,{position:new Vec3(0, -this.node.getComponent(UITransform).height,0),scale: new Vec3(0,0,0)})
                 .start()
                 tween(this.node.getComponent(UIOpacity))
                 .to(0.2,{opacity:0})

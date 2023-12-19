@@ -29,7 +29,7 @@ export class Login extends Component {
         this.btnFacebook.on(Button.EventType.CLICK, this.onClick, this);
         this.btnGoogle.on(Button.EventType.CLICK, this.onClick, this);
         this.btnCheck.on(Button.EventType.CLICK, this.onClick, this);
-
+        this.iconCheck.active = true;
         if (this.loading == null) {
             this.loading = instantiate(this.pfLoading);
             this.node.addChild(this.loading);
@@ -91,6 +91,10 @@ export class Login extends Component {
         AudioMgr.inst.playOneShot(this.arrAudioClips[1]);
         switch (button.node.name) {
             case 'btnPlayAsGuest':
+                if(!this.iconCheck.active){
+                    this.notice.getComponent(Notice).show({ title: 'Notice', content: "Please accept agreement!" }, () => {  });
+                    return;
+                }
                 this.loading.getComponent(Loading).show();
                 if(sys.os == sys.OS.ANDROID && sys.isNative){
                     native.jsbBridgeWrapper.dispatchEventToNative('javascript_to_java','getdeviceid');
@@ -99,6 +103,10 @@ export class Login extends Component {
                 }
                 break;
             case 'btnFacebook':
+                if(!this.iconCheck.active){
+                    this.notice.getComponent(Notice).show({ title: 'Notice', content: "Please accept agreement!" }, () => {  });
+                    return;
+                }
                 this.loading.getComponent(Loading).show();
                 if(sys.os == sys.OS.ANDROID && sys.isNative){
                     native.jsbBridgeWrapper.dispatchEventToNative('javascript_to_java','getfacebookid');
@@ -107,6 +115,10 @@ export class Login extends Component {
                 }
                 break;
             case 'btnGoogle':
+                if(!this.iconCheck.active){
+                    this.notice.getComponent(Notice).show({ title: 'Notice', content: "Please accept agreement!" }, () => {  });
+                    return;
+                }
                 this.loading.getComponent(Loading).show();
                 if(sys.os == sys.OS.ANDROID && sys.isNative){
                     native.jsbBridgeWrapper.dispatchEventToNative('javascript_to_java','getgoogleid');
