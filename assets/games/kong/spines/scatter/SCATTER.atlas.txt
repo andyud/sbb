@@ -1,0 +1,111 @@
+
+SCATTER.png
+size: 1024,4096
+format: RGBA8888
+filter: Linear,Linear
+repeat: none
+1S
+  rotate: false
+  xy: 515, 681
+  size: 124, 189
+  orig: 134, 191
+  offset: 5, 2
+  index: -1
+2C
+  rotate: false
+  xy: 106, 3
+  size: 110, 129
+  orig: 122, 132
+  offset: 7, 0
+  index: -1
+3A
+  rotate: false
+  xy: 2, 215
+  size: 163, 121
+  orig: 207, 131
+  offset: 6, 5
+  index: -1
+4T
+  rotate: false
+  xy: 335, 11
+  size: 116, 118
+  orig: 156, 128
+  offset: 35, 5
+  index: -1
+5T
+  rotate: false
+  xy: 216, 9
+  size: 118, 120
+  orig: 156, 128
+  offset: 33, 5
+  index: -1
+6E
+  rotate: false
+  xy: 662, 492
+  size: 87, 118
+  orig: 222, 128
+  offset: 5, 5
+  index: -1
+7R
+  rotate: false
+  xy: 2, 97
+  size: 131, 121
+  orig: 139, 128
+  offset: 5, 2
+  index: -1
+background
+  rotate: false
+  xy: 2, 3274
+  size: 802, 684
+  orig: 814, 696
+  offset: 6, 6
+  index: -1
+background_2
+  rotate: false
+  xy: 2, 2000
+  size: 696, 592
+  orig: 708, 604
+  offset: 6, 6
+  index: -1
+building
+  rotate: true
+  xy: 186, 3
+  size: 488, 626
+  orig: 496, 631
+  offset: 4, 5
+  index: -1
+building halo
+  rotate: true
+  xy: 2, 1476
+  size: 522, 632
+  orig: 534, 644
+  offset: 6, 6
+  index: -1
+effect line
+  rotate: false
+  xy: 2, 846
+  size: 776, 628
+  orig: 782, 628
+  offset: 0, 0
+  index: -1
+frame
+  rotate: false
+  xy: 2, 2594
+  size: 795, 678
+  orig: 807, 690
+  offset: 6, 6
+  index: -1
+reflection
+  rotate: false
+  xy: 636, 1486
+  size: 154, 512
+  orig: 154, 512
+  offset: 0, 0
+  index: -1
+sparkle
+  rotate: false
+  xy: 2, 336
+  size: 512, 508
+  orig: 512, 512
+  offset: 0, 2
+  index: -1

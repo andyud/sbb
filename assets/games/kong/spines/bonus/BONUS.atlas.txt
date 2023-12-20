@@ -1,0 +1,139 @@
+
+BONUS.png
+size: 1024,4096
+format: RGBA8888
+filter: Linear,Linear
+repeat: none
+BONUS n
+  rotate: false
+  xy: 700, 1599
+  size: 143, 132
+  orig: 145, 134
+  offset: 1, 1
+  index: -1
+BONUS n_outline
+  rotate: false
+  xy: 717, 1436
+  size: 158, 161
+  orig: 160, 163
+  offset: 1, 1
+  index: -1
+BONUS o
+  rotate: false
+  xy: 737, 1216
+  size: 141, 157
+  orig: 143, 159
+  offset: 1, 1
+  index: -1
+BONUS o_outline
+  rotate: false
+  xy: 707, 1026
+  size: 175, 188
+  orig: 177, 190
+  offset: 1, 1
+  index: -1
+BONUS s
+  rotate: false
+  xy: 274, 36
+  size: 63, 106
+  orig: 65, 108
+  offset: 1, 1
+  index: -1
+BONUS s_outline
+  rotate: false
+  xy: 803, 1870
+  size: 79, 128
+  orig: 81, 130
+  offset: 1, 1
+  index: -1
+BONUS u
+  rotate: false
+  xy: 700, 1870
+  size: 101, 112
+  orig: 103, 114
+  offset: 1, 1
+  index: -1
+BONUS u_outline
+  rotate: false
+  xy: 700, 1733
+  size: 125, 135
+  orig: 127, 137
+  offset: 1, 1
+  index: -1
+BONUS_b
+  rotate: false
+  xy: 703, 24
+  size: 159, 216
+  orig: 161, 218
+  offset: 1, 1
+  index: -1
+BONUS_b_outline
+  rotate: true
+  xy: 2, 63
+  size: 196, 270
+  orig: 198, 272
+  offset: 1, 1
+  index: -1
+background
+  rotate: false
+  xy: 2, 1697
+  size: 696, 592
+  orig: 698, 594
+  offset: 1, 1
+  index: -1
+background_2
+  rotate: false
+  xy: 2, 2971
+  size: 802, 684
+  orig: 804, 686
+  offset: 1, 1
+  index: -1
+effectline
+  rotate: false
+  xy: 2, 1035
+  size: 771, 660
+  orig: 772, 660
+  offset: 0, 0
+  index: -1
+frame
+  rotate: false
+  xy: 2, 2291
+  size: 795, 678
+  orig: 797, 680
+  offset: 1, 1
+  index: -1
+glow
+  rotate: false
+  xy: 2, 261
+  size: 460, 459
+  orig: 512, 512
+  offset: 27, 31
+  index: -1
+hallo_bonus
+  rotate: false
+  xy: 2, 722
+  size: 703, 311
+  orig: 705, 313
+  offset: 1, 1
+  index: -1
+skull_back of the eye
+  rotate: true
+  xy: 707, 735
+  size: 290, 171
+  orig: 448, 440
+  offset: 0, 269
+  index: -1
+skull_bottom
+  rotate: 180
+  xy: 298, 3
+  size: 404, 262
+  orig: 405, 262
+  offset: 0, 0
+  index: -1
+skull_top
+  rotate: true
+  xy: 464, 242
+  size: 491, 420
+  orig: 491, 427
+  offset: 0, 7
+  index: -1

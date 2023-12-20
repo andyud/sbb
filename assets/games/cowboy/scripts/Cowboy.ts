@@ -363,7 +363,7 @@ export class Cowboy extends Component {
         this.webSocket = null;
         APIMgr.instance.setCurrentGame(this.gameName);
         GameEvent.AddEventListener('START_CONNECT', (data: any) => {
-            if (this.gameName === APIMgr.instance.currentGame.gameName.toLowerCase()) {
+            if (this.gameName === APIMgr.instance.currentGame.gameName) {
                 this.lbBalance.string = GameMgr.instance.numberWithCommas(APIMgr.instance.signinRes.balance);
                 this.lbLevel.string = `lv: ${APIMgr.instance.signinRes.level}`;
                 this.lbTotalBet.string = GameMgr.instance.numberWithCommas(this.loginRes.lineBet * 25);

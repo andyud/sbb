@@ -27,6 +27,8 @@ export class Lobby extends Component {
     arrGames: Node[] = []
     @property([AudioClip])
     arrAudioClips: AudioClip[] = [];
+    @property([Label])
+    jackpotPools:Label[] = [];
     start() {
         //--add listener
         for(let i=0;i<this.arrGames.length;i++){
@@ -34,7 +36,7 @@ export class Lobby extends Component {
         }
 
         this.loadPlayerInfo();
-        this.connectLobby();
+        this.loadJackpotPool();
         if(GameMgr.instance.isDebugMode){
             this.lbDbDeviceId.node.active = true;
         } else {
@@ -51,27 +53,25 @@ export class Lobby extends Component {
             this.shop.active = false;
         }
         this.btnShop.on(Button.EventType.CLICK,this.onClick,this);
+
+        //--get jackpot pool
+        
     }
     loadPlayerInfo(){
         this.lbDbDeviceId.string = `Device Id: ${APIMgr.instance.deviceId}`
         this.lbBalance.string = GameMgr.instance.numberWithCommas(APIMgr.instance.signinRes.balance);
         this.lbLevel.string = `${APIMgr.instance.signinRes.level}`;
     }
-    async connectLobby(){
-        await APIMgr.instance.getGames();
+    loadJackpotPool(){
+        for(let i=0;i<APIMgr.instance.gamesRes.list.length;i++){
+            GameMgr.instance.numberTo(this.jackpotPools[i],0,APIMgr.instance.jackpotPoolRes[i],2000);
+        }
     }
     gameClickHandler(button: Button) {
         AudioMgr.inst.playOneShot(this.arrAudioClips[2]);
         AudioMgr.inst.bgm.stop();
         AudioMgr.inst.bgm.clip = null;
-        switch(button.node.name){
-            case 'cowboy':
-                director.loadScene('cowboy');
-                break;
-            case 'snow':
-                director.loadScene('snow');
-                break;
-        }
+        director.loadScene(button.node.name);
     }
 
     onClick(button: Button) {

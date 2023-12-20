@@ -1,0 +1,90 @@
+
+01_WW_EF_Tention.png
+size: 1189,1158
+format: RGBA8888
+filter: Linear,Linear
+repeat: none
+01_WW_EF_Tention00
+  rotate: true
+  xy: 915, 128
+  size: 125, 272
+  orig: 146, 293
+  offset: 20, 20
+  index: -1
+01_WW_EF_Tention01
+  rotate: true
+  xy: 788, 2
+  size: 124, 364
+  orig: 145, 397
+  offset: 20, 20
+  index: -1
+01_WW_EF_Tention02
+  rotate: false
+  xy: 788, 137
+  size: 125, 459
+  orig: 145, 495
+  offset: 19, 19
+  index: -1
+01_WW_EF_Tention03
+  rotate: false
+  xy: 982, 597
+  size: 125, 559
+  orig: 145, 575
+  offset: 19, 1
+  index: -1
+01_WW_EF_Tention04
+  rotate: false
+  xy: 788, 598
+  size: 192, 558
+  orig: 213, 574
+  offset: 20, 1
+  index: -1
+01_WW_EF_Tention05
+  rotate: false
+  xy: 264, 612
+  size: 260, 544
+  orig: 262, 560
+  offset: 1, 1
+  index: -1
+01_WW_EF_Tention06
+  rotate: false
+  xy: 264, 69
+  size: 260, 541
+  orig: 262, 559
+  offset: 1, 1
+  index: -1
+01_WW_EF_Tention07
+  rotate: false
+  xy: 526, 617
+  size: 260, 539
+  orig: 262, 557
+  offset: 1, 1
+  index: -1
+01_WW_EF_Tention08
+  rotate: false
+  xy: 526, 76
+  size: 260, 539
+  orig: 262, 553
+  offset: 1, 1
+  index: -1
+01_WW_EF_Tention09
+  rotate: false
+  xy: 2, 28
+  size: 260, 546
+  orig: 262, 566
+  offset: 1, 1
+  index: -1
+01_WW_EF_Tention10
+  rotate: false
+  xy: 2, 576
+  size: 260, 580
+  orig: 262, 582
+  offset: 1, 1
+  index: -1
+01_WW_EF_Tention11
+  rotate: false
+  xy: 915, 255
+  size: 256, 340
+  orig: 262, 355
+  offset: 1, 14
+  index: -1

@@ -67,6 +67,7 @@ BfhZUWNOM6WQGMIJ53fwjXkhURECCgMLHOFuSBtkmbfj5tw=
             }
         ] 
     };
+    public jackpotPoolRes = [];
     public gameInfoRes = {
         statusCode: 0,
         url: "https://slotk0w9ukeg.777invegas.com:8202",
@@ -195,6 +196,18 @@ BfhZUWNOM6WQGMIJ53fwjXkhURECCgMLHOFuSBtkmbfj5tw=
             .catch((error) => {
                 console.error("Error:", error);
             });
+    }
+    async getJackpotPool(gameId:number){
+        let api = `jackpotPool/${gameId}`;
+        await this.doGet(api, this.signinRes.authorization)
+            .then((response) => response.json())
+            .then((data) => {
+                console.log("Success:", data);
+                this.jackpotPoolRes.push(data.jackpotPool);
+            })
+            .catch((error) => {
+                console.error("Error:", error);
+       });
     }
     public getGameInfo(gameId: string) {
         let api = `game/${gameId}`;
