@@ -31,6 +31,7 @@
 
 #include "platform/ios/IOSPlatform.h"
 #import "platform/ios/AppDelegateBridge.h"
+#import "platform/apple/JsbBridgeWrapper.h"
 #import "service/SDKWrapper.h"
 
 @implementation AppDelegate
@@ -57,9 +58,29 @@
 
     [self.window makeKeyAndVisible];
     [appDelegateBridge application:application didFinishLaunchingWithOptions:launchOptions];
+    
+    JsbBridgeWrapper* m = [JsbBridgeWrapper sharedInstance];
+    OnScriptEventListener requestLabelContent = ^void(NSString* arg){
+          JsbBridgeWrapper* m = [JsbBridgeWrapper sharedInstance];
+        if([arg isEqualToString:@"getdeviceid"]) {
+            NSLog(@"Somthing...");
+            NSString *identifer = [[[UIDevice currentDevice] identifierForVendor] UUIDString];
+            [m dispatchEventToScript:@"getdeviceid" arg:identifer];
+        }
+        else if([arg isEqualToString:@"Sun"]) {
+            NSLog(@"Somthing...");
+        }
+        //  [m dispatchEventToScript:@"changeLabelContent" arg:@"Charlotte"];
+      };
+   [m addScriptEventListener:@"javascript_to_java" listener:requestLabelContent];
     return YES;
 }
-
+-(NSString*)getUniqueDeviceToken
+{
+    UIDevice *currentDevice = [UIDevice currentDevice];
+    NSString *deviceId = [[currentDevice identifierForVendor] UUIDString];
+    return deviceId;
+}
 - (void)applicationWillResignActive:(UIApplication *)application {
     /*
      Sent when the application is about to move from active to inactive state. This can occur for certain types of temporary interruptions (such as an incoming phone call or SMS message) or when the user quits the application and it begins the transition to the background state.

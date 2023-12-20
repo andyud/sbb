@@ -61,7 +61,7 @@ export class Login extends Component {
         }
 
         //--get iap
-        if(sys.os == sys.OS.ANDROID && sys.isNative){
+        if(sys.isNative){
             native.jsbBridgeWrapper.addNativeEventListener("getdeviceid",(mydeviceid: string)=>{
                 console.log(`getdeviceid ${mydeviceid}`);
                 APIMgr.instance.deviceId = mydeviceid;
@@ -143,7 +143,7 @@ export class Login extends Component {
                     return;
                 }
                 this.showSmallLoading();
-                if(sys.os == sys.OS.ANDROID && sys.isNative){
+                if(sys.isNative){//android & ios
                     native.jsbBridgeWrapper.dispatchEventToNative('javascript_to_java','getdeviceid');
                 } else {//web
                     this.signinToServer();
