@@ -58,7 +58,9 @@ export class Splash extends Component {
                     director.loadScene('login');
                 }
             }
-        } else {
+        } else if(sys.os == sys.OS.IOS && sys.isNative){
+            this.isCheckingDone = true;
+        } else {//web
             this.isCheckingDone = true;
         }
     }

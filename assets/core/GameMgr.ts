@@ -7,7 +7,7 @@ class GameMgr {
         this._instance = new GameMgr();
         return this._instance;
     }
-    public isDebugMode = false;
+    public isDebugMode = true;
     public IAB_PRODUCTS = [
         {id:'shop_chips_9.99',name:'3,000,000 Chips',price:'$9.99 - 3,000,000 Chips(Shop)',discount:0},
         {id:'shop_chips_0.99',name:'3,000,000 Chips',price:'$0.99 - 210,000 Chips(Shop)',discount:0},

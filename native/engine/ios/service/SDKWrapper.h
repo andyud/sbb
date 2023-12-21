@@ -46,6 +46,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface SDKWrapper : NSObject
 @property(nonatomic, strong) NSString *name;
+@property(nonatomic, strong) UIWindow *window;
 + (instancetype)shared;
 - (void)application:(UIApplication *)application
     didFinishLaunchingWithOptions:(NSDictionary *)launchOptions;

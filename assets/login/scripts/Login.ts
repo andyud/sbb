@@ -155,7 +155,7 @@ export class Login extends Component {
                     return;
                 }
                 this.showSmallLoading();
-                if(sys.os == sys.OS.ANDROID && sys.isNative){
+                if(sys.isNative){
                     native.jsbBridgeWrapper.dispatchEventToNative('javascript_to_java','getfacebookid');
                 } else {//web
                     this.signinToServer();
@@ -166,8 +166,8 @@ export class Login extends Component {
                     this.notice.getComponent(Notice).show({ title: 'Notice', content: "Please accept agreement!" }, () => {  });
                     return;
                 }
-                this.hideSmallLoading();
-                if(sys.os == sys.OS.ANDROID && sys.isNative){
+                this.showSmallLoading();
+                if(sys.isNative){
                     native.jsbBridgeWrapper.dispatchEventToNative('javascript_to_java','getgoogleid');
                 } else {//web
                     this.signinToServer();

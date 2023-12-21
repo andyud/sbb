@@ -33,6 +33,8 @@
 #import "platform/ios/AppDelegateBridge.h"
 #import "platform/apple/JsbBridgeWrapper.h"
 #import "service/SDKWrapper.h"
+#import "GoogleSignIn/GoogleSignIn.h"
+#include "platform/apple/JsbBridge.h"
 
 @implementation AppDelegate
 @synthesize window;
@@ -48,6 +50,7 @@
     // Add the view controller's view to the window and display.
     CGRect bounds = [[UIScreen mainScreen] bounds];
     self.window   = [[UIWindow alloc] initWithFrame:bounds];
+    [SDKWrapper shared].window = self.window;//backup
 
     // Should create view controller first, cc::Application will use it.
     _viewController                           = [[ViewController alloc] init];
@@ -59,28 +62,102 @@
     [self.window makeKeyAndVisible];
     [appDelegateBridge application:application didFinishLaunchingWithOptions:launchOptions];
     
+    //--device id
     JsbBridgeWrapper* m = [JsbBridgeWrapper sharedInstance];
     OnScriptEventListener requestLabelContent = ^void(NSString* arg){
           JsbBridgeWrapper* m = [JsbBridgeWrapper sharedInstance];
         if([arg isEqualToString:@"getdeviceid"]) {
-            NSLog(@"Somthing...");
+            NSLog(@"getdeviceid success...");
             NSString *identifer = [[[UIDevice currentDevice] identifierForVendor] UUIDString];
             [m dispatchEventToScript:@"getdeviceid" arg:identifer];
+        } else if([arg isEqualToString:@"getgoogleid"]) {
+            NSLog(@"getgoogleid success...");
+            [GIDSignIn.sharedInstance signInWithPresentingViewController: [[SDKWrapper shared].window rootViewController]
+                                                                completion:^(GIDSignInResult * _Nullable signInResult,
+                                                                             NSError * _Nullable error) {
+              if (error) { return; }
+              if (signInResult == nil) { return; }
+  
+              GIDGoogleUser *user = signInResult.user;
+                [m dispatchEventToScript:@"getdeviceid" arg:user.userID];
+//              NSString *emailAddress = user.profile.email;
+//              NSString *name = user.profile.name;
+//              NSString *givenName = user.profile.givenName;
+//              NSString *familyName = user.profile.familyName;
+//              NSURL *profilePic = [user.profile imageURLWithDimension:320];
+            }];
+        } else if([arg isEqualToString:@"getfacebookid"]) {
+            
         }
-        else if([arg isEqualToString:@"Sun"]) {
-            NSLog(@"Somthing...");
-        }
-        //  [m dispatchEventToScript:@"changeLabelContent" arg:@"Charlotte"];
-      };
-   [m addScriptEventListener:@"javascript_to_java" listener:requestLabelContent];
+    };
+    [m addScriptEventListener:@"javascript_to_java" listener:requestLabelContent];
+    
+    
+    //--google sign in
+    [GIDSignIn.sharedInstance restorePreviousSignInWithCompletion:^(GIDGoogleUser * _Nullable user, NSError * _Nullable error) {
+       if (error) {
+         // Show the app's signed-out state.
+           NSLog(@"");
+       } else {
+         // Show the app's signed-in state.
+           NSLog(@"");
+       }
+    }];
+    
+//    static ICallback cb = ^void (NSString* _arg0, NSString* _arg1){
+//        if([_arg0 isEqual:@"getgoogleid"]){
+//            //open Ad
+//
+//        }
+//    };
+//
+//    JsbBridge* m2 = [JsbBridge sharedInstance];
+//    [m2 setCallback:cb];
     return YES;
 }
--(NSString*)getUniqueDeviceToken
-{
-    UIDevice *currentDevice = [UIDevice currentDevice];
-    NSString *deviceId = [[currentDevice identifierForVendor] UUIDString];
-    return deviceId;
+//static ICallback callback = ^void (NSString* _arg0, NSString* _arg1){
+//    if([_arg0 isEqual:@"getgoogleid"]){
+//        //open Ad
+//        [GIDSignIn.sharedInstance signInWithPresentingViewController: 
+//                                                            completion:^(GIDSignInResult * _Nullable signInResult,
+//                                                                         NSError * _Nullable error) {
+//          if (error) { return; }
+//          if (signInResult == nil) { return; }
+//
+//          GIDGoogleUser *user = signInResult.user;
+//
+//          NSString *emailAddress = user.profile.email;
+//
+//          NSString *name = user.profile.name;
+//          NSString *givenName = user.profile.givenName;
+//          NSString *familyName = user.profile.familyName;
+//
+//          NSURL *profilePic = [user.profile imageURLWithDimension:320];
+//      }];
+//    }
+//};
+
+- (BOOL)application:(UIApplication *)app
+            openURL:(NSURL *)url
+            options:(NSDictionary<UIApplicationOpenURLOptionsKey,id> *)options {
+  BOOL handled;
+
+  handled = [GIDSignIn.sharedInstance handleURL:url];
+  if (handled) {
+    return YES;
+  }
+
+  // Handle other custom URL types.
+
+  // If not handled by this app, return NO.
+  return NO;
 }
+//- (void)handleGetURLEvent:(NSAppleEventDescriptor *)event
+//           withReplyEvent:(NSAppleEventDescriptor *)replyEvent {
+//      NSString *URLString = [[event paramDescriptorForKeyword:keyDirectObject] stringValue];
+//      NSURL *URL = [NSURL URLWithString:URLString];
+//      [GIDSignIn.sharedInstance handleURL:url];
+//}
 - (void)applicationWillResignActive:(UIApplication *)application {
     /*
      Sent when the application is about to move from active to inactive state. This can occur for certain types of temporary interruptions (such as an incoming phone call or SMS message) or when the user quits the application and it begins the transition to the background state.
