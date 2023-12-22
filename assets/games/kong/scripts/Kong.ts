@@ -346,6 +346,19 @@ export class Kong extends Component {
         [2, 0, 2, 0, 2],//23
         [0, 2, 0, 2, 0]//24
     ];
+    private ICON_MAPPING = {
+        ship:0,
+        dragon:1,
+        scatter:2,
+        j:3,
+        air:4,
+        q:5,
+        a:6,
+        k:7,
+        coin:8,
+        jackpot:9,
+        wild:10
+    }
     //----------------------------------------------------------------------------------------------------
     private kongConfig = {
         reelsSpeed: 0.015,//per symbol
@@ -641,27 +654,27 @@ export class Kong extends Component {
                 //run reels
                 let self = this;
                 //--check reels tension -> add more item and expend times
-                let counts = [0, 0, 0, 0];
+                let counts = [0, 0, 0, 0];//scatter, coin, jackpot, wild
                 let lineId = -1;
                 for (let i = 0; i < 4; i++) {
                     let line = this.spinRes.lineKeys[i];
                     for (let j = 0; j < line.length; j++) {
-                        if (line[j] == 0) {
+                        if (line[j] == this.ICON_MAPPING.scatter) {
                             counts[0]++;
                             if (counts[0] == 2 && lineId == -1) {
                                 lineId = i;
                             }
-                        } else if (line[j] == 1) {
+                        } else if (line[j] == this.ICON_MAPPING.coin) {
                             counts[1]++;
                             if (counts[1] == 2 && lineId == -1) {
                                 lineId = i;
                             }
-                        } else if (line[j] == 3) {
+                        } else if (line[j] == this.ICON_MAPPING.jackpot) {
                             counts[2]++;
                             if (counts[2] == 2 && lineId == -1) {
                                 lineId = i;
                             }
-                        } else if (line[j] == 10) {
+                        } else if (line[j] == this.ICON_MAPPING.wild) {
                             counts[3]++;
                             if (counts[3] == 2 && lineId == -1) {
                                 lineId = i;
@@ -984,9 +997,9 @@ export class Kong extends Component {
         let countScatter = 0;
         let countWanted = 0;
         for (let i = 0; i < this.spinRes.lineKeys[idx].length; i++) {
-            if (this.spinRes.lineKeys[idx][i] == 0) {
+            if (this.spinRes.lineKeys[idx][i] == this.ICON_MAPPING.scatter) {
                 countScatter++;
-            } else if (this.spinRes.lineKeys[idx][i] == 3) {
+            } else if (this.spinRes.lineKeys[idx][i] == this.ICON_MAPPING.coin) {
                 countWanted++;
             }
         }
@@ -1018,13 +1031,13 @@ export class Kong extends Component {
             for (let i = 0; i <= idx; i++) {
                 let line = this.spinRes.lineKeys[i];
                 for (let j = 0; j < line.length; j++) {
-                    if (line[j] == 0) {
+                    if (line[j] == this.ICON_MAPPING.scatter) {
                         counts[0]++;
-                    } else if (line[j] == 1) {
+                    } else if (line[j] == this.ICON_MAPPING.coin) {
                         counts[1]++;
-                    } else if (line[j] == 3) {
+                    } else if (line[j] == this.ICON_MAPPING.jackpot) {
                         counts[2]++;
-                    } else if (line[j] == 10) {
+                    } else if (line[j] == this.ICON_MAPPING.wild) {
                         counts[3]++;
                     }
                 }
@@ -1069,15 +1082,15 @@ export class Kong extends Component {
                     const texId = arr[j]
                     const tex = this.icons[texId];
                     this.reels[i].children[startIdx - j].getComponent(KongItem).setTexture(tex, texId);
-                    if (texId == 0 || texId == 1 || texId == 3 || texId == 10) {
+                    if (texId == this.ICON_MAPPING.scatter || texId == this.ICON_MAPPING.coin || texId == this.ICON_MAPPING.jackpot || texId == this.ICON_MAPPING.wild) {
                         // this.reels[i].children[startIdx - j].getComponent(KongItem).runSpecialEff();
-                        if (texId == 0 && this.spinRes.freeSpin && this.spinRes.freeSpin.remain && this.spinRes.freeSpin.remain == this.spinRes.freeSpin.count) {//scatter
+                        if (texId == this.ICON_MAPPING.scatter && this.spinRes.freeSpin && this.spinRes.freeSpin.remain && this.spinRes.freeSpin.remain == this.spinRes.freeSpin.count) {//scatter
                             this.reels[i].children[startIdx - j].getComponent(KongItem).runScatter(this.items);
-                        } else if (texId == 1) {//wild
+                        } else if (texId == this.ICON_MAPPING.wild) {//wild
                             this.reels[i].children[startIdx - j].getComponent(KongItem).runWild(this.items);
-                        } else if (texId == 3 && this.spinRes.bonusPayout && this.spinRes.bonusPayout.length > 0 && this.spinRes.bonusPayout[0].extendData) {//bonus
+                        } else if (texId == this.ICON_MAPPING.coin && this.spinRes.bonusPayout && this.spinRes.bonusPayout.length > 0 && this.spinRes.bonusPayout[0].extendData) {//bonus
                             this.reels[i].children[startIdx - j].getComponent(KongItem).runWanted(this.items);
-                        } else if (texId == 10 && this.spinRes.winType == 'Jackpot') {//jackpot
+                        } else if (texId == this.ICON_MAPPING.jackpot && this.spinRes.winType == 'Jackpot') {//jackpot
                             this.reels[i].children[startIdx - j].getComponent(KongItem).runJackpot(this.items);
                         }
                     }

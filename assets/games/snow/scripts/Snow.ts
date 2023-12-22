@@ -646,22 +646,22 @@ export class Snow extends Component {
                 for (let i = 0; i < 4; i++) {
                     let line = this.spinRes.lineKeys[i];
                     for (let j = 0; j < line.length; j++) {
-                        if (line[j] == 0) {
+                        if (line[j] == 2) {//scatter
                             counts[0]++;
                             if (counts[0] == 2 && lineId == -1) {
                                 lineId = i;
                             }
-                        } else if (line[j] == 1) {
+                        } else if (line[j] == 8) {//coin or bonus
                             counts[1]++;
                             if (counts[1] == 2 && lineId == -1) {
                                 lineId = i;
                             }
-                        } else if (line[j] == 3) {
+                        } else if (line[j] == 9) {//jackopot
                             counts[2]++;
                             if (counts[2] == 2 && lineId == -1) {
                                 lineId = i;
                             }
-                        } else if (line[j] == 10) {
+                        } else if (line[j] == 10) {//wild
                             counts[3]++;
                             if (counts[3] == 2 && lineId == -1) {
                                 lineId = i;
@@ -984,9 +984,9 @@ export class Snow extends Component {
         let countScatter = 0;
         let countWanted = 0;
         for (let i = 0; i < this.spinRes.lineKeys[idx].length; i++) {
-            if (this.spinRes.lineKeys[idx][i] == 0) {
+            if (this.spinRes.lineKeys[idx][i] == 2) {
                 countScatter++;
-            } else if (this.spinRes.lineKeys[idx][i] == 3) {
+            } else if (this.spinRes.lineKeys[idx][i] == 8) {
                 countWanted++;
             }
         }
@@ -1018,13 +1018,13 @@ export class Snow extends Component {
             for (let i = 0; i <= idx; i++) {
                 let line = this.spinRes.lineKeys[i];
                 for (let j = 0; j < line.length; j++) {
-                    if (line[j] == 0) {
+                    if (line[j] == 2) {//scatter
                         counts[0]++;
-                    } else if (line[j] == 1) {
+                    } else if (line[j] == 8) {//coin - bonus
                         counts[1]++;
-                    } else if (line[j] == 3) {
+                    } else if (line[j] == 9) {//jackpot
                         counts[2]++;
-                    } else if (line[j] == 10) {
+                    } else if (line[j] == 10) {//wild
                         counts[3]++;
                     }
                 }
@@ -1069,15 +1069,15 @@ export class Snow extends Component {
                     const texId = arr[j]
                     const tex = this.icons[texId];
                     this.reels[i].children[startIdx - j].getComponent(SnowItem).setTexture(tex, texId);
-                    if (texId == 0 || texId == 1 || texId == 3 || texId == 10) {
+                    if (texId == 2 || texId == 8 || texId == 9 || texId == 10) {
                         // this.reels[i].children[startIdx - j].getComponent(SnowItem).runSpecialEff();
-                        if (texId == 0 && this.spinRes.freeSpin && this.spinRes.freeSpin.remain && this.spinRes.freeSpin.remain == this.spinRes.freeSpin.count) {//scatter
+                        if (texId == 2 && this.spinRes.freeSpin && this.spinRes.freeSpin.remain && this.spinRes.freeSpin.remain == this.spinRes.freeSpin.count) {//scatter
                             this.reels[i].children[startIdx - j].getComponent(SnowItem).runScatter(this.items);
-                        } else if (texId == 1) {//wild
+                        } else if (texId == 10) {//wild
                             this.reels[i].children[startIdx - j].getComponent(SnowItem).runWild(this.items);
-                        } else if (texId == 3 && this.spinRes.bonusPayout && this.spinRes.bonusPayout.length > 0 && this.spinRes.bonusPayout[0].extendData) {//bonus
+                        } else if (texId == 8 && this.spinRes.bonusPayout && this.spinRes.bonusPayout.length > 0 && this.spinRes.bonusPayout[0].extendData) {//bonus
                             this.reels[i].children[startIdx - j].getComponent(SnowItem).runWanted(this.items);
-                        } else if (texId == 10 && this.spinRes.winType == 'Jackpot') {//jackpot
+                        } else if (texId == 9 && this.spinRes.winType == 'Jackpot') {//jackpot
                             this.reels[i].children[startIdx - j].getComponent(SnowItem).runJackpot(this.items);
                         }
                     }
