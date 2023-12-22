@@ -12,7 +12,7 @@ export class Splash extends Component {
     private percent = 0;
     private isCheckingDone = false;
     start() {
-        //--get product id list
+        //--get product id list for android, ios don't need
         if(sys.os == sys.OS.ANDROID && sys.isNative){
             native.jsbBridgeWrapper.addNativeEventListener("getproductlist",(products: string)=>{
                 console.log(`getproductlist ${products}`);
@@ -52,13 +52,12 @@ export class Splash extends Component {
                 GameMgr.instance.IAB_PRODUCTS = [];
                 native.jsbBridgeWrapper.dispatchEventToNative('getproductlist',str);
             } else {//web
-                // this.signinToServer();
                 this.isCheckingDone = true;
                 if(this.percent>=100){
                     director.loadScene('login');
                 }
             }
-        } else if(sys.os == sys.OS.IOS && sys.isNative){
+        } else if(sys.os == sys.OS.IOS && sys.isNative){//ios don't need to get before purchase
             this.isCheckingDone = true;
         } else {//web
             this.isCheckingDone = true;

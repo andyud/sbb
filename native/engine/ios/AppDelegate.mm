@@ -33,8 +33,11 @@
 #import "platform/ios/AppDelegateBridge.h"
 #import "platform/apple/JsbBridgeWrapper.h"
 #import "service/SDKWrapper.h"
-#import "GoogleSignIn/GoogleSignIn.h"
+//#import "GoogleSignIn/GoogleSignIn.h"
 #include "platform/apple/JsbBridge.h"
+//#import "FBSDKCoreKit/FBSDKCoreKit.h"
+//#import "FBSDKLoginKit/FBSDKLoginManager.h"
+#import "StoreKit/StoreKit.h"
 
 @implementation AppDelegate
 @synthesize window;
@@ -51,6 +54,7 @@
     CGRect bounds = [[UIScreen mainScreen] bounds];
     self.window   = [[UIWindow alloc] initWithFrame:bounds];
     [SDKWrapper shared].window = self.window;//backup
+//    [SDKWrapper shared].loginManager = [[FBSDKLoginManager alloc] init];
 
     // Should create view controller first, cc::Application will use it.
     _viewController                           = [[ViewController alloc] init];
@@ -72,77 +76,89 @@
             [m dispatchEventToScript:@"getdeviceid" arg:identifer];
         } else if([arg isEqualToString:@"getgoogleid"]) {
             NSLog(@"getgoogleid success...");
-            [GIDSignIn.sharedInstance signInWithPresentingViewController: [[SDKWrapper shared].window rootViewController]
-                                                                completion:^(GIDSignInResult * _Nullable signInResult,
-                                                                             NSError * _Nullable error) {
-              if (error) { return; }
-              if (signInResult == nil) { return; }
-  
-              GIDGoogleUser *user = signInResult.user;
-                [m dispatchEventToScript:@"getdeviceid" arg:user.userID];
-//              NSString *emailAddress = user.profile.email;
-//              NSString *name = user.profile.name;
-//              NSString *givenName = user.profile.givenName;
-//              NSString *familyName = user.profile.familyName;
-//              NSURL *profilePic = [user.profile imageURLWithDimension:320];
-            }];
+//            [GIDSignIn.sharedInstance signInWithPresentingViewController: [[SDKWrapper shared].window rootViewController]
+//                                                                completion:^(GIDSignInResult * _Nullable signInResult,
+//                                                                             NSError * _Nullable error) {
+//              if (error) { return; }
+//              if (signInResult == nil) { return; }
+//  
+//              GIDGoogleUser *user = signInResult.user;
+//                [m dispatchEventToScript:@"getdeviceid" arg:user.userID];
+//            }];
+            
+           
+            //--in app purchase -------------------------------------------------------------------------
+            
+            //--end in app purchase----------------------------------------------------------------------
         } else if([arg isEqualToString:@"getfacebookid"]) {
+            NSLog(@"getfacebookid success...");
+//            [[SDKWrapper shared].loginManager logInWithPermissions:@[@"gaming_profile"] fromViewController:[[SDKWrapper shared].window rootViewController] handler:^(FBSDKLoginManagerLoginResult *result, NSError *error) {
+//                    if (error) {
+//                        NSLog(@"Process error");
+//                        [m dispatchEventToScript:@"getfacebookid" arg:@"error"];
+//                    } else {
+//                        NSLog(@"working");
+//                        if ([FBSDKAccessToken currentAccessToken]) {
+//                            NSLog(@"Token is available : %@",[[FBSDKAccessToken currentAccessToken]tokenString]);
+//                            NSMutableDictionary* parameters = [NSMutableDictionary dictionary];
+//                            [parameters setValue:@"id,name,email,first_name,last_name,picture.type(large)" forKey:@"fields"];
+//                            [[[FBSDKGraphRequest alloc] initWithGraphPath:@"me" parameters:parameters]
+//                             startWithCompletion:^(id<FBSDKGraphRequestConnecting> connection, id result, NSError *error)  {
+//                                 if (!error) {
+//                                     NSLog(@"working");
+//                                     NSLog(@"%@",result);
+//                                     [m dispatchEventToScript:@"getfacebookid" arg:[result userID]];
+//                                 }
+//                             }];
+////                            FBSDKGraphRequest *graphRequest = [[FBSDKGraphRequest alloc] initWithGraphPath:_graphPath
+////                                   parameters:arrayParams
+////                                   HTTPMethod:_httpMethod];
+////
+////                              [graphRequest startWithCompletion:^(id<FBSDKGraphRequestConnecting> connection, id result, NSError *error) {
+//                        }
+//                        else {
+//                          [m dispatchEventToScript:@"getfacebookid" arg:@"error"];
+//                            NSLog(@"facebookLoginFailed");
+//                        }
+//                    }
+//                }];
             
         }
     };
+    OnScriptEventListener purchaseproducthandler = ^void(NSString* arg){
+          JsbBridgeWrapper* m = [JsbBridgeWrapper sharedInstance];
+        if([arg length]>0){
+            if([SKPaymentQueue canMakePayments]){
+                NSLog(@"User can make payments");
+                ViewController* vc = [[SDKWrapper shared].window rootViewController];
+                //[vc purchase:@"shop_chips_0.99"];
+                [vc fetchAvailableProducts:arg];
+            }
+            else{
+                NSLog(@"User cannot make payments due to parental controls");
+                [m dispatchEventToScript:@"purchaseres" arg:@"invalid"];
+            }
+        } else {
+            [m dispatchEventToScript:@"purchaseres" arg:@"invalid"];
+        }
+    };
     [m addScriptEventListener:@"javascript_to_java" listener:requestLabelContent];
+    [m addScriptEventListener:@"buyproduct" listener:purchaseproducthandler];
     
+    //--facebook sign-in
+//    [[FBSDKApplicationDelegate sharedInstance] application:application
+//                                 didFinishLaunchingWithOptions:launchOptions];
     
-    //--google sign in
-    [GIDSignIn.sharedInstance restorePreviousSignInWithCompletion:^(GIDGoogleUser * _Nullable user, NSError * _Nullable error) {
-       if (error) {
-         // Show the app's signed-out state.
-           NSLog(@"");
-       } else {
-         // Show the app's signed-in state.
-           NSLog(@"");
-       }
-    }];
-    
-//    static ICallback cb = ^void (NSString* _arg0, NSString* _arg1){
-//        if([_arg0 isEqual:@"getgoogleid"]){
-//            //open Ad
-//
-//        }
-//    };
-//
-//    JsbBridge* m2 = [JsbBridge sharedInstance];
-//    [m2 setCallback:cb];
+    //app center
     return YES;
 }
-//static ICallback callback = ^void (NSString* _arg0, NSString* _arg1){
-//    if([_arg0 isEqual:@"getgoogleid"]){
-//        //open Ad
-//        [GIDSignIn.sharedInstance signInWithPresentingViewController: 
-//                                                            completion:^(GIDSignInResult * _Nullable signInResult,
-//                                                                         NSError * _Nullable error) {
-//          if (error) { return; }
-//          if (signInResult == nil) { return; }
-//
-//          GIDGoogleUser *user = signInResult.user;
-//
-//          NSString *emailAddress = user.profile.email;
-//
-//          NSString *name = user.profile.name;
-//          NSString *givenName = user.profile.givenName;
-//          NSString *familyName = user.profile.familyName;
-//
-//          NSURL *profilePic = [user.profile imageURLWithDimension:320];
-//      }];
-//    }
-//};
 
-- (BOOL)application:(UIApplication *)app
+- (BOOL)application:(UIApplication *)application
             openURL:(NSURL *)url
             options:(NSDictionary<UIApplicationOpenURLOptionsKey,id> *)options {
   BOOL handled;
 
-  handled = [GIDSignIn.sharedInstance handleURL:url];
+//  handled = [GIDSignIn.sharedInstance handleURL:url];
   if (handled) {
     return YES;
   }
@@ -152,12 +168,19 @@
   // If not handled by this app, return NO.
   return NO;
 }
-//- (void)handleGetURLEvent:(NSAppleEventDescriptor *)event
-//           withReplyEvent:(NSAppleEventDescriptor *)replyEvent {
-//      NSString *URLString = [[event paramDescriptorForKeyword:keyDirectObject] stringValue];
-//      NSURL *URL = [NSURL URLWithString:URLString];
-//      [GIDSignIn.sharedInstance handleURL:url];
+
+//- (BOOL)application:(UIApplication *)application openURL:(NSURL *)url
+//  sourceApplication:(NSString *)sourceApplication annotation:(id)annotation {
+//    
+//    BOOL handled = [[FBSDKApplicationDelegate sharedInstance] application:application
+//                                                                  openURL:url
+//                                                        sourceApplication:sourceApplication
+//                                                               annotation:annotation
+//                    ];
+//    // Add any custom logic here.
+//    return handled;
 //}
+
 - (void)applicationWillResignActive:(UIApplication *)application {
     /*
      Sent when the application is about to move from active to inactive state. This can occur for certain types of temporary interruptions (such as an incoming phone call or SMS message) or when the user quits the application and it begins the transition to the background state.

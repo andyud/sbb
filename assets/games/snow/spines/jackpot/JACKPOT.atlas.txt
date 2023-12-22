@@ -1,0 +1,223 @@
+
+JACKPOT.png
+size: 2048,2048
+format: RGBA8888
+filter: Linear,Linear
+repeat: none
+Snowflake/JACKPOT-Anim2_00
+  rotate: true
+  xy: 776, 1626
+  size: 379, 385
+  orig: 386, 390
+  offset: 4, 3
+  index: -1
+Snowflake/JACKPOT-Anim2_01
+  rotate: true
+  xy: 776, 1626
+  size: 379, 385
+  orig: 386, 390
+  offset: 4, 3
+  index: -1
+Snowflake/JACKPOT-Anim2_02
+  rotate: true
+  xy: 776, 1626
+  size: 379, 385
+  orig: 386, 390
+  offset: 4, 3
+  index: -1
+Snowflake/JACKPOT-Anim2_03
+  rotate: true
+  xy: 389, 762
+  size: 380, 385
+  orig: 386, 390
+  offset: 3, 3
+  index: -1
+Snowflake/JACKPOT-Anim2_04
+  rotate: true
+  xy: 776, 482
+  size: 380, 385
+  orig: 386, 390
+  offset: 3, 3
+  index: -1
+Snowflake/JACKPOT-Anim2_05
+  rotate: true
+  xy: 1163, 482
+  size: 380, 385
+  orig: 386, 390
+  offset: 3, 3
+  index: -1
+Snowflake/JACKPOT-Anim2_06
+  rotate: true
+  xy: 1163, 1626
+  size: 379, 385
+  orig: 386, 390
+  offset: 4, 3
+  index: -1
+Snowflake/JACKPOT-Anim2_07
+  rotate: true
+  xy: 1550, 1626
+  size: 379, 385
+  orig: 386, 390
+  offset: 4, 3
+  index: -1
+Snowflake/JACKPOT-Anim2_08
+  rotate: true
+  xy: 2, 1529
+  size: 379, 385
+  orig: 386, 390
+  offset: 4, 3
+  index: -1
+Snowflake/JACKPOT-Anim2_09
+  rotate: true
+  xy: 389, 1525
+  size: 379, 385
+  orig: 386, 390
+  offset: 4, 3
+  index: -1
+Snowflake/JACKPOT-Anim2_10
+  rotate: true
+  xy: 776, 1245
+  size: 379, 385
+  orig: 386, 390
+  offset: 4, 3
+  index: -1
+Snowflake/JACKPOT-Anim2_11
+  rotate: true
+  xy: 1163, 1245
+  size: 379, 385
+  orig: 386, 390
+  offset: 4, 3
+  index: -1
+Snowflake/JACKPOT-Anim2_12
+  rotate: true
+  xy: 1550, 1245
+  size: 379, 385
+  orig: 386, 390
+  offset: 4, 3
+  index: -1
+Snowflake/JACKPOT-Anim2_13
+  rotate: true
+  xy: 776, 864
+  size: 379, 386
+  orig: 386, 390
+  offset: 4, 2
+  index: -1
+Snowflake/JACKPOT-Anim2_14
+  rotate: true
+  xy: 1164, 864
+  size: 379, 386
+  orig: 386, 390
+  offset: 4, 2
+  index: -1
+Snowflake/JACKPOT-Anim2_15
+  rotate: true
+  xy: 1552, 864
+  size: 379, 386
+  orig: 386, 390
+  offset: 4, 2
+  index: -1
+Snowflake/JACKPOT-Anim2_16
+  rotate: true
+  xy: 2, 1148
+  size: 379, 385
+  orig: 386, 390
+  offset: 4, 3
+  index: -1
+Snowflake/JACKPOT-Anim2_17
+  rotate: true
+  xy: 389, 1144
+  size: 379, 385
+  orig: 386, 390
+  offset: 4, 3
+  index: -1
+Snowflake/JACKPOT-Anim2_18
+  rotate: true
+  xy: 2, 767
+  size: 379, 385
+  orig: 386, 390
+  offset: 4, 3
+  index: -1
+Snowflake/JACKPOT-Anim2_19
+  rotate: true
+  xy: 1550, 482
+  size: 380, 385
+  orig: 386, 390
+  offset: 4, 3
+  index: -1
+a
+  rotate: false
+  xy: 547, 1906
+  size: 115, 99
+  orig: 115, 101
+  offset: 0, 1
+  index: -1
+background
+  rotate: false
+  xy: 880, 3
+  size: 511, 477
+  orig: 561, 479
+  offset: 11, 1
+  index: -1
+c
+  rotate: true
+  xy: 241, 1919
+  size: 86, 101
+  orig: 88, 102
+  offset: 1, 1
+  index: -1
+effectline
+  rotate: false
+  xy: 388, 68
+  size: 490, 412
+  orig: 491, 412
+  offset: 1, 0
+  index: -1
+frame
+  rotate: false
+  xy: 1393, 2
+  size: 555, 478
+  orig: 555, 478
+  offset: 0, 0
+  index: -1
+j
+  rotate: true
+  xy: 2, 1923
+  size: 82, 137
+  orig: 83, 139
+  offset: 1, 1
+  index: -1
+k
+  rotate: false
+  xy: 664, 1906
+  size: 110, 99
+  orig: 111, 100
+  offset: 1, 1
+  index: -1
+o
+  rotate: true
+  xy: 444, 1908
+  size: 97, 101
+  orig: 99, 103
+  offset: 1, 1
+  index: -1
+p
+  rotate: true
+  xy: 141, 1920
+  size: 85, 98
+  orig: 87, 100
+  offset: 1, 1
+  index: -1
+snowflake
+  rotate: true
+  xy: 2, 385
+  size: 380, 384
+  orig: 386, 390
+  offset: 3, 3
+  index: -1
+t
+  rotate: true
+  xy: 344, 1910
+  size: 95, 98
+  orig: 96, 100
+  offset: 0, 1
+  index: -1

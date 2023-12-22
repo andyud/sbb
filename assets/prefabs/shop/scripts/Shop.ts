@@ -1,6 +1,7 @@
-import { _decorator, Component, Node, Label, Button, sys, native} from 'cc';
+import { _decorator, Component, Node, Label, Button, sys, native, Prefab, instantiate, UITransform} from 'cc';
 import GameMgr from '../../../core/GameMgr';
 import { ShopItemLong } from './ShopItemLong';
+import { Notice } from '../../popups/scripts/Notice';
 const { ccclass, property } = _decorator;
 
 @ccclass('Shop')
@@ -11,7 +12,10 @@ export class Shop extends Component {
     purchaseResult: Node | null = null;
     @property([Node])
     arrItems:Node[] = [];
-    
+    @property({ type: Prefab })
+    pfNotice: Prefab | null = null;
+    private notice: Node = null;
+    public selectedItem = {id:'1',name:'3,000,000 Chips',type:'',price:'',discount:0}
     start() {
         this.purchaseResult.active = false;
         for(let i=0;i<this.arrItems.length;i++){
@@ -23,15 +27,26 @@ export class Shop extends Component {
                 this.arrItems[i].active = false;
             }
         }
-        if(sys.os == sys.OS.ANDROID && sys.isNative){
+        if(sys.isNative){
             native.jsbBridgeWrapper.addNativeEventListener("purchaseres",(res: string)=>{
                 console.log(`purchaseres: `+ res);
-                if(res=='failed'){
-
-                } else {
+                if(res=='error'){
+                    this.notice.getComponent(Notice).show({ title: 'Notice', content: "Invalid product!" }, () => {  });
+                } else if(res=='cancel'){
+                    this.notice.getComponent(Notice).show({ title: 'Notice', content: "Purchase has canceled!" }, () => {  });
+                } else if(res=='invalid'){
+                    this.notice.getComponent(Notice).show({ title: 'Notice', content: "Invalid payment!" }, () => {  });
+                }  else {
                     this.purchaseResult.active = true;
+                    this.lbPurchaseResult.string = this.selectedItem.name;
                 }
             });
+        }
+        if (this.notice == null) {
+            this.notice = instantiate(this.pfNotice);
+            this.node.addChild(this.notice);
+            this.notice.getComponent(UITransform).setContentSize(this.node.getComponent(UITransform).width, this.node.getComponent(UITransform).height);
+            this.notice.getComponent(Notice).hide();
         }
     }
     onCloseShop(){
@@ -41,9 +56,14 @@ export class Shop extends Component {
         this.purchaseResult.active = false;
     }
     onClick(button: Button) {
-        if(sys.os == sys.OS.ANDROID && sys.isNative){
-            let itemInfo = button.node.getComponent(ShopItemLong).info;
+        let itemInfo = button.node.getComponent(ShopItemLong).info;
+        this.selectedItem = itemInfo;
+        if(sys.isNative){
             native.jsbBridgeWrapper.dispatchEventToNative('buyproduct',itemInfo.id);
+        } else {
+            // this.purchaseResult.active = true;
+            // this.lbPurchaseResult.string = this.selectedItem.name;
+            this.notice.getComponent(Notice).show({ title: 'Notice', content: "Invalid payment!" }, () => {  });
         }
     }
 }

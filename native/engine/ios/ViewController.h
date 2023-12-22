@@ -29,7 +29,25 @@ you.
 #pragma once
 
 #import <UIKit/UIKit.h>
+#import <StoreKit/StoreKit.h>
 
-@interface ViewController : UIViewController
+@interface ViewController : UIViewController<SKProductsRequestDelegate,SKPaymentTransactionObserver>{
+    SKProductsRequest *productsRequest;
+    NSSet *productIdentifiers;
+    NSMutableDictionary *productsPrice;
+    NSString *currentProductID;
+    NSMutableArray *productsPurchased;
+}
 
+typedef enum {
+    PURCHASE_STATUS_COMPLETED = 1,
+    PURCHASE_STATUS_RESTORED,
+    PURCHASE_STATUS_FAILED,
+    PURCHASE_STATUS_CANCELLED
+}PURCHASE_STATUS;
+@property (nonatomic, strong) NSArray *validProducts;
+- (void)fetchAvailableProducts:(NSString *)productId; //1.check product is available -> if failed dispatch event to client, elese thi purchase tiep
+- (BOOL)canMakePurchases;
+- (void)purchaseMyProduct:(SKProduct*)product;//2
+- (void)purchase:(NSString *)productId;
 @end

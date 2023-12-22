@@ -30,6 +30,7 @@ you.
 
 #import "platform/ios/AppDelegateBridge.h"
 #import <UIKit/UIKit.h>
+#import <StoreKit/StoreKit.h>
 
 @class ViewController;
 

@@ -28,6 +28,7 @@ you.
 
 #import <Foundation/Foundation.h>
 #import <UIKit/UIKit.h>
+//#import <FBSDKLoginKit/FBSDKLoginManager.h>
 NS_ASSUME_NONNULL_BEGIN
 
 @protocol SDKDelegate <NSObject>
@@ -47,6 +48,7 @@ NS_ASSUME_NONNULL_BEGIN
 @interface SDKWrapper : NSObject
 @property(nonatomic, strong) NSString *name;
 @property(nonatomic, strong) UIWindow *window;
+//@property(nonatomic, strong) FBSDKLoginManager *loginManager;
 + (instancetype)shared;
 - (void)application:(UIApplication *)application
     didFinishLaunchingWithOptions:(NSDictionary *)launchOptions;

@@ -1172,7 +1172,7 @@
     "propertyPath": [
       "_name"
     ],
-    "value": "shop_item_long"
+    "value": "shop_item0"
   },
   {
     "__type__": "cc.TargetInfo",
@@ -1284,7 +1284,7 @@
     "propertyPath": [
       "_name"
     ],
-    "value": "shop_item_long-001"
+    "value": "shop_item1"
   },
   {
     "__type__": "cc.TargetInfo",
@@ -1396,7 +1396,7 @@
     "propertyPath": [
       "_name"
     ],
-    "value": "shop_item_short"
+    "value": "shop_item2"
   },
   {
     "__type__": "cc.TargetInfo",
@@ -1508,7 +1508,7 @@
     "propertyPath": [
       "_name"
     ],
-    "value": "shop_item_short-001"
+    "value": "shop_item3"
   },
   {
     "__type__": "cc.TargetInfo",
@@ -1590,7 +1590,7 @@
   },
   {
     "__type__": "cc.PrefabInstance",
-    "fileId": "a7sxXhhrhBVLIurLohS2Wd",
+    "fileId": "9fYYVHrpFAwLVuo62FGL/v",
     "prefabRootNode": {
       "__id__": 1
     },
@@ -1620,7 +1620,7 @@
     "propertyPath": [
       "_name"
     ],
-    "value": "shop_item_short-002"
+    "value": "shop_item4"
   },
   {
     "__type__": "cc.TargetInfo",
@@ -1639,7 +1639,7 @@
     "value": {
       "__type__": "cc.Vec3",
       "x": 463.094,
-      "y": -470.954,
+      "y": -160.51,
       "z": 0
     }
   },
@@ -1702,7 +1702,7 @@
   },
   {
     "__type__": "cc.PrefabInstance",
-    "fileId": "9fYYVHrpFAwLVuo62FGL/v",
+    "fileId": "a7sxXhhrhBVLIurLohS2Wd",
     "prefabRootNode": {
       "__id__": 1
     },
@@ -1732,7 +1732,7 @@
     "propertyPath": [
       "_name"
     ],
-    "value": "shop_item_short-003"
+    "value": "shop_item5"
   },
   {
     "__type__": "cc.TargetInfo",
@@ -1751,7 +1751,7 @@
     "value": {
       "__type__": "cc.Vec3",
       "x": 463.094,
-      "y": -160.51,
+      "y": -470.954,
       "z": 0
     }
   },
@@ -3588,6 +3588,10 @@
         "__id__": 86
       }
     ],
+    "pfNotice": {
+      "__uuid__": "1e81a8f2-e73b-4b93-ac96-5aa507e8c522",
+      "__expectedType__": "cc.Prefab"
+    },
     "_id": ""
   },
   {
