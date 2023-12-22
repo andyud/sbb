@@ -33,10 +33,10 @@
 #import "platform/ios/AppDelegateBridge.h"
 #import "platform/apple/JsbBridgeWrapper.h"
 #import "service/SDKWrapper.h"
-//#import "GoogleSignIn/GoogleSignIn.h"
+#import "GoogleSignIn/GoogleSignIn.h"
 #include "platform/apple/JsbBridge.h"
-//#import "FBSDKCoreKit/FBSDKCoreKit.h"
-//#import "FBSDKLoginKit/FBSDKLoginManager.h"
+#import "FBSDKCoreKit/FBSDKCoreKit.h"
+#import "FBSDKLoginKit/FBSDKLoginManager.h"
 #import "StoreKit/StoreKit.h"
 
 @implementation AppDelegate
@@ -54,7 +54,7 @@
     CGRect bounds = [[UIScreen mainScreen] bounds];
     self.window   = [[UIWindow alloc] initWithFrame:bounds];
     [SDKWrapper shared].window = self.window;//backup
-//    [SDKWrapper shared].loginManager = [[FBSDKLoginManager alloc] init];
+    [SDKWrapper shared].loginManager = [[FBSDKLoginManager alloc] init];
 
     // Should create view controller first, cc::Application will use it.
     _viewController                           = [[ViewController alloc] init];
@@ -76,15 +76,15 @@
             [m dispatchEventToScript:@"getdeviceid" arg:identifer];
         } else if([arg isEqualToString:@"getgoogleid"]) {
             NSLog(@"getgoogleid success...");
-//            [GIDSignIn.sharedInstance signInWithPresentingViewController: [[SDKWrapper shared].window rootViewController]
-//                                                                completion:^(GIDSignInResult * _Nullable signInResult,
-//                                                                             NSError * _Nullable error) {
-//              if (error) { return; }
-//              if (signInResult == nil) { return; }
-//  
-//              GIDGoogleUser *user = signInResult.user;
-//                [m dispatchEventToScript:@"getdeviceid" arg:user.userID];
-//            }];
+            [GIDSignIn.sharedInstance signInWithPresentingViewController: [[SDKWrapper shared].window rootViewController]
+                                                                completion:^(GIDSignInResult * _Nullable signInResult,
+                                                                             NSError * _Nullable error) {
+              if (error) { return; }
+              if (signInResult == nil) { return; }
+  
+              GIDGoogleUser *user = signInResult.user;
+                [m dispatchEventToScript:@"getgoogleid" arg:user.userID];
+            }];
             
            
             //--in app purchase -------------------------------------------------------------------------
@@ -92,36 +92,36 @@
             //--end in app purchase----------------------------------------------------------------------
         } else if([arg isEqualToString:@"getfacebookid"]) {
             NSLog(@"getfacebookid success...");
-//            [[SDKWrapper shared].loginManager logInWithPermissions:@[@"gaming_profile"] fromViewController:[[SDKWrapper shared].window rootViewController] handler:^(FBSDKLoginManagerLoginResult *result, NSError *error) {
-//                    if (error) {
-//                        NSLog(@"Process error");
-//                        [m dispatchEventToScript:@"getfacebookid" arg:@"error"];
-//                    } else {
-//                        NSLog(@"working");
-//                        if ([FBSDKAccessToken currentAccessToken]) {
-//                            NSLog(@"Token is available : %@",[[FBSDKAccessToken currentAccessToken]tokenString]);
-//                            NSMutableDictionary* parameters = [NSMutableDictionary dictionary];
-//                            [parameters setValue:@"id,name,email,first_name,last_name,picture.type(large)" forKey:@"fields"];
-//                            [[[FBSDKGraphRequest alloc] initWithGraphPath:@"me" parameters:parameters]
-//                             startWithCompletion:^(id<FBSDKGraphRequestConnecting> connection, id result, NSError *error)  {
-//                                 if (!error) {
-//                                     NSLog(@"working");
-//                                     NSLog(@"%@",result);
-//                                     [m dispatchEventToScript:@"getfacebookid" arg:[result userID]];
-//                                 }
-//                             }];
-////                            FBSDKGraphRequest *graphRequest = [[FBSDKGraphRequest alloc] initWithGraphPath:_graphPath
-////                                   parameters:arrayParams
-////                                   HTTPMethod:_httpMethod];
-////
-////                              [graphRequest startWithCompletion:^(id<FBSDKGraphRequestConnecting> connection, id result, NSError *error) {
-//                        }
-//                        else {
-//                          [m dispatchEventToScript:@"getfacebookid" arg:@"error"];
-//                            NSLog(@"facebookLoginFailed");
-//                        }
-//                    }
-//                }];
+            [[SDKWrapper shared].loginManager logInWithPermissions:@[@"gaming_profile"] fromViewController:[[SDKWrapper shared].window rootViewController] handler:^(FBSDKLoginManagerLoginResult *result, NSError *error) {
+                    if (error) {
+                        NSLog(@"Process error");
+                        [m dispatchEventToScript:@"getfacebookid" arg:@"error"];
+                    } else {
+                        NSLog(@"working");
+                        if ([FBSDKAccessToken currentAccessToken]) {
+                            NSLog(@"Token is available : %@",[[FBSDKAccessToken currentAccessToken]tokenString]);
+                            NSMutableDictionary* parameters = [NSMutableDictionary dictionary];
+                            [parameters setValue:@"id,name,email,first_name,last_name,picture.type(large)" forKey:@"fields"];
+                            [[[FBSDKGraphRequest alloc] initWithGraphPath:@"me" parameters:parameters]
+                             startWithCompletion:^(id<FBSDKGraphRequestConnecting> connection, id result, NSError *error)  {
+                                 if (!error) {
+                                     NSLog(@"working");
+                                     NSLog(@"%@",result);
+                                     [m dispatchEventToScript:@"getfacebookid" arg:[result userID]];
+                                 }
+                             }];
+//                            FBSDKGraphRequest *graphRequest = [[FBSDKGraphRequest alloc] initWithGraphPath:_graphPath
+//                                   parameters:arrayParams
+//                                   HTTPMethod:_httpMethod];
+//
+//                              [graphRequest startWithCompletion:^(id<FBSDKGraphRequestConnecting> connection, id result, NSError *error) {
+                        }
+                        else {
+                          [m dispatchEventToScript:@"getfacebookid" arg:@"error"];
+                            NSLog(@"facebookLoginFailed");
+                        }
+                    }
+                }];
             
         }
     };
@@ -146,8 +146,8 @@
     [m addScriptEventListener:@"buyproduct" listener:purchaseproducthandler];
     
     //--facebook sign-in
-//    [[FBSDKApplicationDelegate sharedInstance] application:application
-//                                 didFinishLaunchingWithOptions:launchOptions];
+    [[FBSDKApplicationDelegate sharedInstance] application:application
+                                 didFinishLaunchingWithOptions:launchOptions];
     
     //app center
     return YES;
@@ -158,7 +158,7 @@
             options:(NSDictionary<UIApplicationOpenURLOptionsKey,id> *)options {
   BOOL handled;
 
-//  handled = [GIDSignIn.sharedInstance handleURL:url];
+  handled = [GIDSignIn.sharedInstance handleURL:url];
   if (handled) {
     return YES;
   }
@@ -169,17 +169,17 @@
   return NO;
 }
 
-//- (BOOL)application:(UIApplication *)application openURL:(NSURL *)url
-//  sourceApplication:(NSString *)sourceApplication annotation:(id)annotation {
-//    
-//    BOOL handled = [[FBSDKApplicationDelegate sharedInstance] application:application
-//                                                                  openURL:url
-//                                                        sourceApplication:sourceApplication
-//                                                               annotation:annotation
-//                    ];
-//    // Add any custom logic here.
-//    return handled;
-//}
+- (BOOL)application:(UIApplication *)application openURL:(NSURL *)url
+  sourceApplication:(NSString *)sourceApplication annotation:(id)annotation {
+    
+    BOOL handled = [[FBSDKApplicationDelegate sharedInstance] application:application
+                                                                  openURL:url
+                                                        sourceApplication:sourceApplication
+                                                               annotation:annotation
+                    ];
+    // Add any custom logic here.
+    return handled;
+}
 
 - (void)applicationWillResignActive:(UIApplication *)application {
     /*
