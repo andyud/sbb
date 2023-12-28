@@ -1,16 +1,23 @@
-import { _decorator, Component, Node, Sprite, SpriteFrame } from 'cc';
+import { _decorator, Animation, Component, easing, Node, Sprite, SpriteFrame, Tween, tween, UIOpacity, UITransform, Vec3 } from 'cc';
+import { GameEvent } from '../../../core/GameEvent';
 const { ccclass, property } = _decorator;
 
 @ccclass('FruitItem')
 export class FruitItem extends Component {
-    @property({type:Sprite})
-    spItem:Sprite | null = null;
-    @property({type:Sprite})
-    spHL:Sprite | null = null;
+    @property({type:Node})
+    sp:Node | null = null;
+    @property({type:Node})
+    hl:Node | null = null;
+    @property({type:Node})
+    bomb:Node | null = null;
     @property({type:Node})
     spHorizontal: Node | null = null;
     @property({type:Node})
     spVertical: Node | null = null;
+    speed = 0.3;
+    //--control moving & avoid move douplicate
+    moveCount = 0;
+    isMoving = false;
     info = {
         row:0,
         col:0,
@@ -18,17 +25,59 @@ export class FruitItem extends Component {
         type:0,
     }
     start() {
-        this.spHL.node.active = false;
+        this.hl.active = false;
     }
-    init(tex:SpriteFrame,texHL:SpriteFrame,texBomb:SpriteFrame,info:any){
-        this.spItem.spriteFrame = tex;
-        this.spHL.spriteFrame = texHL;
+    init(info:any){
         this.info = info;
-        // this.spHL.spriteFrame = texHL;
     }
     setHL(isActive:boolean){
-        this.spItem.node.active = !isActive;
-        this.spHL.node.active = isActive;
+        this.sp.active = !isActive;
+        this.hl.active = isActive;
+    }
+    setScaleAnim(isActive:boolean){
+        if(isActive){
+            tween(this.node)
+            .repeatForever(
+                tween(this.node)
+                .to(0.5,{scale:new Vec3(1.1,0.8,1.1)})//,{easing:"quadIn"})
+                .to(0.2,{scale:new Vec3(1,1,1)})//,{easing:"quadOut"})
+            )
+            .start();
+        } else {
+            Tween.stopAllByTarget(this.node.getComponent(UIOpacity));
+            this.node.setScale(new Vec3(1,1,1));
+        }
+    }
+    playDestroy(){
+        this.sp.active = false;
+        this.hl.active = true;
+        this.bomb.active = false;
+        this.node.getComponent(Animation).play('destroy');
+    }
+    destroyDone(){
+        this.node.active = false;
+        GameEvent.DispatchEvent("FRUIT_DESTROY_DONE",this.info);
+        this.node.removeFromParent();
+    }
+    moveDown(){
+        if(this.moveCount>0 && this.isMoving==false){
+            this.isMoving = true;
+            tween(this.node)
+            .to(this.speed,{position:new Vec3(this.node.position.x,this.node.position.y-this.node.getComponent(UITransform).height)})
+            .call(()=>{
+                this.isMoving = false;
+                this.moveCount--;
+                this.moveDown();
+                this.info.row--;
+                this.info.idx = this.info.row*8 + this.info.col;
+                GameEvent.DispatchEvent("FRUIT_CHECK_MOVE_DONE",this.info);
+            })
+            .start();
+        }
+    }
+    setMove(){
+        this.moveCount++;
+        this.moveDown();
     }
     // update(deltaTime: number) {
         

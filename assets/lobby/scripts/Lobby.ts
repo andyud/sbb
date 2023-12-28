@@ -13,6 +13,8 @@ export class Lobby extends Component {
     btnShop:Node | null = null;
     @property({type:Label})
     lbNickName:Label | null = null;
+    @property({type:Node})
+    btnLuckyWheel:Node | null = null;
 
     @property({type:Label})
     lbBalance:Label | null = null;
@@ -53,7 +55,7 @@ export class Lobby extends Component {
             this.shop.active = false;
         }
         this.btnShop.on(Button.EventType.CLICK,this.onClick,this);
-
+        this.btnLuckyWheel.on(Button.EventType.CLICK,this.onClick,this);
         //--get jackpot pool
         
     }
@@ -79,6 +81,12 @@ export class Lobby extends Component {
         switch (button.node.name) {
             case 'btnShop':
                 this.shop.active = true;
+                break;
+            case 'btnLuckyWheel':
+                AudioMgr.inst.bgm.stop();
+                AudioMgr.inst.bgm.clip = null;
+                console.log('touch>>>>');
+                director.loadScene('fruit');
                 break;
         }
     }
