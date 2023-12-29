@@ -45,8 +45,10 @@ export class Fruit extends Component {
     private boardY: number = 0;
     readonly ITEM_PER_ROW = 8;
     readonly ITEM_PER_COL = 8;
+    readonly ITEM_SIZE = 100;
     //--
     arrSelectedItems = [];//selected item have order,
+    iCountDestroy= 0;
     //--define
     ItemsTypes = {
         NONE: 0,
@@ -58,8 +60,8 @@ export class Fruit extends Component {
         BOMB: 6
     }
     MaxTrix = [
-        [0, 1, 2, 3, 4, 5, 6, 7], //idx = col+row*8 
-        [8, 9, 10, 11, 12, 13, 14, 15],
+        [0,   1,  2,  3,  4,  5,  6, 7], //idx = col+row*8 
+        [8,   9, 10, 11, 12, 13, 14, 15],
         [16, 17, 18, 19, 20, 21, 22, 23],
         [24, 25, 26, 27, 28, 29, 30, 31],
         [32, 33, 34, 35, 36, 37, 38, 39],
@@ -69,7 +71,7 @@ export class Fruit extends Component {
         //col0, col1, col2,...........
     ];
     arrItems = [];//store items
-    arrSpeed = [];
+    arrCorrectRow = [];
     isEnableTouch: boolean = true;
     isBackPressed: boolean = false;
     iMovesCount: number = 1000;
@@ -84,6 +86,7 @@ export class Fruit extends Component {
             for (let i = 0; i < this.arrItems.length; i++) {
                 this.arrItems[i].getComponent(FruitItem).setScaleAnim(false);
             }
+            this.resetSpeed();
         }, this);
         this.board.on(Node.EventType.TOUCH_MOVE, (event: EventTouch) => {
             if (this.isEnableTouch == false) return;
@@ -159,20 +162,33 @@ export class Fruit extends Component {
             //--add 1 item to top
             let texId = GameMgr.instance.getRandomInt(0, this.pfItems.length - 3);
             let newItem = instantiate(this.pfItems[texId]);
-            newItem.getComponent(FruitItem).init({ row: this.ITEM_PER_ROW, col: info.col, idx: -1, type: texId });
+            newItem.getComponent(FruitItem).init({ row: this.ITEM_PER_ROW + this.arrCorrectRow[info.col], col: info.col, idx: -1, type: texId });
             //--check row col
-            let x = newItem.getComponent(FruitItem).info.col * 100;
-            let y = newItem.getComponent(FruitItem).info.row * 100;
+            let x = newItem.getComponent(FruitItem).info.col * this.ITEM_SIZE;
+            let y = newItem.getComponent(FruitItem).info.row * this.ITEM_SIZE;
+            newItem.getComponent(FruitItem).moveCount = this.arrCorrectRow[info.col];
+            
             newItem.setPosition(x - w / 2 + 50, y - h / 2 + 50);
             this.board.addChild(newItem);
+            this.arrCorrectRow[info.col]++;
+
             for (let i = 0; i < this.board.children.length; i++) {
                 let item = this.board.children[i];
                 let info2 = item.getComponent(FruitItem).info;
                 if (info2.col == info.col && info2.row > info.row) {
-                    item.getComponent(FruitItem).setMove();
-                    // console.log(`item: ${info2.row},${info2.col}`)
+                    item.getComponent(FruitItem).moveCount++;
                 }
             }
+            this.iCountDestroy++;
+            if(this.iCountDestroy==this.arrSelectedItems.length){
+                //move
+                for (let i = 0; i < this.board.children.length; i++) {
+                    this.board.children[i].getComponent(FruitItem).setMove();
+                    console.log(`# total move: ${this.board.children[i].getComponent(FruitItem).moveCount}`);
+                }
+            }
+            //--check can move
+
         });
         GameEvent.AddEventListener("FRUIT_CHECK_MOVE_DONE", (info: any) => {
             //--update info for row
@@ -215,8 +231,12 @@ export class Fruit extends Component {
             }
         })
 
-        //--
+        //--buttons
         this.btnBack.on(Button.EventType.CLICK, this.onButtonTouch, this);
+
+        //--sound
+        AudioMgr.inst.setAudioSouce('main',this.arrAudioClips[0]);
+        AudioMgr.inst.bgm.play();
     }
     initTables() {
         console.log(">>>initTables");
@@ -232,8 +252,8 @@ export class Fruit extends Component {
             item.getComponent(FruitItem).init({ row: row, col: col, idx: i, type: texId });
 
             //--check row col
-            let x = col * 100;
-            let y = row * 100;
+            let x = col * this.ITEM_SIZE;
+            let y = row * this.ITEM_SIZE;
             item.setPosition(x - w / 2 + 50, y - h / 2 + 50);
             this.arrItems.push(item);
             this.board.addChild(item);
@@ -245,10 +265,10 @@ export class Fruit extends Component {
             // console.log(`>>>id:${i}, x:${item.getWorldPosition().x},y:${item.getWorldPosition().y}`);
         }
     }
-    initSpeed() {
-        this.arrSpeed = [];
+    resetSpeed() {
+        this.arrCorrectRow = [];
         for (let i = 0; i < this.ITEM_PER_ROW; i++) {
-            this.arrSpeed.push(0);
+            this.arrCorrectRow.push(0);
         }
     }
     getAvailabelCell(pos: Vec2) {//if cell ok -> add to list
@@ -363,6 +383,7 @@ export class Fruit extends Component {
             this.arrItems[this.arrSelectedItems[i]].getComponent(FruitItem).setHL(false);
         }
         this.arrSelectedItems = [];
+        this.iCountDestroy = 0;
     }
     //input 1 path, return new path
     // findNextNode(path:number):newpath{

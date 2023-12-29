@@ -278,11 +278,11 @@
     },
     "arrAudioClips": [
       {
-        "__uuid__": "b8781238-2b07-443c-98f5-db31107386d4",
+        "__uuid__": "94894e28-c6aa-4b18-a880-98e9ba42053a",
         "__expectedType__": "cc.AudioClip"
       },
       {
-        "__uuid__": "3cb3a753-eb39-404e-9f50-f34139859401",
+        "__uuid__": "b8781238-2b07-443c-98f5-db31107386d4",
         "__expectedType__": "cc.AudioClip"
       },
       {
@@ -12426,7 +12426,7 @@
     "_priority": 0,
     "_fov": 45,
     "_fovAxis": 0,
-    "_orthoHeight": 540,
+    "_orthoHeight": 572.7117031398668,
     "_near": 0,
     "_far": 1000,
     "_color": {

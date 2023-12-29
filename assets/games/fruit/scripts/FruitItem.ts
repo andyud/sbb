@@ -61,6 +61,7 @@ export class FruitItem extends Component {
     }
     moveDown(){
         if(this.moveCount>0 && this.isMoving==false){
+            console.log(`>>> item: ${this.info.row}:${this.info.col}-${this.moveCount}`)
             this.isMoving = true;
             tween(this.node)
             .to(this.speed,{position:new Vec3(this.node.position.x,this.node.position.y-this.node.getComponent(UITransform).height)})
@@ -70,13 +71,16 @@ export class FruitItem extends Component {
                 this.moveDown();
                 this.info.row--;
                 this.info.idx = this.info.row*8 + this.info.col;
+                // if(this.moveCount==0){
+                //     console.log(`type: ${this.info.type}, row: ${this.info.row}, col: ${this.info.col}, idx: ${this.info.idx}`)
+                // }
+                
                 GameEvent.DispatchEvent("FRUIT_CHECK_MOVE_DONE",this.info);
             })
             .start();
         }
     }
     setMove(){
-        this.moveCount++;
         this.moveDown();
     }
     // update(deltaTime: number) {
