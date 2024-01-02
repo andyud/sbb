@@ -3,6 +3,7 @@ import GameMgr from '../../../core/GameMgr';
 import { FruitItem } from './FruitItem';
 import { GameEvent } from '../../../core/GameEvent';
 import { AudioMgr } from '../../../core/AudioMgr';
+import { FruitTutorial } from './FruitTutorial';
 const { ccclass, property } = _decorator;
 
 @ccclass('Fruit')
@@ -13,6 +14,8 @@ export class Fruit extends Component {
     pfItems: Prefab[] = [];
     @property({ type: Prefab })
     pfItemTop: Prefab | null = null;
+    @property({type:Node})
+    tutorial: Node | null = null;
     @property({ type: Label })
     lbMoves: Label | null = null;
     @property({ type: Label })
@@ -60,7 +63,7 @@ export class Fruit extends Component {
         BOMB: 6
     }
     MaxTrix = [
-        [0,   1,  2,  3,  4,  5,  6, 7], //idx = col+row*8 
+        [0,   1,  2,  3,  4,  5,  6,  7], //idx = col+row*8 
         [8,   9, 10, 11, 12, 13, 14, 15],
         [16, 17, 18, 19, 20, 21, 22, 23],
         [24, 25, 26, 27, 28, 29, 30, 31],
@@ -78,6 +81,11 @@ export class Fruit extends Component {
     start() {
         this.lbMoves.string = `${this.iMovesCount}`;
         this.initTables();
+        this.tutorial.on(Node.EventType.TOUCH_END, (event: EventTouch) => {
+            AudioMgr.inst.playOneShot(this.arrAudioClips[11]);
+            this.tutorial.getComponent(FruitTutorial).isDone = true;
+            this.tutorial.active = false;
+        });
         this.board.on(Node.EventType.TOUCH_START, (event: EventTouch) => {
             if (this.isEnableTouch == false) return;
             this.clearSelectedItem();
@@ -87,6 +95,7 @@ export class Fruit extends Component {
                 this.arrItems[i].getComponent(FruitItem).setScaleAnim(false);
             }
             this.resetSpeed();
+            AudioMgr.inst.bgm.volume = 0.5;
         }, this);
         this.board.on(Node.EventType.TOUCH_MOVE, (event: EventTouch) => {
             if (this.isEnableTouch == false) return;
@@ -130,17 +139,23 @@ export class Fruit extends Component {
                         }
                     }
                     itemInfo.playDestroy();
+                    let timeout = setTimeout(()=>{
+                        clearTimeout(timeout);
+                        AudioMgr.inst.playOneShot(this.arrAudioClips[12+i%4]);
+                    },i*50)
                 }
                 this.iMovesCount--;
                 this.lbMoves.string = `${this.iMovesCount}`;
             } else {
                 this.clearSelectedItem();
             }
+            AudioMgr.inst.bgm.volume = 1;
         }, this);
         this.board.on(Node.EventType.TOUCH_CANCEL, (event: EventTouch) => {
             if (this.isEnableTouch == false) return;
             this.graphics.clear();
             this.clearSelectedItem();
+            AudioMgr.inst.bgm.volume = 1;
         }, this);
 
         //--init size
@@ -254,7 +269,7 @@ export class Fruit extends Component {
             //--check row col
             let x = col * this.ITEM_SIZE;
             let y = row * this.ITEM_SIZE;
-            item.setPosition(x - w / 2 + 50, y - h / 2 + 50);
+            item.setPosition(x - w / 2 +  this.ITEM_SIZE/2 , y - h / 2 +  this.ITEM_SIZE/2);
             this.arrItems.push(item);
             this.board.addChild(item);
             col++;
@@ -277,11 +292,10 @@ export class Fruit extends Component {
         for (let i = 0; i < this.arrItems.length; i++) {
             let item = this.arrItems[i];
             let itemPos = item.getWorldPosition();
-            let itemSize = item.getComponent(UITransform).contentSize;
-            let left = itemPos.x - itemSize.width / 2;
-            let right = itemPos.x + itemSize.width / 2;
-            let top = itemPos.y + itemSize.height / 2;
-            let bottom = itemPos.y - itemSize.height / 2;
+            let left = itemPos.x - this.ITEM_SIZE / 2;
+            let right = itemPos.x + this.ITEM_SIZE / 2;
+            let top = itemPos.y + this.ITEM_SIZE / 2;
+            let bottom = itemPos.y - this.ITEM_SIZE / 2;
             if (pos.x > left && pos.x < right && pos.y > bottom && pos.y < top) {
                 selectedCell = i;
                 break;
@@ -289,7 +303,7 @@ export class Fruit extends Component {
         }
         if (selectedCell == -1) return;
 
-        //1. check cell exists on list or not
+        //2. check same type
         let itemType = -1;
         if (this.arrSelectedItems.length > 0) {
             itemType = this.arrItems[this.arrSelectedItems[0]].getComponent(FruitItem).info.type;
@@ -297,6 +311,7 @@ export class Fruit extends Component {
                 return;//difference type;
             }
         }
+        //cell exists on list or not
         for (let i = 0; i < this.arrSelectedItems.length; i++) {
             if (this.arrSelectedItems[i] == selectedCell) {
                 return;
@@ -321,6 +336,16 @@ export class Fruit extends Component {
         this.arrSelectedItems.push(selectedCell);
         //highlight
         this.arrItems[selectedCell].getComponent(FruitItem).setHL(true);
+        if(this.arrSelectedItems.length>0){
+            console.log(`play combo audio: ${this.arrSelectedItems.length}`);
+            if(this.arrSelectedItems.length>10){
+                AudioMgr.inst.playOneShot(this.arrAudioClips[10]);
+            }
+            else{
+                AudioMgr.inst.playOneShot(this.arrAudioClips[this.arrSelectedItems.length]);
+            }
+        }
+
         //draw path
         this.graphics.clear();
         this.graphics.lineWidth = 10;
@@ -452,16 +477,29 @@ export class Fruit extends Component {
         }
         //--
         if (this.arrSuggest.length > 0) {
-            let random = GameMgr.instance.getRandomInt(0, this.arrSuggest.length - 1);
-            let line = this.arrSuggest[random];
+            let idx = this.arrSuggest.length-1;
+            let line = this.arrSuggest[idx];
+            let arrPoint =  [];
+            let w = this.board.getComponent(UITransform).width;
+            let h = this.board.getComponent(UITransform).height;
+            let type = 0;
             for (let i = 0; i < line.length; i++) {
                 let idx = line[i];
-                this.arrItems[idx].getComponent(FruitItem).setScaleAnim(true);
+                let fruitItem = this.arrItems[idx].getComponent(FruitItem);
+                fruitItem.setScaleAnim(true);
+                let x = fruitItem.info.col * this.ITEM_SIZE - w/2 + this.ITEM_SIZE/2;
+                let y = fruitItem.info.row * this.ITEM_SIZE - h/2 + this.ITEM_SIZE/2;
+                arrPoint.push({x:x,y:y});
+                type = fruitItem.info.type;
+            }
+            if(arrPoint.length>0){
+                this.tutorial.active = true;
+                this.tutorial.getComponent(FruitTutorial).setActiveTutorial(arrPoint,this.pfItems[type]);
             }
         }
     }
     onButtonTouch(button: Button) {
-        AudioMgr.inst.playOneShot(this.arrAudioClips[0]);
+        AudioMgr.inst.playOneShot(this.arrAudioClips[11]);
         switch (button.node.name) {
             case 'btnBack':
                 if (this.isBackPressed) return;

@@ -385,7 +385,7 @@ export class Kong extends Component {
             }
         })
         //loading
-        if (this.loading == null) {
+        if (this.loading != null) {
             this.percent = 0;
             this.loading.active = true;
         }
