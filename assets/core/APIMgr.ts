@@ -80,6 +80,12 @@ BfhZUWNOM6WQGMIJ53fwjXkhURECCgMLHOFuSBtkmbfj5tw=
         tournament: null, 
         multiplier: 0 
     };
+    public purchaseRes = {
+        chips: 210000, 
+        itemId: 1, 
+        chips_id: 18, 
+        balance: 210000
+    };
     //--end mockup data ----------------------------------------------------------------------
    
     public async doPost(api: string, data: {}, authorization: string = ""): Promise<any> {
@@ -230,6 +236,24 @@ BfhZUWNOM6WQGMIJ53fwjXkhURECCgMLHOFuSBtkmbfj5tw=
                 break;
             }
         }
+    }
+    async purchase(receipt:string,goods_id:number,purchase_token:string,platform:number,cb:any){
+        let data = {receipt: receipt, goods_id: goods_id, purchase_token: purchase_token,platform:platform};
+        let strData = JSON.stringify(data);
+        let cipherDataB64 = this.encodeData(strData);
+        await this.doPost("purchase", {
+            t: cipherDataB64
+        }, this.signinRes.authorization)
+        .then((response) => response.json())
+        .then((data) => {
+            let newData = this.decodeData(data.encrypted);
+            this.purchaseRes = JSON.parse(newData);
+            cb(true,this.purchaseRes.chips);
+        })
+        .catch((error) => {
+            console.error("Error:", error);
+            cb(false,0);
+        });
     }
 }
 

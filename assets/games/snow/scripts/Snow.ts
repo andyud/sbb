@@ -502,11 +502,11 @@ export class Snow extends Component {
         AudioMgr.inst.setAudioSouce('bonus', this.arrAudioClips[22]);
         AudioMgr.inst.setAudioSouce('coin', this.arrAudioClips[2]);
         AudioMgr.inst.setAudioSouce('tension', this.arrAudioClips[3]);
-        // AudioMgr.inst.bgmBonus.volume = 1;
-        // AudioMgr.inst.bgmCoin.volume = 1;
-        // AudioMgr.inst.bgmFreeSpin.volume = 1;
-        // AudioMgr.inst.bgmSpin.volume = 1;
-        // AudioMgr.inst.bgmTension.volume = 1;
+        
+        //--get jackpot pool
+        GameEvent.AddEventListener("updatebalance", (balance: number) => {
+            GameMgr.instance.numberTo(this.lbBalance, 0, balance, 1000);
+        });
     }
     setMaskEnable(isEnable: boolean) {
         this.reelMask.enabled = isEnable;
@@ -542,7 +542,7 @@ export class Snow extends Component {
             if (evt && evt.data) {
                 if (evt.data.indexOf('error') >= 0) {
                     self.errorMessage = JSON.parse(evt.data).data;
-                    self.notice.getComponent(Notice).show({ title: 'Notice', content: self.errorMessage.message }, () => { director.loadScene('lobby') });
+                    self.notice.getComponent(Notice).show({ title: 'Notice', content: self.errorMessage.message }, () => { self.loadNewScene('lobby') });
                 } else {
                     const res = APIMgr.instance.decodeData(evt.data);
                     const json = JSON.parse(res);
@@ -552,7 +552,7 @@ export class Snow extends Component {
                     console.log(`WebSocket: res=${res}!`)
                 }
             } else {
-                self.notice.getComponent(Notice).show({ title: 'Notice', content: 'Connect server error' }, () => { director.loadScene('lobby') });
+                self.notice.getComponent(Notice).show({ title: 'Notice', content: 'Connect server error' }, () => { self.loadNewScene('lobby') });
             }
 
             // respLabel.string = binaryStr;
@@ -789,7 +789,7 @@ export class Snow extends Component {
                 AudioMgr.inst.bgmTension.clip = null;
                 let timeout15 = setTimeout(() => {
                     clearTimeout(timeout15);
-                    director.loadScene('lobby');
+                    this.loadNewScene('lobby');
                 }, this.snowConfig.showResultDelay);
 
                 break;
@@ -1286,5 +1286,14 @@ export class Snow extends Component {
             this.percent++;
             this.updateProgress()
         }
+    }
+    loadNewScene(sceneName:string){
+        AudioMgr.inst.bgm.stop();
+        AudioMgr.inst.bgm.clip = null;
+        this.removeListener();
+        director.loadScene(sceneName);
+    }
+    removeListener() {
+        GameEvent.RemoveEventListener("updatebalance");
     }
 }

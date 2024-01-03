@@ -22,11 +22,13 @@ export class ShopItemLong extends Component {
     @property({ type: Node })
     mostPopular: Node | null = null;
     info = {id:'1',name:'',type:'',price:'',discount:0}
+    idx = 0;
     start() {
 
     }
-    setInfo(info:any){
+    setInfo(info:any, idx: number){
         this.info = info;
+        this.idx  = idx;
         this.lbName.string = info.name;
         if(this.info.discount>0){
             this.lbDiscountPercent.node.active = true;

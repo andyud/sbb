@@ -29,6 +29,7 @@ import android.content.Intent;
 import android.content.res.Configuration;
 import android.provider.Settings;
 import android.util.Log;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -379,7 +380,7 @@ public class AppActivity extends CocosActivity implements PurchasesUpdatedListen
     void handlePurchase(Purchase purchase) {
         // Purchase retrieved from BillingClient#queryPurchasesAsync or your PurchasesUpdatedListener.
 //        Purchase purchase = ...;
-        System.out.println("handlePurchase done >>> ");
+        System.out.println("handlePurchase done purchaseToken: "+purchase.getPurchaseToken());
         // Verify the purchase.
         // Ensure entitlement was not already granted for this purchaseToken.
         // Grant entitlement to the user.
@@ -394,7 +395,9 @@ public class AppActivity extends CocosActivity implements PurchasesUpdatedListen
             public void onConsumeResponse(BillingResult billingResult, String purchaseToken) {
                 if (billingResult.getResponseCode() == BillingClient.BillingResponseCode.OK) {
                     // Handle the success of the consume operation.
-                    System.out.println("onConsumeResponse done >>> ");
+                    String strRes = purchase.getOrderId() + "@" + purchaseToken;
+                    System.out.println("onConsumeResponse done purchaseToken: "+strRes);
+                    JsbBridgeWrapper.getInstance().dispatchEventToScript("purchaseres", strRes);
                 }
             }
         };
@@ -410,7 +413,7 @@ public class AppActivity extends CocosActivity implements PurchasesUpdatedListen
             }
         } else if (billingResult.getResponseCode() == BillingClient.BillingResponseCode.USER_CANCELED) {
                 // Handle an error caused by a user cancelling the purchase flow.
-            JsbBridgeWrapper.getInstance().dispatchEventToScript("purchaseres", "failed");
+            JsbBridgeWrapper.getInstance().dispatchEventToScript("purchaseres", "cancel");
 
         } else {
             // Handle any other error codes.
