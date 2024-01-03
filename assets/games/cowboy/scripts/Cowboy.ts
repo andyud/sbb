@@ -16,6 +16,9 @@ declare var io: any;
 @ccclass('Cowboy')
 export class Cowboy extends Component {
     @property({ type: Prefab })
+    pfLoading: Prefab | null = null;
+    private loadingSmall: Node = null;
+    @property({ type: Prefab })
     pfShop: Prefab | null = null;
     private shop: Node = null;
     @property({ type: Prefab })
@@ -507,6 +510,13 @@ export class Cowboy extends Component {
          GameEvent.AddEventListener("updatebalance", (balance: number) => {
             GameMgr.instance.numberTo(this.lbBalance, 0, balance, 1000);
         });
+
+        // if (this.loadingSmall == null) {
+        //     this.loadingSmall = instantiate(this.pfLoading);
+        //     this.node.parent.addChild(this.loading);
+        //     this.loadingSmall.getComponent(UITransform).setContentSize(this.node.getComponent(UITransform).width, this.node.getComponent(UITransform).height);
+        // }
+        // this.loadingSmall.getComponent(Loading).show();
     }
     setMaskEnable(isEnable: boolean) {
         this.reelMask.enabled = isEnable;
@@ -1287,6 +1297,7 @@ export class Cowboy extends Component {
         }
     }
     loadNewScene(sceneName:string){
+        // this.loadingSmall.getComponent(Loading).show();
         AudioMgr.inst.bgm.stop();
         AudioMgr.inst.bgm.clip = null;
         this.removeListener();

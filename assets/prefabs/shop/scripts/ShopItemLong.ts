@@ -36,11 +36,16 @@ export class ShopItemLong extends Component {
             this.lbOldPrice.node.active = true;
             this.lbOldPrice.string = `${info.price.replace(' Chips(Shop)','')}`;
         } else {
-            this.lbDiscountPercent.node.active = false;
-            this.lbOldPrice.node.active = false;
+            // this.lbDiscountPercent.node.active = false;
+            // this.lbOldPrice.node.active = false;
             // this.iconArrow.active = false;
         }
         this.lbNewPrice.string = `${info.price.replace(' Chips(Shop)','')}`;
+        let arrInfo = info.price.split(' ');
+        if(arrInfo.length>2){
+            this.lbName.string = arrInfo[0];
+            this.lbNewPrice.string = arrInfo[2];
+        }
     }
 }
 

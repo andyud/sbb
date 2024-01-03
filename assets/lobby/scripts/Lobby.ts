@@ -1,21 +1,37 @@
-import { _decorator, Button, Component, director, Label, Node, AudioClip, Prefab, instantiate } from 'cc';
+import { _decorator, Button, Component, director, Label, Node, AudioClip, Prefab, instantiate, UITransform } from 'cc';
 import APIMgr from '../../core/APIMgr';
 import { AudioMgr } from '../../core/AudioMgr';
 import GameMgr from '../../core/GameMgr';
 import { GameEvent } from '../../core/GameEvent';
+import { Loading } from '../../prefabs/loading/Loading';
+import { Notice } from '../../prefabs/popups/scripts/Notice';
 const { ccclass, property } = _decorator;
 
 @ccclass('Lobby')
 export class Lobby extends Component {
     @property({ type: Prefab })
+    pfLoading: Prefab | null = null;
+    private loading: Node = null;
+    @property({ type: Prefab })
+    pfNotice: Prefab | null = null;
+    private notice: Node = null;
+    @property({ type: Prefab })
     pfShop: Prefab | null = null;
     private shop: Node = null;
     @property({ type: Node })
     btnShop: Node | null = null;
+    @property({ type: Node })
+    btnMenu: Node | null = null;
+    @property({ type: Node })
+    btnInbox: Node | null = null;
     @property({ type: Label })
     lbNickName: Label | null = null;
     @property({ type: Node })
     btnLuckyWheel: Node | null = null;
+
+
+    @property({type:Node})
+    btnBack:Node | null = null;
 
     @property({ type: Label })
     lbBalance: Label | null = null;
@@ -57,10 +73,27 @@ export class Lobby extends Component {
         }
         this.btnShop.on(Button.EventType.CLICK, this.onClick, this);
         this.btnLuckyWheel.on(Button.EventType.CLICK, this.onClick, this);
+        this.btnBack.on(Button.EventType.CLICK, this.onClick, this);
+        this.btnMenu.on(Button.EventType.CLICK, this.onClick, this);
+        this.btnInbox.on(Button.EventType.CLICK, this.onClick, this);
         //--get jackpot pool
         GameEvent.AddEventListener("updatebalance", (balance: number) => {
             GameMgr.instance.numberTo(this.lbBalance, 0, balance, 1000);
         });
+
+        //--
+        this.btnBack.getComponent(Button).interactable = false;
+        if (this.loading == null) {
+            this.loading = instantiate(this.pfLoading);
+            this.node.addChild(this.loading);
+            this.loading.getComponent(UITransform).setContentSize(this.node.getComponent(UITransform).width, this.node.getComponent(UITransform).height);
+        }
+        if (this.notice == null) {
+            this.notice = instantiate(this.pfNotice);
+            this.node.addChild(this.notice);
+            this.notice.getComponent(UITransform).setContentSize(this.node.getComponent(UITransform).width, this.node.getComponent(UITransform).height);
+            this.notice.getComponent(Notice).hide();
+        }
     }
     loadPlayerInfo() {
         this.lbDbDeviceId.string = `Device Id: ${APIMgr.instance.deviceId}`
@@ -78,6 +111,7 @@ export class Lobby extends Component {
         this.loadNewScene(button.node.name)
     }
     loadNewScene(sceneName:string){
+        this.loading.getComponent(Loading).show();
         AudioMgr.inst.bgm.stop();
         AudioMgr.inst.bgm.clip = null;
         this.removeListener();
@@ -93,7 +127,16 @@ export class Lobby extends Component {
                 this.shop.active = true;
                 break;
             case 'btnLuckyWheel':
-                this.loadNewScene('fruit');
+                this.notice.getComponent(Notice).show({ title: 'Notice', content: "Comming soon!" }, () => {  });
+                // this.loadNewScene('fruit');
+                break;
+            case 'btnBack':
+                break;
+            case 'btnMenu':
+                this.notice.getComponent(Notice).show({ title: 'Notice', content: "Comming soon!" }, () => {  });
+                break;
+            case 'btnInbox':
+                this.notice.getComponent(Notice).show({ title: 'Notice', content: "Comming soon!" }, () => {  });
                 break;
         }
     }

@@ -16,6 +16,9 @@ declare var io: any;
 @ccclass('Kong')
 export class Kong extends Component {
     @property({ type: Prefab })
+    pfLoading: Prefab | null = null;
+    private loadingSmall: Node = null;
+    @property({ type: Prefab })
     pfShop: Prefab | null = null;
     private shop: Node = null;
     @property({ type: Prefab })
@@ -463,9 +466,19 @@ export class Kong extends Component {
                 this.countBonusRemain--;
                 this.lbBonusRemain.string = `${this.countBonusRemain}`;
                 let val = this.spinRes.bonusPayout[0].extendData[this.countBonusRemain];
-                let currVal = val * this.loginRes.lineBet;
-                this.arrPlayBonusItem[idx].getComponent(KongBonusItem).setValue(currVal, '+');
-                this.totalBonusWin += currVal;
+                let currVal = 0;
+                if(val.toString().indexOf('x')>=0){
+                    let multiply = val.toString().replace('x','');
+                    this.totalBonusWin = this.totalBonusWin* parseInt(multiply);
+                    this.arrPlayBonusItem[idx].getComponent(KongBonusItem).setValue2(val.toString());
+                } else {
+                    currVal = val * this.loginRes.lineBet;
+                    this.arrPlayBonusItem[idx].getComponent(KongBonusItem).setValue(currVal, '+');
+                    this.totalBonusWin += currVal;
+                }
+                
+               
+                
                 GameMgr.instance.numberTo(this.lbBonusReward, this.totalBonusWin - currVal, this.totalBonusWin, 500);
                 if (this.countBonusRemain == 0) { //--disable touch
                     for (let k = 0; k < this.arrPlayBonusItem.length; k++) {
@@ -488,8 +501,13 @@ export class Kong extends Component {
                             if (bonusItem.lb.node.active) {
                                 continue;
                             }
-                            let currVal2 = arrTemp[ii] * this.loginRes.lineBet;
-                            this.arrPlayBonusItem[ii].getComponent(KongBonusItem).setValue(currVal2);
+                            if(arrTemp[ii].toString().indexOf('x')>=0){
+                                this.arrPlayBonusItem[ii].getComponent(KongBonusItem).setValue2(arrTemp[ii].toString());
+                            } else {
+                                let currVal2 = arrTemp[ii] * this.loginRes.lineBet;
+                                this.arrPlayBonusItem[ii].getComponent(KongBonusItem).setValue(currVal2);
+                            }
+                            
                             this.arrPlayBonusItem[ii].getComponent(KongBonusItem).lb.color = Color.GREEN;
                         }
                         const timeout13 = setTimeout(() => {
@@ -520,6 +538,12 @@ export class Kong extends Component {
         GameEvent.AddEventListener("updatebalance", (balance: number) => {
             GameMgr.instance.numberTo(this.lbBalance, 0, balance, 1000);
         });
+
+        // if (this.loadingSmall == null) {
+        //     this.loadingSmall = instantiate(this.pfLoading);
+        //     this.node.addChild(this.loading);
+        //     this.loadingSmall.getComponent(UITransform).setContentSize(this.node.getComponent(UITransform).width, this.node.getComponent(UITransform).height);
+        // }
     }
     setMaskEnable(isEnable: boolean) {
         this.reelMask.enabled = isEnable;
@@ -1301,6 +1325,7 @@ export class Kong extends Component {
         }
     }
     loadNewScene(sceneName:string){
+        // this.loadingSmall.getComponent(Loading).show();
         AudioMgr.inst.bgm.stop();
         AudioMgr.inst.bgm.clip = null;
         this.removeListener();

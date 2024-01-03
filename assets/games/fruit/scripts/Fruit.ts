@@ -40,6 +40,17 @@ export class Fruit extends Component {
     arrAudioClips: AudioClip[] = [];
     startPoint: Vec2 = null;
     endPoint: Vec2 = null;
+
+    //--loading --------------------
+    @property({type:Node})
+    loading:Node | null = null;
+    @property({type:Node})
+    loadingBar:Node | null = null;
+    // @property({type:Node})
+    // star:Node | null = null;
+    private percent = 0;
+    //--end loading ----------------
+
     private screenW: number = 1920;
     private screenH: number = 1080;
     private boardH: number = 800;
@@ -252,6 +263,10 @@ export class Fruit extends Component {
         //--sound
         AudioMgr.inst.setAudioSouce('main',this.arrAudioClips[0]);
         AudioMgr.inst.bgm.play();
+
+        //--
+        this.loading.active = true;
+
     }
     initTables() {
         console.log(">>>initTables");
@@ -512,8 +527,25 @@ export class Fruit extends Component {
                 break;
         }
     }
-    // update(deltaTime: number) {
-
-    // }
+    private updateProgress(){
+        if(this.loadingBar && this.loadingBar.parent){
+            let w = this.loadingBar.parent.getComponent(UITransform).width;
+            let progress = (this.percent/100) * w;
+            this.loadingBar.getComponent(UITransform).width = progress;
+            if(progress>w*0.99){
+                progress = w*0.99;
+                this.loading.active = false;
+            }
+            // this.star.position    =  new Vec3(progress - w/2 - this.star.getComponent(UITransform).width/2, 0);
+        } else {
+            this.percent = 0;
+        }
+	}
+    update(deltaTime: number) {
+        if(this.percent<100){
+            this.percent++;
+            this.updateProgress()
+        }
+    }
 }
 

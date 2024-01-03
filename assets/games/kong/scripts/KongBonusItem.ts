@@ -42,6 +42,14 @@ export class KongBonusItem extends Component {
             this.sp.active = false;
         }).start()
     }
+    setValue2(val:string){
+        this.lb.string = val;
+        this.lb.node.active = true;
+        tween(this.sp).to(0.3,{scale:new Vec3(-1,1,1)})
+        .call(()=>{
+            this.sp.active = false;
+        }).start()
+    }
     setTouchEnable(isEnable:boolean){
         this.node.getComponent(Button).interactable = isEnable;
     }

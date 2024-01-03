@@ -15676,6 +15676,10 @@
     },
     "_enabled": true,
     "__prefab": null,
+    "pfLoading": {
+      "__uuid__": "b3bac4fe-1f22-4a3b-ad58-a4918d9cc89b",
+      "__expectedType__": "cc.Prefab"
+    },
     "pfShop": {
       "__uuid__": "dc50db52-6e8b-461a-ad2c-bbbc86e04a9e",
       "__expectedType__": "cc.Prefab"
