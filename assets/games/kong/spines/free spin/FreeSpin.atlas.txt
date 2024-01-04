@@ -1,0 +1,236 @@
+
+FreeSpin.png
+size: 2048,2048
+format: RGBA8888
+filter: Linear,Linear
+repeat: none
+FREE SPIN_idle
+  rotate: false
+  xy: 2, 27
+  size: 812, 212
+  orig: 817, 216
+  offset: 3, 2
+  index: -1
+Kong
+  rotate: false
+  xy: 1863, 452
+  size: 158, 168
+  orig: 164, 173
+  offset: 3, 3
+  index: -1
+background
+  rotate: false
+  xy: 2, 838
+  size: 696, 592
+  orig: 700, 596
+  offset: 2, 2
+  index: -1
+bright building
+  rotate: false
+  xy: 1557, 623
+  size: 411, 617
+  orig: 640, 754
+  offset: 153, 137
+  index: -1
+bright building_00003
+  rotate: true
+  xy: 1280, 237
+  size: 383, 581
+  orig: 399, 617
+  offset: 5, 1
+  index: -1
+building halo
+  rotate: true
+  xy: 651, 313
+  size: 483, 627
+  orig: 526, 636
+  offset: 31, 7
+  index: -1
+dimmed building
+  rotate: true
+  xy: 806, 798
+  size: 636, 750
+  orig: 640, 754
+  offset: 2, 2
+  index: -1
+e1
+  rotate: true
+  xy: 1788, 3
+  size: 121, 164
+  orig: 125, 169
+  offset: 2, 2
+  index: -1
+f
+  rotate: false
+  xy: 1863, 287
+  size: 142, 163
+  orig: 147, 167
+  offset: 3, 2
+  index: -1
+frame
+  rotate: false
+  xy: 806, 1436
+  size: 796, 600
+  orig: 800, 604
+  offset: 2, 2
+  index: -1
+frame_lower for building
+  rotate: true
+  xy: 1604, 1240
+  size: 796, 371
+  orig: 800, 375
+  offset: 2, 2
+  index: -1
+free spin_effect
+  rotate: false
+  xy: 816, 66
+  size: 775, 169
+  orig: 779, 173
+  offset: 2, 2
+  index: -1
+line effect
+  rotate: false
+  xy: 2, 241
+  size: 647, 595
+  orig: 651, 599
+  offset: 2, 2
+  index: -1
+n
+  rotate: false
+  xy: 1593, 59
+  size: 193, 176
+  orig: 197, 180
+  offset: 2, 2
+  index: -1
+outline
+  rotate: false
+  xy: 2, 1432
+  size: 802, 604
+  orig: 806, 608
+  offset: 2, 2
+  index: -1
+p
+  rotate: false
+  xy: 1863, 126
+  size: 134, 159
+  orig: 139, 163
+  offset: 3, 2
+  index: -1
+r
+  rotate: false
+  xy: 1280, 632
+  size: 176, 164
+  orig: 180, 169
+  offset: 2, 2
+  index: -1
+s
+  rotate: false
+  xy: 700, 1273
+  size: 97, 157
+  orig: 101, 161
+  offset: 2, 2
+  index: -1
+twinkle_1
+  rotate: false
+  xy: 1977, 1984
+  size: 44, 52
+  orig: 51, 59
+  offset: 2, 2
+  index: -1
+
+FreeSpin2.png
+size: 2048,2048
+format: RGBA8888
+filter: Linear,Linear
+repeat: none
+biplane
+  rotate: true
+  xy: 2, 1186
+  size: 223, 474
+  orig: 228, 503
+  offset: 3, 26
+  index: -1
+bright building_00000
+  rotate: true
+  xy: 559, 1278
+  size: 378, 515
+  orig: 399, 617
+  offset: 8, 0
+  index: -1
+bright building_00001
+  rotate: true
+  xy: 2, 1411
+  size: 370, 555
+  orig: 399, 617
+  offset: 8, 0
+  index: -1
+bright building_00002
+  rotate: true
+  xy: 871, 1658
+  size: 376, 579
+  orig: 399, 617
+  offset: 5, 0
+  index: -1
+bright building_00004
+  rotate: true
+  xy: 1452, 1662
+  size: 372, 582
+  orig: 399, 617
+  offset: 8, 0
+  index: -1
+bright building_00005
+  rotate: true
+  xy: 1452, 1292
+  size: 368, 556
+  orig: 399, 617
+  offset: 17, 0
+  index: -1
+bright square
+  rotate: true
+  xy: 1076, 1078
+  size: 265, 299
+  orig: 277, 307
+  offset: 6, 6
+  index: -1
+dimmed square
+  rotate: true
+  xy: 1377, 1025
+  size: 265, 299
+  orig: 277, 307
+  offset: 6, 6
+  index: -1
+e2
+  rotate: false
+  xy: 1678, 1131
+  size: 105, 159
+  orig: 109, 163
+  offset: 2, 2
+  index: -1
+i
+  rotate: false
+  xy: 1785, 1133
+  size: 105, 157
+  orig: 110, 161
+  offset: 3, 2
+  index: -1
+square frame
+  rotate: false
+  xy: 1076, 1345
+  size: 311, 311
+  orig: 315, 315
+  offset: 2, 2
+  index: -1
+upperframe
+  rotate: false
+  xy: 2, 1783
+  size: 867, 251
+  orig: 871, 255
+  offset: 2, 2
+  index: -1
+upperframe_shadow
+  rotate: false
+  xy: 2, 1065
+  size: 662, 119
+  orig: 666, 123
+  offset: 2, 2
+  index: -1

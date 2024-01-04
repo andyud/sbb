@@ -1,0 +1,639 @@
+{
+"skeleton": {
+	"hash": "Q8GWSyeQHXJKxQihHXRdseEHO2s",
+	"spine": "3.8.95",
+	"x": -461,
+	"y": -413,
+	"width": 920,
+	"height": 823,
+	"images": "./images/",
+	"audio": "E:/muse/spine/yuri_hong/bg_2/FreeSpin"
+},
+"bones": [
+	{ "name": "root" },
+	{ "name": "main", "parent": "root" },
+	{ "name": "square frame", "parent": "main", "x": 24.5, "y": -55.5 },
+	{ "name": "upperframe", "parent": "main", "x": 23.5, "y": 282.5 },
+	{ "name": "f", "parent": "upperframe", "x": -335, "y": -22 },
+	{ "name": "r", "parent": "upperframe", "x": -229.5, "y": -1 },
+	{ "name": "e1", "parent": "upperframe", "x": -144, "y": 21 },
+	{ "name": "e2", "parent": "upperframe", "x": -54, "y": 29 },
+	{ "name": "s", "parent": "upperframe", "x": 67, "y": 29 },
+	{ "name": "p", "parent": "upperframe", "x": 154, "y": 22 },
+	{ "name": "i", "parent": "upperframe", "x": 219.5, "y": 8 },
+	{ "name": "n", "parent": "upperframe", "x": 311, "y": -15.5 },
+	{ "name": "twinkle_1", "parent": "square frame", "x": 2.32, "y": 153.13 },
+	{ "name": "Kong", "parent": "main", "x": -103.52, "y": 47.33 },
+	{ "name": "biplane", "parent": "main", "x": 190, "y": 54.5 },
+	{ "name": "bright building_sequence", "parent": "main", "x": -102.19, "y": 35.41 },
+	{ "name": "twinkle_2", "parent": "square frame", "x": 392.18, "y": 88.42 },
+	{ "name": "twinkle_3", "parent": "square frame", "x": 354.3, "y": -206.75 },
+	{ "name": "twinkle_4", "parent": "square frame", "x": -395.45, "y": 85.26 },
+	{ "name": "twinkle_5", "parent": "square frame", "x": -289.69, "y": -254.1 }
+],
+"slots": [
+	{ "name": "outline", "bone": "main", "attachment": "outline" },
+	{ "name": "background", "bone": "main", "attachment": "background" },
+	{ "name": "line effect", "bone": "main", "attachment": "line effect" },
+	{ "name": "frame", "bone": "main", "attachment": "frame" },
+	{ "name": "upperframe_shadow", "bone": "upperframe", "attachment": "upperframe_shadow" },
+	{ "name": "upperframe", "bone": "upperframe", "attachment": "upperframe" },
+	{ "name": "FREE SPIN_idle", "bone": "upperframe", "attachment": "FREE SPIN_idle" },
+	{ "name": "f", "bone": "f", "attachment": "f" },
+	{ "name": "r", "bone": "r", "attachment": "r" },
+	{ "name": "e1", "bone": "e1", "attachment": "e1" },
+	{ "name": "e2", "bone": "e2", "attachment": "e2" },
+	{ "name": "n", "bone": "n", "attachment": "n" },
+	{ "name": "i", "bone": "i", "attachment": "i" },
+	{ "name": "p", "bone": "p", "attachment": "p" },
+	{ "name": "s", "bone": "s", "attachment": "s" },
+	{ "name": "free spin_effect", "bone": "upperframe" },
+	{ "name": "building halo", "bone": "main", "attachment": "building halo" },
+	{ "name": "building halo_add", "bone": "main", "attachment": "building halo", "blend": "additive" },
+	{ "name": "dimmed building", "bone": "main", "attachment": "dimmed building" },
+	{ "name": "bright building", "bone": "main", "attachment": "bright building" },
+	{ "name": "frame_lower for building", "bone": "main", "attachment": "frame_lower for building" },
+	{ "name": "bright building_sequence", "bone": "bright building_sequence", "blend": "additive" },
+	{ "name": "Kong", "bone": "Kong", "attachment": "Kong" },
+	{ "name": "biplane", "bone": "biplane", "attachment": "biplane" },
+	{ "name": "dimmed square", "bone": "main", "attachment": "dimmed square" },
+	{ "name": "bright square", "bone": "square frame", "blend": "additive" },
+	{ "name": "square frame", "bone": "square frame", "attachment": "square frame" },
+	{ "name": "twinkle_1", "bone": "twinkle_1", "attachment": "twinkle_1" },
+	{ "name": "twinkle_2", "bone": "twinkle_2", "attachment": "twinkle_1" },
+	{ "name": "twinkle_3", "bone": "twinkle_3", "attachment": "twinkle_1" },
+	{ "name": "twinkle_4", "bone": "twinkle_4", "attachment": "twinkle_1" },
+	{ "name": "twinkle_5", "bone": "twinkle_5", "attachment": "twinkle_1" }
+],
+"skins": [
+	{
+		"name": "default",
+		"attachments": {
+			"FREE SPIN_idle": {
+				"FREE SPIN_idle": { "x": 1, "y": 2.5, "width": 817, "height": 216 }
+			},
+			"Kong": {
+				"Kong": { "x": 31.52, "y": 55.17, "width": 164, "height": 173 }
+			},
+			"background": {
+				"background": { "x": 23, "y": -18, "width": 700, "height": 596 }
+			},
+			"biplane": {
+				"biplane": { "width": 228, "height": 503 }
+			},
+			"bright building": {
+				"bright building": {
+					"type": "mesh",
+					"uvs": [ 0.88102, 0.81687, 0.24114, 0.81821, 0.23955, 0.00135, 0.87943, 0 ],
+					"triangles": [ 2, 3, 0, 1, 2, 0 ],
+					"vertices": [ 102.85, -274.92, -306.67, -275.93, -307.69, 339.98, 101.84, 341 ],
+					"hull": 4,
+					"edges": [ 0, 2, 2, 4, 4, 6, 0, 6 ],
+					"width": 640,
+					"height": 754
+				}
+			},
+			"bright building_sequence": {
+				"bright building_00000": { "width": 399, "height": 617 },
+				"bright building_00001": { "width": 399, "height": 617 },
+				"bright building_00002": { "width": 399, "height": 617 },
+				"bright building_00003": { "width": 399, "height": 617 },
+				"bright building_00004": { "width": 399, "height": 617 },
+				"bright building_00005": { "width": 399, "height": 617 }
+			},
+			"bright square": {
+				"bright square": { "y": -30, "width": 277, "height": 307 }
+			},
+			"building halo": {
+				"building halo": { "x": -122, "y": 49, "width": 526, "height": 636 }
+			},
+			"building halo_add": {
+				"building halo": { "x": -122, "y": 49, "width": 526, "height": 636 }
+			},
+			"dimmed building": {
+				"dimmed building": { "x": -141, "y": -36, "width": 640, "height": 754 }
+			},
+			"dimmed square": {
+				"dimmed square": { "x": 24.5, "y": -85.5, "width": 277, "height": 307 }
+			},
+			"e1": {
+				"e1": { "width": 125, "height": 169 }
+			},
+			"e2": {
+				"e2": { "width": 109, "height": 163 }
+			},
+			"f": {
+				"f": { "width": 147, "height": 167 }
+			},
+			"frame": {
+				"frame": { "x": 23, "y": -19, "width": 800, "height": 604 }
+			},
+			"frame_lower for building": {
+				"frame_lower for building": { "x": 23, "y": -133.5, "width": 800, "height": 375 }
+			},
+			"free spin_effect": {
+				"free spin_effect": { "x": 1, "y": 11, "width": 779, "height": 173 }
+			},
+			"i": {
+				"i": { "width": 110, "height": 161 }
+			},
+			"line effect": {
+				"line effect": { "x": -9.5, "y": -67.5, "width": 651, "height": 599 }
+			},
+			"n": {
+				"n": { "width": 197, "height": 180 }
+			},
+			"outline": {
+				"outline": { "x": 23, "y": -18, "width": 806, "height": 608 }
+			},
+			"p": {
+				"p": { "width": 139, "height": 163 }
+			},
+			"r": {
+				"r": { "width": 180, "height": 169 }
+			},
+			"s": {
+				"s": { "width": 101, "height": 161 }
+			},
+			"square frame": {
+				"square frame": { "width": 315, "height": 315 }
+			},
+			"twinkle_1": {
+				"twinkle_1": { "x": 3.7, "y": -1.26, "width": 51, "height": 59 }
+			},
+			"twinkle_2": {
+				"twinkle_1": { "x": 3.7, "y": -1.26, "width": 51, "height": 59 }
+			},
+			"twinkle_3": {
+				"twinkle_1": { "x": 3.7, "y": -1.26, "width": 51, "height": 59 }
+			},
+			"twinkle_4": {
+				"twinkle_1": { "x": 3.7, "y": -1.26, "width": 51, "height": 59 }
+			},
+			"twinkle_5": {
+				"twinkle_1": { "x": 3.7, "y": -1.26, "width": 51, "height": 59 }
+			},
+			"upperframe": {
+				"upperframe": { "width": 871, "height": 255 }
+			},
+			"upperframe_shadow": {
+				"upperframe_shadow": { "x": -3.5, "y": -81, "width": 666, "height": 123 }
+			}
+		}
+	}
+],
+"animations": {
+	"close": {
+		"bones": {
+			"main": {
+				"scale": [
+					{ "curve": 0.25, "c3": 0.689, "c4": 0.5 },
+					{ "time": 0.5, "x": 0, "y": 0 }
+				]
+			},
+			"twinkle_5": {
+				"rotate": [
+					{ "angle": 72 }
+				],
+				"scale": [
+					{ "x": 0.7, "y": 0.7 }
+				]
+			},
+			"twinkle_3": {
+				"rotate": [
+					{ "angle": 162 }
+				],
+				"scale": [
+					{ "x": 0.325, "y": 0.325 }
+				]
+			},
+			"twinkle_2": {
+				"rotate": [
+					{ "angle": 72 }
+				],
+				"scale": [
+					{ "x": 0.7, "y": 0.7 }
+				]
+			}
+		}
+	},
+	"idle": {
+		"slots": {
+			"bright building_sequence": {
+				"attachment": [
+					{ "name": "bright building_00000" },
+					{ "time": 0.0667, "name": "bright building_00001" },
+					{ "time": 0.1333, "name": "bright building_00002" },
+					{ "time": 0.2, "name": "bright building_00003" },
+					{ "time": 0.2667, "name": "bright building_00004" },
+					{ "time": 0.3333, "name": "bright building_00005" },
+					{ "time": 0.4, "name": "bright building_00000" },
+					{ "time": 0.4667, "name": "bright building_00001" },
+					{ "time": 0.5333, "name": "bright building_00002" },
+					{ "time": 0.6, "name": "bright building_00003" },
+					{ "time": 0.6667, "name": "bright building_00004" }
+				]
+			},
+			"bright square": {
+				"color": [
+					{ "color": "ffffffff" },
+					{ "time": 0.3333, "color": "ffffff00" },
+					{ "time": 0.6667, "color": "ffffffff" }
+				],
+				"attachment": [
+					{ "name": "bright square" }
+				]
+			},
+			"building halo_add": {
+				"color": [
+					{ "color": "ffffff00" },
+					{ "time": 0.1667, "color": "ffffffae" },
+					{ "time": 0.6667, "color": "ffffff00" }
+				]
+			},
+			"e1": {
+				"attachment": [
+					{ "name": null }
+				]
+			},
+			"e2": {
+				"attachment": [
+					{ "name": null }
+				]
+			},
+			"f": {
+				"attachment": [
+					{ "name": null }
+				]
+			},
+			"free spin_effect": {
+				"color": [
+					{ "color": "ffffffff" },
+					{ "time": 0.3333, "color": "ffffff6c" },
+					{ "time": 0.6667, "color": "ffffffff" }
+				],
+				"attachment": [
+					{ "name": "free spin_effect" }
+				]
+			},
+			"i": {
+				"attachment": [
+					{ "name": null }
+				]
+			},
+			"n": {
+				"attachment": [
+					{ "name": null }
+				]
+			},
+			"p": {
+				"attachment": [
+					{ "name": null }
+				]
+			},
+			"r": {
+				"attachment": [
+					{ "name": null }
+				]
+			},
+			"s": {
+				"attachment": [
+					{ "name": null }
+				]
+			}
+		},
+		"bones": {
+			"twinkle_1": {
+				"rotate": [
+					{},
+					{ "time": 0.3, "angle": 180 },
+					{ "time": 0.4667, "angle": 90 },
+					{ "time": 0.6333 }
+				],
+				"scale": [
+					{},
+					{ "time": 0.3, "x": 0.25, "y": 0.25 },
+					{ "time": 0.6333 }
+				]
+			},
+			"twinkle_2": {
+				"rotate": [
+					{ "angle": 72 },
+					{ "time": 0.1333, "curve": "stepped" },
+					{ "time": 0.1667 },
+					{ "time": 0.4667, "angle": 180 },
+					{ "time": 0.6333, "angle": 90 },
+					{ "time": 0.6667, "angle": 72 }
+				],
+				"scale": [
+					{ "x": 0.7, "y": 0.7 },
+					{ "time": 0.1333, "curve": "stepped" },
+					{ "time": 0.1667 },
+					{ "time": 0.4667, "x": 0.25, "y": 0.25 },
+					{ "time": 0.6667, "x": 0.7, "y": 0.7 }
+				]
+			},
+			"twinkle_3": {
+				"rotate": [
+					{ "angle": 162 },
+					{ "time": 0.1333, "angle": 90 },
+					{ "time": 0.3, "curve": "stepped" },
+					{ "time": 0.3333 },
+					{ "time": 0.6333, "angle": 180 },
+					{ "time": 0.6667, "angle": 162 }
+				],
+				"scale": [
+					{ "x": 0.325, "y": 0.325 },
+					{ "time": 0.3, "curve": "stepped" },
+					{ "time": 0.3333 },
+					{ "time": 0.6333, "x": 0.25, "y": 0.25 },
+					{ "time": 0.6667, "x": 0.325, "y": 0.325 }
+				]
+			},
+			"twinkle_4": {
+				"rotate": [
+					{},
+					{ "time": 0.3, "angle": 180 },
+					{ "time": 0.4667, "angle": 90 },
+					{ "time": 0.6333 }
+				],
+				"scale": [
+					{},
+					{ "time": 0.3, "x": 0.25, "y": 0.25 },
+					{ "time": 0.6333 }
+				]
+			},
+			"twinkle_5": {
+				"rotate": [
+					{ "angle": 72 },
+					{ "time": 0.1333, "curve": "stepped" },
+					{ "time": 0.1667 },
+					{ "time": 0.4667, "angle": 180 },
+					{ "time": 0.6333, "angle": 90 },
+					{ "time": 0.6667, "angle": 72 }
+				],
+				"scale": [
+					{ "x": 0.7, "y": 0.7 },
+					{ "time": 0.1333, "curve": "stepped" },
+					{ "time": 0.1667 },
+					{ "time": 0.4667, "x": 0.25, "y": 0.25 },
+					{ "time": 0.6667, "x": 0.7, "y": 0.7 }
+				]
+			}
+		}
+	},
+	"start": {
+		"slots": {
+			"FREE SPIN_idle": {
+				"attachment": [
+					{ "name": null },
+					{ "time": 1, "name": "FREE SPIN_idle" }
+				]
+			},
+			"bright building_sequence": {
+				"attachment": [
+					{ "time": 0.3, "name": "bright building_00000" },
+					{ "time": 0.3667, "name": "bright building_00001" },
+					{ "time": 0.4333, "name": "bright building_00002" },
+					{ "time": 0.5, "name": "bright building_00003" },
+					{ "time": 0.5667, "name": "bright building_00004" },
+					{ "time": 0.6333, "name": "bright building_00005" },
+					{ "time": 0.7, "name": "bright building_00000" },
+					{ "time": 0.7667, "name": "bright building_00001" },
+					{ "time": 0.8333, "name": "bright building_00002" },
+					{ "time": 0.9, "name": "bright building_00003" },
+					{ "time": 0.9667, "name": "bright building_00004" },
+					{ "time": 1, "name": "bright building_00005" }
+				]
+			},
+			"bright square": {
+				"color": [
+					{ "time": 0.6667, "color": "ffffff00" },
+					{ "time": 1, "color": "ffffffff" }
+				],
+				"attachment": [
+					{ "time": 0.6667, "name": "bright square" }
+				]
+			},
+			"building halo": {
+				"color": [
+					{ "time": 0.5, "color": "ffffff00" },
+					{ "time": 0.8333, "color": "ffffffff" }
+				],
+				"attachment": [
+					{ "name": null },
+					{ "time": 0.5, "name": "building halo" }
+				]
+			},
+			"building halo_add": {
+				"color": [
+					{ "time": 0.6667, "color": "ffffff00" },
+					{ "time": 0.8333, "color": "ffffffff" },
+					{ "time": 1, "color": "ffffff00" }
+				],
+				"attachment": [
+					{ "name": null },
+					{ "time": 0.6667, "name": "building halo" }
+				]
+			},
+			"e1": {
+				"attachment": [
+					{ "time": 1, "name": null }
+				]
+			},
+			"e2": {
+				"attachment": [
+					{ "time": 1, "name": null }
+				]
+			},
+			"f": {
+				"attachment": [
+					{ "time": 1, "name": null }
+				]
+			},
+			"i": {
+				"attachment": [
+					{ "time": 1, "name": null }
+				]
+			},
+			"n": {
+				"attachment": [
+					{ "time": 1, "name": null }
+				]
+			},
+			"p": {
+				"attachment": [
+					{ "time": 1, "name": null }
+				]
+			},
+			"r": {
+				"attachment": [
+					{ "time": 1, "name": null }
+				]
+			},
+			"s": {
+				"attachment": [
+					{ "time": 1, "name": null }
+				]
+			},
+			"twinkle_1": {
+				"attachment": [
+					{ "name": null },
+					{ "time": 0.6667, "name": "twinkle_1" }
+				]
+			},
+			"twinkle_2": {
+				"attachment": [
+					{ "name": null },
+					{ "time": 0.3333, "name": "twinkle_1" }
+				]
+			},
+			"twinkle_3": {
+				"attachment": [
+					{ "name": null },
+					{ "time": 0.6667, "name": "twinkle_1" }
+				]
+			},
+			"twinkle_4": {
+				"attachment": [
+					{ "name": null },
+					{ "time": 0.5, "name": "twinkle_1" }
+				]
+			},
+			"twinkle_5": {
+				"attachment": [
+					{ "name": null },
+					{ "time": 0.5, "name": "twinkle_1" }
+				]
+			}
+		},
+		"bones": {
+			"main": {
+				"translate": [
+					{ "y": 937.4, "curve": 0.25, "c3": 0.703, "c4": 0.66 },
+					{ "time": 0.3333, "curve": 0.407, "c2": 0.56, "c3": 0.75 },
+					{ "time": 0.4, "y": 20, "curve": 0.25, "c3": 0.66, "c4": 0.52 },
+					{ "time": 0.4667 }
+				]
+			},
+			"e1": {
+				"translate": [
+					{ "y": 869.22, "curve": "stepped" },
+					{ "time": 0.3667, "y": 869.22 },
+					{ "time": 0.7 }
+				]
+			},
+			"e2": {
+				"translate": [
+					{ "y": 869.22, "curve": "stepped" },
+					{ "time": 0.4333, "y": 869.22 },
+					{ "time": 0.7667 }
+				]
+			},
+			"f": {
+				"translate": [
+					{ "y": 869.22, "curve": "stepped" },
+					{ "time": 0.2333, "y": 869.22 },
+					{ "time": 0.5667 }
+				]
+			},
+			"upperframe": {
+				"translate": [
+					{ "y": 720.56 },
+					{ "time": 0.3333 }
+				]
+			},
+			"i": {
+				"translate": [
+					{ "y": 869.22, "curve": "stepped" },
+					{ "time": 0.6333, "y": 869.22 },
+					{ "time": 0.9667 }
+				]
+			},
+			"n": {
+				"translate": [
+					{ "y": 869.22, "curve": "stepped" },
+					{ "time": 0.7, "y": 869.22 },
+					{ "time": 1 }
+				]
+			},
+			"p": {
+				"translate": [
+					{ "y": 869.22, "curve": "stepped" },
+					{ "time": 0.5667, "y": 869.22 },
+					{ "time": 0.9 }
+				]
+			},
+			"r": {
+				"translate": [
+					{ "y": 869.22, "curve": "stepped" },
+					{ "time": 0.3, "y": 869.22 },
+					{ "time": 0.6333 }
+				]
+			},
+			"s": {
+				"translate": [
+					{ "y": 869.22, "curve": "stepped" },
+					{ "time": 0.5333, "y": 869.22 },
+					{ "time": 0.8667 }
+				]
+			},
+			"twinkle_1": {
+				"rotate": [
+					{ "time": 0.6667, "angle": 180 },
+					{ "time": 1 }
+				],
+				"scale": [
+					{ "time": 0.6667, "x": 0, "y": 0 },
+					{ "time": 0.8333 }
+				]
+			},
+			"twinkle_2": {
+				"rotate": [
+					{ "time": 0.3333, "angle": 180 },
+					{ "time": 0.6667 },
+					{ "time": 1, "angle": 72 }
+				],
+				"scale": [
+					{ "time": 0.3333, "x": 0, "y": 0 },
+					{ "time": 0.5 },
+					{ "time": 1, "x": 0.7, "y": 0.7 }
+				]
+			},
+			"twinkle_3": {
+				"rotate": [
+					{ "time": 0.6667, "angle": 180 },
+					{ "time": 1, "angle": 162 }
+				],
+				"scale": [
+					{ "time": 0.6667, "x": 0, "y": 0 },
+					{ "time": 0.8333 },
+					{ "time": 1, "x": 0.325, "y": 0.325 }
+				]
+			},
+			"twinkle_4": {
+				"rotate": [
+					{ "time": 0.5, "angle": 180 },
+					{ "time": 0.8333 }
+				],
+				"scale": [
+					{ "time": 0.5, "x": 0, "y": 0 },
+					{ "time": 0.6667 }
+				]
+			},
+			"twinkle_5": {
+				"rotate": [
+					{ "time": 0.5, "angle": 180 },
+					{ "time": 0.8333 },
+					{ "time": 1, "angle": 72 }
+				],
+				"scale": [
+					{ "time": 0.5, "x": 0, "y": 0 },
+					{ "time": 0.6667 },
+					{ "time": 1, "x": 0.7, "y": 0.7 }
+				]
+			}
+		}
+	}
+}
+}

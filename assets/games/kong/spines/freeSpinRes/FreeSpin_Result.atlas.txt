@@ -1,0 +1,97 @@
+
+FreeSpin_Result.png
+size: 4096,4096
+format: RGBA8888
+filter: Linear,Linear
+repeat: none
+YOU WIN!
+  rotate: true
+  xy: 2116, 1982
+  size: 533, 135
+  orig: 537, 139
+  offset: 2, 2
+  index: -1
+bg
+  rotate: false
+  xy: 2, 1696
+  size: 916, 819
+  orig: 920, 823
+  offset: 2, 2
+  index: -1
+character
+  rotate: true
+  xy: 920, 1872
+  size: 643, 610
+  orig: 643, 610
+  offset: 0, 0
+  index: -1
+frame
+  rotate: true
+  xy: 1532, 1672
+  size: 843, 153
+  orig: 847, 157
+  offset: 2, 2
+  index: -1
+frame_background
+  rotate: true
+  xy: 1687, 1694
+  size: 821, 154
+  orig: 830, 161
+  offset: 5, 5
+  index: -1
+glow
+  rotate: true
+  xy: 1843, 2231
+  size: 284, 271
+  orig: 289, 281
+  offset: 2, 4
+  index: -1
+reflection
+  rotate: true
+  xy: 2364, 2160
+  size: 355, 151
+  orig: 359, 155
+  offset: 2, 2
+  index: -1
+sparkle1
+  rotate: false
+  xy: 972, 2469
+  size: 48, 46
+  orig: 52, 51
+  offset: 2, 3
+  index: -1
+sparkle3
+  rotate: false
+  xy: 1022, 2469
+  size: 48, 46
+  orig: 52, 50
+  offset: 2, 2
+  index: -1
+sparkle4
+  rotate: false
+  xy: 1072, 2472
+  size: 43, 43
+  orig: 52, 52
+  offset: 5, 4
+  index: -1
+sparkle6
+  rotate: false
+  xy: 1117, 2492
+  size: 24, 23
+  orig: 30, 29
+  offset: 3, 3
+  index: -1
+sparkle7
+  rotate: false
+  xy: 920, 2469
+  size: 50, 46
+  orig: 57, 52
+  offset: 2, 3
+  index: -1
+you win rainbow
+  rotate: true
+  xy: 2253, 2009
+  size: 506, 109
+  orig: 510, 113
+  offset: 2, 2
+  index: -1

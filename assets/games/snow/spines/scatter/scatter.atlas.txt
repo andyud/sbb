@@ -1,111 +1,111 @@
 
 SCATTER.png
-size: 2048,1024
+size: 2048,2048
 format: RGBA8888
 filter: Linear,Linear
 repeat: none
 CASTLE
   rotate: true
-  xy: 495, 3
-  size: 463, 451
-  orig: 465, 454
+  xy: 2, 950
+  size: 662, 645
+  orig: 664, 649
   offset: 1, 1
   index: -1
 FRAME
   rotate: true
-  xy: 131, 468
-  size: 554, 477
-  orig: 554, 477
+  xy: 818, 1003
+  size: 791, 681
+  orig: 791, 681
   offset: 0, 0
   index: -1
 NORMAL BACKGROUND
-  rotate: false
-  xy: 2, 44
-  size: 491, 406
-  orig: 491, 406
+  rotate: true
+  xy: 2, 246
+  size: 702, 580
+  orig: 702, 580
   offset: 0, 0
   index: -1
 PURPLE BACKGROUND
-  rotate: true
-  xy: 710, 531
-  size: 491, 406
-  orig: 491, 406
+  rotate: false
+  xy: 791, 421
+  size: 702, 580
+  orig: 702, 580
   offset: 0, 0
   index: -1
 SCA
-  rotate: false
-  xy: 948, 2
-  size: 275, 127
-  orig: 275, 127
-  offset: 0, 0
+  rotate: true
+  xy: 584, 445
+  size: 393, 180
+  orig: 393, 182
+  offset: 0, 1
   index: -1
 SCATTER_Origin
-  rotate: true
-  xy: 2, 452
-  size: 570, 127
-  orig: 570, 127
-  offset: 0, 0
+  rotate: false
+  xy: 2, 1614
+  size: 814, 180
+  orig: 814, 182
+  offset: 0, 1
   index: -1
 STAR-BACKGROUND
-  rotate: true
-  xy: 948, 131
-  size: 398, 170
-  orig: 400, 172
-  offset: 1, 1
+  rotate: false
+  xy: 2, 2
+  size: 567, 242
+  orig: 571, 246
+  offset: 2, 2
   index: -1
 T
   rotate: false
-  xy: 1118, 653
-  size: 99, 113
-  orig: 101, 115
-  offset: 1, 1
+  xy: 1495, 841
+  size: 140, 160
+  orig: 144, 164
+  offset: 2, 2
   index: -1
 TER22
   rotate: true
-  xy: 1118, 768
-  size: 254, 113
-  orig: 254, 113
-  offset: 0, 0
+  xy: 584, 81
+  size: 362, 161
+  orig: 363, 162
+  offset: 1, 0
   index: -1
 star1
-  rotate: true
-  xy: 2, 2
-  size: 40, 39
-  orig: 41, 40
+  rotate: false
+  xy: 584, 892
+  size: 56, 56
+  orig: 58, 57
   offset: 1, 1
   index: -1
 star2
   rotate: true
-  xy: 1120, 499
-  size: 67, 65
-  orig: 68, 67
-  offset: 1, 2
+  xy: 1501, 1577
+  size: 94, 93
+  orig: 97, 96
+  offset: 2, 3
   index: -1
 star3
-  rotate: true
-  xy: 43, 6
-  size: 36, 35
-  orig: 36, 35
-  offset: 0, 0
+  rotate: false
+  xy: 584, 840
+  size: 50, 50
+  orig: 51, 50
+  offset: 1, 0
   index: -1
 star4
   rotate: false
-  xy: 1118, 568
-  size: 82, 83
-  orig: 87, 88
+  xy: 1501, 1673
+  size: 118, 121
+  orig: 124, 126
   offset: 3, 2
   index: -1
 star5
-  rotate: true
-  xy: 80, 8
-  size: 34, 33
-  orig: 34, 35
-  offset: 0, 1
+  rotate: false
+  xy: 1501, 1527
+  size: 47, 48
+  orig: 49, 50
+  offset: 1, 1
   index: -1
 text_inner
   rotate: true
-  xy: 610, 493
-  size: 529, 98
-  orig: 529, 98
+  xy: 649, 857
+  size: 755, 140
+  orig: 755, 140
   offset: 0, 0
   index: -1

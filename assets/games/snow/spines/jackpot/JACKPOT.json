@@ -1,17 +1,17 @@
 {
 "skeleton": {
-	"hash": "GYuULGuMqqELMtvwC2a+G9+J1W8",
+	"hash": "/ZYCvGG/Qzf3PvtuKXdaZYp88pY",
 	"spine": "3.8.99",
-	"x": -81.61,
-	"y": -70.3,
-	"width": 164.22,
-	"height": 139.19,
+	"x": -84.22,
+	"y": -72.54,
+	"width": 169.47,
+	"height": 143.64,
 	"images": "./Image/",
 	"audio": "D:/OneDrive - DoreAzure/Outside/yuri_hong/Jackpot/Image"
 },
 "bones": [
 	{ "name": "root" },
-	{ "name": "bone", "parent": "root", "length": 136.79, "rotation": -90, "scaleX": 0.2035, "scaleY": 0.2035 },
+	{ "name": "bone", "parent": "root", "length": 136.79, "rotation": -90, "scaleX": 0.21, "scaleY": 0.21 },
 	{ "name": "snowflake", "parent": "bone", "length": 191.69, "rotation": 90.67, "x": -5.26, "y": 3.52 },
 	{ "name": "bone2", "parent": "bone", "x": 28.32, "y": -1.77 },
 	{ "name": "bone3", "parent": "bone", "length": 111.77, "rotation": 91.72, "x": 220.43, "y": 6.16 },

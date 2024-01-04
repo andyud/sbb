@@ -20,7 +20,7 @@ android {
         applicationId APPLICATION_ID
         minSdkVersion PROP_MIN_SDK_VERSION
         targetSdkVersion PROP_TARGET_SDK_VERSION
-        versionCode 6
+        versionCode 7
         versionName "1.0"
 
         externalNativeBuild {
@@ -65,9 +65,9 @@ android {
 
     buildTypes {
         release {
-            debuggable false
-            jniDebuggable false
-            renderscriptDebuggable false
+            debuggable true
+            jniDebuggable true
+            renderscriptDebuggable true
             minifyEnabled true
             shrinkResources true
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'

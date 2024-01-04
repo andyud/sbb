@@ -1,104 +1,531 @@
 
 WILD.png
-size: 2048,1024
+size: 2048,2048
 format: RGBA8888
 filter: Linear,Linear
 repeat: none
 Frame
+  rotate: false
+  xy: 2, 1729
+  size: 357, 307
+  orig: 357, 307
+  offset: 0, 0
+  index: -1
+Snowfall/SnowFall_Loop_01
+  rotate: false
+  xy: 2, 1190
+  size: 203, 279
+  orig: 203, 279
+  offset: 0, 0
+  index: -1
+Snowfall/SnowFall_Loop_02
   rotate: true
-  xy: 2, 228
-  size: 791, 681
-  orig: 793, 683
-  offset: 1, 1
+  xy: 640, 1833
+  size: 203, 279
+  orig: 203, 279
+  offset: 0, 0
+  index: -1
+Snowfall/SnowFall_Loop_03
+  rotate: false
+  xy: 2, 909
+  size: 203, 279
+  orig: 203, 279
+  offset: 0, 0
+  index: -1
+Snowfall/SnowFall_Loop_04
+  rotate: true
+  xy: 921, 1833
+  size: 203, 279
+  orig: 203, 279
+  offset: 0, 0
+  index: -1
+Snowfall/SnowFall_Loop_05
+  rotate: false
+  xy: 2, 628
+  size: 203, 279
+  orig: 203, 279
+  offset: 0, 0
+  index: -1
+Snowfall/SnowFall_Loop_06
+  rotate: true
+  xy: 1202, 1833
+  size: 203, 279
+  orig: 203, 279
+  offset: 0, 0
+  index: -1
+Snowfall/SnowFall_Loop_07
+  rotate: false
+  xy: 2, 347
+  size: 203, 279
+  orig: 203, 279
+  offset: 0, 0
+  index: -1
+Snowfall/SnowFall_Loop_08
+  rotate: true
+  xy: 1483, 1833
+  size: 203, 279
+  orig: 203, 279
+  offset: 0, 0
+  index: -1
+Snowfall/SnowFall_Loop_09
+  rotate: false
+  xy: 2, 66
+  size: 203, 279
+  orig: 203, 279
+  offset: 0, 0
+  index: -1
+Snowfall/SnowFall_Loop_10
+  rotate: true
+  xy: 1764, 1833
+  size: 203, 279
+  orig: 203, 279
+  offset: 0, 0
+  index: -1
+Snowfall/SnowFall_Loop_11
+  rotate: false
+  xy: 207, 1190
+  size: 203, 279
+  orig: 203, 279
+  offset: 0, 0
+  index: -1
+Snowfall/SnowFall_Loop_12
+  rotate: false
+  xy: 207, 909
+  size: 203, 279
+  orig: 203, 279
+  offset: 0, 0
+  index: -1
+Snowfall/SnowFall_Loop_13
+  rotate: false
+  xy: 207, 628
+  size: 203, 279
+  orig: 203, 279
+  offset: 0, 0
+  index: -1
+Snowfall/SnowFall_Loop_14
+  rotate: false
+  xy: 207, 347
+  size: 203, 279
+  orig: 203, 279
+  offset: 0, 0
+  index: -1
+Snowfall/SnowFall_Loop_15
+  rotate: false
+  xy: 207, 66
+  size: 203, 279
+  orig: 203, 279
+  offset: 0, 0
+  index: -1
+Snowfall/SnowFall_Loop_16
+  rotate: true
+  xy: 640, 1628
+  size: 203, 279
+  orig: 203, 279
+  offset: 0, 0
+  index: -1
+Snowfall/SnowFall_Loop_17
+  rotate: true
+  xy: 921, 1628
+  size: 203, 279
+  orig: 203, 279
+  offset: 0, 0
+  index: -1
+Snowfall/SnowFall_Loop_18
+  rotate: true
+  xy: 1202, 1628
+  size: 203, 279
+  orig: 203, 279
+  offset: 0, 0
+  index: -1
+Snowfall/SnowFall_Loop_19
+  rotate: true
+  xy: 1483, 1628
+  size: 203, 279
+  orig: 203, 279
+  offset: 0, 0
+  index: -1
+Snowfall/SnowFall_Loop_20
+  rotate: true
+  xy: 1764, 1628
+  size: 203, 279
+  orig: 203, 279
+  offset: 0, 0
+  index: -1
+Snowfall/SnowFall_Loop_21
+  rotate: true
+  xy: 318, 1476
+  size: 203, 279
+  orig: 203, 279
+  offset: 0, 0
+  index: -1
+Snowfall/SnowFall_Loop_22
+  rotate: false
+  xy: 412, 1195
+  size: 203, 279
+  orig: 203, 279
+  offset: 0, 0
+  index: -1
+Snowfall/SnowFall_Loop_23
+  rotate: false
+  xy: 412, 914
+  size: 203, 279
+  orig: 203, 279
+  offset: 0, 0
+  index: -1
+Snowfall/SnowFall_Loop_24
+  rotate: false
+  xy: 412, 633
+  size: 203, 279
+  orig: 203, 279
+  offset: 0, 0
+  index: -1
+Snowfall/SnowFall_Loop_25
+  rotate: false
+  xy: 412, 352
+  size: 203, 279
+  orig: 203, 279
+  offset: 0, 0
+  index: -1
+Snowfall/SnowFall_Loop_26
+  rotate: false
+  xy: 412, 71
+  size: 203, 279
+  orig: 203, 279
+  offset: 0, 0
+  index: -1
+Snowfall/SnowFall_Loop_27
+  rotate: false
+  xy: 617, 1347
+  size: 203, 279
+  orig: 203, 279
+  offset: 0, 0
+  index: -1
+Snowfall/SnowFall_Loop_28
+  rotate: false
+  xy: 617, 1066
+  size: 203, 279
+  orig: 203, 279
+  offset: 0, 0
+  index: -1
+Snowfall/SnowFall_Loop_29
+  rotate: false
+  xy: 822, 1347
+  size: 203, 279
+  orig: 203, 279
+  offset: 0, 0
+  index: -1
+Snowfall/SnowFall_Loop_30
+  rotate: false
+  xy: 617, 785
+  size: 203, 279
+  orig: 203, 279
+  offset: 0, 0
+  index: -1
+Snowfall/SnowFall_Loop_31
+  rotate: false
+  xy: 822, 1066
+  size: 203, 279
+  orig: 203, 279
+  offset: 0, 0
+  index: -1
+Snowfall/SnowFall_Loop_32
+  rotate: false
+  xy: 1027, 1347
+  size: 203, 279
+  orig: 203, 279
+  offset: 0, 0
+  index: -1
+Snowfall/SnowFall_Loop_33
+  rotate: false
+  xy: 617, 504
+  size: 203, 279
+  orig: 203, 279
+  offset: 0, 0
+  index: -1
+Snowfall/SnowFall_Loop_34
+  rotate: false
+  xy: 822, 785
+  size: 203, 279
+  orig: 203, 279
+  offset: 0, 0
+  index: -1
+Snowfall/SnowFall_Loop_35
+  rotate: false
+  xy: 1027, 1066
+  size: 203, 279
+  orig: 203, 279
+  offset: 0, 0
+  index: -1
+Snowfall/SnowFall_Loop_36
+  rotate: false
+  xy: 1232, 1347
+  size: 203, 279
+  orig: 203, 279
+  offset: 0, 0
+  index: -1
+Snowfall/SnowFall_Loop_37
+  rotate: false
+  xy: 617, 223
+  size: 203, 279
+  orig: 203, 279
+  offset: 0, 0
+  index: -1
+Snowfall/SnowFall_Loop_38
+  rotate: false
+  xy: 822, 504
+  size: 203, 279
+  orig: 203, 279
+  offset: 0, 0
+  index: -1
+Snowfall/SnowFall_Loop_39
+  rotate: false
+  xy: 1027, 785
+  size: 203, 279
+  orig: 203, 279
+  offset: 0, 0
+  index: -1
+Snowfall/SnowFall_Loop_40
+  rotate: false
+  xy: 1232, 1066
+  size: 203, 279
+  orig: 203, 279
+  offset: 0, 0
+  index: -1
+Snowfall/SnowFall_Loop_41
+  rotate: false
+  xy: 1437, 1347
+  size: 203, 279
+  orig: 203, 279
+  offset: 0, 0
+  index: -1
+Snowfall/SnowFall_Loop_42
+  rotate: false
+  xy: 822, 223
+  size: 203, 279
+  orig: 203, 279
+  offset: 0, 0
+  index: -1
+Snowfall/SnowFall_Loop_43
+  rotate: false
+  xy: 1027, 504
+  size: 203, 279
+  orig: 203, 279
+  offset: 0, 0
+  index: -1
+Snowfall/SnowFall_Loop_44
+  rotate: false
+  xy: 1232, 785
+  size: 203, 279
+  orig: 203, 279
+  offset: 0, 0
+  index: -1
+Snowfall/SnowFall_Loop_45
+  rotate: false
+  xy: 1437, 1066
+  size: 203, 279
+  orig: 203, 279
+  offset: 0, 0
+  index: -1
+Snowfall/SnowFall_Loop_46
+  rotate: false
+  xy: 1642, 1347
+  size: 203, 279
+  orig: 203, 279
+  offset: 0, 0
+  index: -1
+Snowfall/SnowFall_Loop_47
+  rotate: false
+  xy: 1027, 223
+  size: 203, 279
+  orig: 203, 279
+  offset: 0, 0
+  index: -1
+Snowfall/SnowFall_Loop_48
+  rotate: false
+  xy: 1232, 504
+  size: 203, 279
+  orig: 203, 279
+  offset: 0, 0
+  index: -1
+Snowfall/SnowFall_Loop_49
+  rotate: false
+  xy: 1437, 785
+  size: 203, 279
+  orig: 203, 279
+  offset: 0, 0
+  index: -1
+Snowfall/SnowFall_Loop_50
+  rotate: false
+  xy: 1642, 1066
+  size: 203, 279
+  orig: 203, 279
+  offset: 0, 0
+  index: -1
+Snowfall/SnowFall_Loop_51
+  rotate: false
+  xy: 1232, 223
+  size: 203, 279
+  orig: 203, 279
+  offset: 0, 0
+  index: -1
+Snowfall/SnowFall_Loop_52
+  rotate: false
+  xy: 1437, 504
+  size: 203, 279
+  orig: 203, 279
+  offset: 0, 0
+  index: -1
+Snowfall/SnowFall_Loop_53
+  rotate: false
+  xy: 1642, 785
+  size: 203, 279
+  orig: 203, 279
+  offset: 0, 0
+  index: -1
+Snowfall/SnowFall_Loop_54
+  rotate: false
+  xy: 1437, 223
+  size: 203, 279
+  orig: 203, 279
+  offset: 0, 0
+  index: -1
+Snowfall/SnowFall_Loop_55
+  rotate: false
+  xy: 1642, 504
+  size: 203, 279
+  orig: 203, 279
+  offset: 0, 0
+  index: -1
+Snowfall/SnowFall_Loop_56
+  rotate: false
+  xy: 1642, 223
+  size: 203, 279
+  orig: 203, 279
+  offset: 0, 0
+  index: -1
+Snowfall/SnowFall_Loop_57
+  rotate: true
+  xy: 617, 18
+  size: 203, 279
+  orig: 203, 279
+  offset: 0, 0
+  index: -1
+Snowfall/SnowFall_Loop_58
+  rotate: true
+  xy: 898, 18
+  size: 203, 279
+  orig: 203, 279
+  offset: 0, 0
+  index: -1
+Snowfall/SnowFall_Loop_59
+  rotate: true
+  xy: 1179, 18
+  size: 203, 279
+  orig: 203, 279
+  offset: 0, 0
+  index: -1
+Snowfall/SnowFall_Loop_60
+  rotate: true
+  xy: 1460, 18
+  size: 203, 279
+  orig: 203, 279
+  offset: 0, 0
+  index: -1
+Snowfall/SnowFall_Loop_61
+  rotate: true
+  xy: 1741, 18
+  size: 203, 279
+  orig: 203, 279
+  offset: 0, 0
   index: -1
 WILD
   rotate: false
-  xy: 2, 48
-  size: 605, 178
-  orig: 607, 180
-  offset: 1, 1
+  xy: 361, 1681
+  size: 273, 81
+  orig: 273, 81
+  offset: 0, 0
   index: -1
 background
-  rotate: true
-  xy: 685, 323
-  size: 696, 566
-  orig: 698, 568
-  offset: 1, 1
+  rotate: false
+  xy: 2, 1471
+  size: 314, 256
+  orig: 314, 256
+  offset: 0, 0
   index: -1
 base
   rotate: false
-  xy: 1253, 415
-  size: 616, 604
-  orig: 616, 604
+  xy: 361, 1764
+  size: 277, 272
+  orig: 277, 272
   offset: 0, 0
   index: -1
 hair1
-  rotate: true
-  xy: 609, 2
-  size: 224, 244
-  orig: 250, 254
-  offset: 9, 10
+  rotate: false
+  xy: 1847, 1516
+  size: 101, 110
+  orig: 113, 114
+  offset: 4, 4
   index: -1
 hair2
-  rotate: true
-  xy: 995, 118
-  size: 145, 108
-  orig: 145, 108
+  rotate: false
+  xy: 1847, 1465
+  size: 65, 49
+  orig: 65, 49
   offset: 0, 0
   index: -1
 hair3
-  rotate: true
-  xy: 685, 233
-  size: 88, 157
-  orig: 88, 157
+  rotate: false
+  xy: 1950, 1555
+  size: 40, 71
+  orig: 40, 71
   offset: 0, 0
   index: -1
 hair4
-  rotate: false
-  xy: 855, 67
-  size: 138, 177
-  orig: 138, 183
-  offset: 0, 6
+  rotate: true
+  xy: 2, 2
+  size: 62, 79
+  orig: 62, 82
+  offset: 0, 3
   index: -1
 lefteye
   rotate: true
-  xy: 1032, 6
-  size: 110, 76
-  orig: 110, 76
+  xy: 599, 1629
+  size: 50, 34
+  orig: 50, 34
   offset: 0, 0
   index: -1
 lefteye_closed
-  rotate: false
-  xy: 974, 265
-  size: 82, 56
-  orig: 90, 77
-  offset: 6, 11
+  rotate: true
+  xy: 1914, 1476
+  size: 38, 25
+  orig: 41, 35
+  offset: 2, 5
   index: -1
 lips
   rotate: false
-  xy: 855, 8
-  size: 92, 57
-  orig: 92, 60
-  offset: 0, 3
+  xy: 318, 1701
+  size: 41, 26
+  orig: 41, 27
+  offset: 0, 1
   index: -1
 nose
-  rotate: true
-  xy: 844, 246
-  size: 75, 128
-  orig: 75, 128
+  rotate: false
+  xy: 83, 6
+  size: 34, 58
+  orig: 34, 58
   offset: 0, 0
   index: -1
 righteye
   rotate: false
-  xy: 1058, 271
-  size: 79, 50
-  orig: 79, 50
+  xy: 1950, 1530
+  size: 36, 23
+  orig: 36, 23
   offset: 0, 0
   index: -1
 righteye_closed
   rotate: false
-  xy: 949, 4
-  size: 81, 61
-  orig: 100, 75
-  offset: 9, 6
+  xy: 1847, 1434
+  size: 37, 29
+  orig: 45, 34
+  offset: 4, 2
   index: -1
