@@ -28,7 +28,8 @@ export class Lobby extends Component {
     lbNickName: Label | null = null;
     @property({ type: Node })
     btnLuckyWheel: Node | null = null;
-
+    @property({ type: Label })
+    lbCountdown: Label | null = null;
 
     @property({type:Node})
     btnBack:Node | null = null;
@@ -42,12 +43,15 @@ export class Lobby extends Component {
     @property({ type: Label })
     lbDbDeviceId: Label | null = null;
 
+    @property({type:Node})
+    contentCenter: Node | null = null;
     @property([Node])
     arrGames: Node[] = []
     @property([AudioClip])
     arrAudioClips: AudioClip[] = [];
     @property([Label])
     jackpotPools: Label[] = [];
+    private countUpdate = 0;
     start() {
         //--add listener
         for (let i = 0; i < this.arrGames.length; i++) {
@@ -139,5 +143,16 @@ export class Lobby extends Component {
                 this.notice.getComponent(Notice).show({ title: 'Notice', content: "Comming soon!" }, () => {  });
                 break;
         }
+    }
+    update(deltaTime: number) {
+        if(this.countUpdate>10){
+            this.countUpdate = 0;
+            let date = new Date();
+            let hour = date.getHours()<10? '0'+date.getHours() : date.getHours();
+            let minutes = date.getMinutes()<10? '0'+date.getMinutes() : date.getMinutes();
+            let seconds = date.getSeconds()<10? '0'+date.getSeconds() : date.getSeconds();
+            this.lbCountdown.string = `${hour}:${minutes}:${seconds}`;
+        }
+        this.countUpdate++;
     }
 }

@@ -40,7 +40,6 @@ export class Shop extends Component {
                 } else if (res == 'invalid') {
                     this.notice.getComponent(Notice).show({ title: 'Notice', content: "Invalid payment!" }, () => { });
                 } else {
-                    this.purchaseResult.active = true;
                     this.lbPurchaseResult.string = this.selectedItem.name;
                     let platform = (sys.os == sys.OS.ANDROID) ? 1 : 2;
                     let arr = res.split('@');
@@ -53,14 +52,15 @@ export class Shop extends Component {
                         token = arr[1];
                     }
                     let goods_id = this.selectedIdx+1;
+                    let self = this;
                     APIMgr.instance.purchase(receipt, goods_id, token,platform, (isSuccess:boolean,chips:number)=>{
                         if(isSuccess){
-                            this.purchaseResult.active = true;
-                            GameMgr.instance.numberTo(this.lbPurchaseResult,0,chips,1000);
+                            self.purchaseResult.active = true;
+                            GameMgr.instance.numberTo(self.lbPurchaseResult,0,chips,1000);
                             GameEvent.DispatchEvent("updatebalance",APIMgr.instance.purchaseRes.balance);
                         } else {
-                            this.purchaseResult.active = false;
-                            this.notice.getComponent(Notice).show('Purchase failed',()=>{});
+                            self.purchaseResult.active = false;
+                            self.notice.getComponent(Notice).show({title: 'Notice', content: 'Purchase failed'},()=>{});
                         }
                     });
                 }
@@ -86,8 +86,6 @@ export class Shop extends Component {
         if (sys.isNative) {
             native.jsbBridgeWrapper.dispatchEventToNative('buyproduct', itemInfo.id);
         } else {
-            this.purchaseResult.active = true;
-            this.lbPurchaseResult.string = this.selectedItem.name;
             this.notice.getComponent(Notice).show({ title: 'Notice', content: "Invalid payment!" }, () => { });
 
             //test iap
@@ -100,7 +98,7 @@ export class Shop extends Component {
             //         GameEvent.DispatchEvent("updatebalance",APIMgr.instance.purchaseRes.balance);
             //     } else {
             //         this.purchaseResult.active = false;
-            //         this.notice.getComponent(Notice).show('Purchase failed',()=>{});
+            //         this.notice.getComponent(Notice).show({title: 'Notice', content: 'Purchase failed'},()=>{});
             //     }
             // });
         }

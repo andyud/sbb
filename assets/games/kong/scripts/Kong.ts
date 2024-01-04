@@ -1,4 +1,4 @@
-import { _decorator, AudioClip, Button, Component, director, Animation, instantiate, Label, Node, Prefab, SpriteFrame, Tween, UIOpacity, UITransform, tween, EditBox, Mask, Color } from 'cc';
+import { _decorator, AudioClip, Button, Component, director, Animation, instantiate, Label, Node, Prefab, SpriteFrame, Tween, UIOpacity, UITransform, tween, EditBox, Mask, Color,sp } from 'cc';
 import { GameEvent } from '../../../core/GameEvent';
 import APIMgr from '../../../core/APIMgr';
 import { Loading } from '../../../prefabs/loading/Loading';
@@ -33,6 +33,8 @@ export class Kong extends Component {
 
     @property({ type: Node })
     bonusResNode: Node | null = null;
+    @property({type:sp.Skeleton})
+    bonusResSke:sp.Skeleton | null = null;
     @property({ type: Node })
     bonusPlayNode: Node | null = null;
     @property({ type: Node })
@@ -42,6 +44,11 @@ export class Kong extends Component {
 
     @property({ type: Node })
     freeSpinNode: Node | null = null;
+    @property({type:sp.Skeleton})
+    skeFreeSpin: sp.Skeleton | null = null;
+    @property({type:sp.Skeleton})
+    skeFreeSpinRes: sp.Skeleton | null = null;
+
     @property({ type: Node })
     btnCloseFreeSpin: Node | null = null;
     @property({ type: Label })
@@ -58,6 +65,8 @@ export class Kong extends Component {
 
     @property({ type: Node })
     bigWinNode: Node | null = null;
+    @property({type:sp.Skeleton})
+    bigWinSke: sp.Skeleton | null = null;
     @property({ type: Node })
     btnCloseBigWin: Node | null = null;
     @property({ type: Label })
@@ -86,6 +95,8 @@ export class Kong extends Component {
     bonusInfoNode: Node | null = null;
     @property({ type: Node })
     lbBonusInfo: Node | null = null;
+    @property({type:sp.Skeleton})
+    bonusIntro:sp.Skeleton | null = null;
     @property({ type: Node })
     btnBonusInfo: Node | null = null;
     @property({ type: Label })
@@ -324,30 +335,25 @@ export class Kong extends Component {
     ]
     private lineMatrix = [
         [1, 1, 1, 1, 1],//0
-        [2, 2, 2, 2, 2],
+        [2, 2, 2, 2, 2],//1
         [0, 0, 0, 0, 0],//2
-        [0, 1, 2, 1, 0],
-        [2, 1, 0, 1, 2],
-        [1, 2, 2, 2, 1],
-        [1, 0, 0, 0, 1],//6
-        [2, 2, 1, 0, 0],
+        [2, 1, 0, 1, 2],//3
+        [0, 1, 2, 1, 0],//4
+        [1, 0, 0, 0, 1],//5
+        [1, 2, 2, 2, 1],//6
+        [2, 2, 1, 0, 0],//7
         [0, 0, 1, 2, 2],//8
-        [1, 0, 1, 2, 1],//9
-        [0, 0, 1, 2, 2],
-        [2, 1, 1, 1, 2],//11
-        [0, 1, 1, 1, 0],//12
+        [0, 1, 1, 1, 2],//9
+        [2, 1, 1, 1, 0],//10
+        [1, 0, 1, 2, 1],//11   
+        [1, 2, 1, 0, 1],//12
         [2, 1, 2, 1, 2],//13
         [0, 1, 0, 1, 0],//14
         [1, 1, 2, 1, 1],//15
         [1, 1, 0, 1, 1],//16
-        [2, 2, 0, 2, 2],//17
-        [0, 0, 2, 0, 0],//18
-        [2, 2, 0, 2, 2],//19
-        [0, 2, 2, 2, 0],//20
-        [1, 2, 0, 2, 0],//21    
-        [1, 0, 2, 0, 1],//22
-        [2, 0, 2, 0, 2],//23
-        [0, 2, 0, 2, 0]//24
+        [2, 0, 2, 0, 2],//17
+        [0, 2, 0, 2, 0],//18
+        [0, 2, 1, 2, 0]//19
     ];
     private ICON_MAPPING = {
         ship:0,
@@ -463,22 +469,20 @@ export class Kong extends Component {
                 if (this.countBonusRemain <= 0) return;
                 AudioMgr.inst.playOneShot(this.arrAudioClips[24]);
                 //count to end
-                this.countBonusRemain--;
                 this.lbBonusRemain.string = `${this.countBonusRemain}`;
-                let val = this.spinRes.bonusPayout[0].extendData[this.countBonusRemain];
+                let val = this.spinRes.bonusPayout[0].extendData[this.spinRes.bonusPayout[0].matchCount - this.countBonusRemain];
+                this.countBonusRemain--;
                 let currVal = 0;
                 if(val.toString().indexOf('x')>=0){
                     let multiply = val.toString().replace('x','');
-                    this.totalBonusWin = this.totalBonusWin* parseInt(multiply);
-                    this.arrPlayBonusItem[idx].getComponent(KongBonusItem).setValue2(val.toString());
+                    currVal = this.totalBonusWin*parseInt(multiply) - this.totalBonusWin;
+                    this.totalBonusWin = this.totalBonusWin * parseInt(multiply);
+                    this.arrPlayBonusItem[idx].getComponent(KongBonusItem).setValue2(`x${multiply}`);
                 } else {
                     currVal = val * this.loginRes.lineBet;
                     this.arrPlayBonusItem[idx].getComponent(KongBonusItem).setValue(currVal, '+');
                     this.totalBonusWin += currVal;
                 }
-                
-               
-                
                 GameMgr.instance.numberTo(this.lbBonusReward, this.totalBonusWin - currVal, this.totalBonusWin, 500);
                 if (this.countBonusRemain == 0) { //--disable touch
                     for (let k = 0; k < this.arrPlayBonusItem.length; k++) {
@@ -494,7 +498,12 @@ export class Kong extends Component {
                     const timeout1 = setTimeout(() => {
                         clearTimeout(timeout1);
                         //open all remain bonus
-                        let arrTemp = [...this.spinRes.bonusPayout[0].extendData, ...this.spinRes.bonusPayout[0].extendData, ...this.spinRes.bonusPayout[0].extendData];
+                        let arrTemp = [1,10,20,30,50,100,500,'x1','x2','x3'];
+                        if(this.spinRes.bonusPayout[0].matchCount==4){
+                            arrTemp = [1,10,20,30,50,100,500,'x2','x3','x4'];
+                        } else if(this.spinRes.bonusPayout[0].matchCount==5){
+                            arrTemp = [1,10,20,30,50,100,500,'x3','x4','x5'];
+                        }
                         arrTemp = GameMgr.instance.shuffle(arrTemp);
                         for (let ii = 0; ii < this.arrPlayBonusItem.length; ii++) {
                             let bonusItem = this.arrPlayBonusItem[ii].getComponent(KongBonusItem)
@@ -504,10 +513,9 @@ export class Kong extends Component {
                             if(arrTemp[ii].toString().indexOf('x')>=0){
                                 this.arrPlayBonusItem[ii].getComponent(KongBonusItem).setValue2(arrTemp[ii].toString());
                             } else {
-                                let currVal2 = arrTemp[ii] * this.loginRes.lineBet;
+                                let currVal2 = parseInt(arrTemp[ii].toString()) * this.loginRes.lineBet;
                                 this.arrPlayBonusItem[ii].getComponent(KongBonusItem).setValue(currVal2);
                             }
-                            
                             this.arrPlayBonusItem[ii].getComponent(KongBonusItem).lb.color = Color.GREEN;
                         }
                         const timeout13 = setTimeout(() => {
@@ -515,7 +523,8 @@ export class Kong extends Component {
                             this.countBonusRemain = -1;
                             this.bonusPlayNode.active = false;
                             this.bonusResNode.active = true;
-                            GameMgr.instance.numberTo(this.lbBonusWinCoin, 0, this.spinRes.totalWinBalance, 2000);
+                            this.bonusResSke.setAnimation(0,'start',false);
+                            GameMgr.instance.numberTo(this.lbBonusWinCoin, 0, this.spinRes.bonusPayout[0].balance, 2000);
                             AudioMgr.inst.bgmBonus.stop();
                             AudioMgr.inst.playOneShot(this.arrAudioClips[17]);
                             let timeout12 = setTimeout(() => {
@@ -651,7 +660,7 @@ export class Kong extends Component {
                 this.spinRes.balance = this.loginRes.balance;
                 this.lbBalance.string = GameMgr.instance.numberWithCommas(this.loginRes.balance);
                 // this.lbLevel.string = `lv: ${this.loginRes.level}`;
-                this.lbTotalBet.string = GameMgr.instance.numberWithCommas(this.loginRes.lineBet * 25);
+                this.lbTotalBet.string = GameMgr.instance.numberWithCommas(this.loginRes.lineBet * 20);
                 //clear & add new
                 if (this.loginRes && this.loginRes.reelInfo && this.loginRes.reelInfo.normal && this.loginRes.reelInfo.normal.length > 0) {
                     let arr = this.loginRes.reelInfo.normal[0];
@@ -801,7 +810,7 @@ export class Kong extends Component {
                 this.spin(true, [9, 2, 2, 2, 8]);
                 break;
             case 'btnDbBonus':
-                this.spin(true, [9, 7, 20, 6, 8]);
+                this.spin(true, [9, 7, 20, 6, 5]);
                 break;
             case 'btnDbFreeSpin':
                 this.spin(true, [3, 10, 17, 18, 12])//13, 15]);
@@ -1166,6 +1175,12 @@ export class Kong extends Component {
             let timeout5 = setTimeout(() => {
                 clearTimeout(timeout5);
                 this.bonusInfoNode.active = true;
+                this.lbBonusInfo.active = false;
+                this.bonusIntro.setAnimation(0,'start',false);
+                let timeout16 = setTimeout(()=>{
+                    clearTimeout(timeout16);
+                    this.lbBonusInfo.active = true;
+                },1000);
                 this.lbBonusInfo.children[0].active = false;
                 this.lbBonusInfo.children[1].active = false;
                 this.lbBonusInfo.children[2].active = false;
@@ -1204,6 +1219,7 @@ export class Kong extends Component {
                 let timeout7 = setTimeout(() => {
                     clearTimeout(timeout7);
                     this.bigWinNode.active = true;
+                    this.bigWinSke.setAnimation(0,'start',false);
                     GameMgr.instance.numberTo(this.lbBigWinCoin, 0, this.spinRes.totalWinBalance, 2000);
                     AudioMgr.inst.playOneShot(this.arrAudioClips[12]);
                 }, isDelay ? this.kongConfig.showResultDelay : this.kongConfig.showResultNotDelay);
@@ -1218,6 +1234,7 @@ export class Kong extends Component {
                             this.isFreeSpin = true;
                             this.iTotalWinFreeSpin = 0;
                             this.freeSpinNode.active = true;
+                            this.skeFreeSpin.setAnimation(0,'start',false);
                             this.lbFreeSpinEff.string = `${this.spinRes.freeSpin.remain}`;
                             this.btnFreeSpin.active = true;
                             this.btnSpin.active = false;
@@ -1247,11 +1264,11 @@ export class Kong extends Component {
                 clearTimeout(timeout9);
                 this.isFreeSpin = false;
                 this.freeSpinResNode.active = true;
+                this.skeFreeSpinRes.setAnimation(0,'start',false);
                 GameMgr.instance.numberTo(this.lbFreeSpinWon, 0, this.iTotalWinFreeSpin, 2000);
                 AudioMgr.inst.playOneShot(this.arrAudioClips[16]);
             }, this.kongConfig.showResultDelay);
         }
-
     }
     getWinType() {
         if (this.spinRes.bonusPayout && this.spinRes.bonusPayout.length > 0 && this.spinRes.bonusPayout[0].extendData) {

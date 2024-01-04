@@ -10,6 +10,7 @@ import { CowboySpinBtn } from './CowboySpinBtn';
 import { CowboyItem } from './CowboyItem';
 import { CowboyBonusItem } from './CowboyBonusItem';
 import { CowboyCoinEff } from './CowboyCoinEff';
+import { Shop } from '../../../prefabs/shop/scripts/Shop';
 const { ccclass, property } = _decorator;
 declare var io: any;
 
@@ -450,9 +451,10 @@ export class Cowboy extends Component {
                 if (this.countBonusRemain <= 0) return;
                 AudioMgr.inst.playOneShot(this.arrAudioClips[24]);
                 //count to end
-                this.countBonusRemain--;
                 this.lbBonusRemain.string = `${this.countBonusRemain}`;
-                let val = this.spinRes.bonusPayout[0].extendData[this.countBonusRemain];
+                let val = this.spinRes.bonusPayout[0].extendData[this.spinRes.bonusPayout[0].matchCount - this.countBonusRemain];
+                this.countBonusRemain--;
+
                 let currVal = val * this.loginRes.lineBet;
                 this.arrPlayBonusItem[idx].getComponent(CowboyBonusItem).setValue(currVal, '+');
                 this.totalBonusWin += currVal;
@@ -471,7 +473,7 @@ export class Cowboy extends Component {
                     const timeout1 = setTimeout(() => {
                         clearTimeout(timeout1);
                         //open all remain bonus
-                        let arrTemp = [...this.spinRes.bonusPayout[0].extendData, ...this.spinRes.bonusPayout[0].extendData, ...this.spinRes.bonusPayout[0].extendData];
+                        let arrTemp = [...this.spinRes.bonusPayout[0].extendData, ...this.spinRes.bonusPayout[0].extendData, ...this.spinRes.bonusPayout[0].extendData, ...this.spinRes.bonusPayout[0].extendData];
                         arrTemp = GameMgr.instance.shuffle(arrTemp);
                         for (let ii = 0; ii < this.arrPlayBonusItem.length; ii++) {
                             let bonusItem = this.arrPlayBonusItem[ii].getComponent(CowboyBonusItem)
@@ -487,7 +489,7 @@ export class Cowboy extends Component {
                             this.countBonusRemain = -1;
                             this.bonusPlayNode.active = false;
                             this.bonusResNode.active = true;
-                            GameMgr.instance.numberTo(this.lbBonusWinCoin, 0, this.spinRes.totalWinBalance, 2000);
+                            GameMgr.instance.numberTo(this.lbBonusWinCoin, 0, this.spinRes.bonusPayout[0].balance, 2000);
                             AudioMgr.inst.bgmBonus.stop();
                             AudioMgr.inst.playOneShot(this.arrAudioClips[17]);
                             let timeout12 = setTimeout(() => {
