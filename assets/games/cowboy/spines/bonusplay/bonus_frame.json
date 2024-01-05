@@ -1,0 +1,98 @@
+{
+"skeleton": {
+	"hash": "YIXWfDwCJWVDISEfnZ4Pbladk/I",
+	"spine": "3.8.95",
+	"x": -962,
+	"y": -542,
+	"width": 1924,
+	"height": 1877.26,
+	"images": "./images/",
+	"audio": ""
+},
+"bones": [
+	{ "name": "root" },
+	{ "name": "main", "parent": "root", "x": 1, "y": -76 },
+	{ "name": "modal layer", "parent": "root" },
+	{ "name": "frame", "parent": "main", "x": -1, "y": 76 }
+],
+"slots": [
+	{ "name": "modal layer", "bone": "modal layer", "attachment": "modal layer" },
+	{ "name": "frame", "bone": "frame", "attachment": "frame" },
+	{ "name": "1", "bone": "frame", "attachment": "1" },
+	{ "name": "2", "bone": "frame", "attachment": "2" },
+	{ "name": "3", "bone": "frame", "attachment": "3" },
+	{ "name": "4", "bone": "frame", "attachment": "4" },
+	{ "name": "5", "bone": "frame", "attachment": "5" },
+	{ "name": "6", "bone": "frame", "attachment": "6" },
+	{ "name": "7", "bone": "frame", "attachment": "7" },
+	{ "name": "8", "bone": "frame", "attachment": "8" },
+	{ "name": "9", "bone": "frame", "attachment": "9" },
+	{ "name": "10", "bone": "frame", "attachment": "10" }
+],
+"skins": [
+	{
+		"name": "default",
+		"attachments": {
+			"1": {
+				"1": { "x": -441, "y": 66, "width": 206, "height": 252 }
+			},
+			"2": {
+				"2": { "x": -219, "y": 66, "width": 206, "height": 252 }
+			},
+			"3": {
+				"3": { "x": 3, "y": 66, "width": 206, "height": 252 }
+			},
+			"4": {
+				"4": { "x": 225, "y": 66, "width": 206, "height": 252 }
+			},
+			"5": {
+				"5": { "x": 447, "y": 66, "width": 206, "height": 252 }
+			},
+			"6": {
+				"6": { "x": -441, "y": -195, "width": 206, "height": 252 }
+			},
+			"7": {
+				"7": { "x": -219, "y": -195, "width": 206, "height": 252 }
+			},
+			"8": {
+				"8": { "x": 3, "y": -195, "width": 206, "height": 252 }
+			},
+			"9": {
+				"9": { "x": 225, "y": -195, "width": 206, "height": 252 }
+			},
+			"10": {
+				"10": { "x": 447, "y": -195, "width": 206, "height": 252 }
+			},
+			"frame": {
+				"frame": { "x": 1, "y": -76, "width": 1266, "height": 768 }
+			},
+			"modal layer": {
+				"modal layer": { "width": 1924, "height": 1084 }
+			}
+		}
+	}
+],
+"animations": {
+	"bonus_frame": {
+		"bones": {
+			"frame": {
+				"rotate": [
+					{ "curve": 0.382, "c2": 0.57, "c3": 0.75 },
+					{ "time": 0.2, "angle": -1.11, "curve": 0.25, "c3": 0.585, "c4": 0.54 },
+					{ "time": 0.2667 }
+				],
+				"translate": [
+					{ "y": 1027.26, "curve": 0.382, "c2": 0.57, "c3": 0.75 },
+					{ "time": 0.2, "y": -30, "curve": 0.25, "c3": 0.585, "c4": 0.54 },
+					{ "time": 0.2667 }
+				],
+				"scale": [
+					{ "curve": 0.382, "c2": 0.57, "c3": 0.75 },
+					{ "time": 0.2, "x": 1.023, "y": 0.97, "curve": 0.25, "c3": 0.585, "c4": 0.54 },
+					{ "time": 0.2667 }
+				]
+			}
+		}
+	}
+}
+}

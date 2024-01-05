@@ -1,0 +1,224 @@
+{
+"skeleton": { "hash": "nQRR/EiUag1VhvUE8Ob+o5eztGA", "spine": "3.8.95", "images": "./images/", "audio": "E:/muse/spine/yuri_hong/bg_bonus" },
+"bones": [
+	{ "name": "root" },
+	{ "name": "poster_5", "parent": "root" },
+	{ "name": "cross_2", "parent": "poster_5", "length": 177.78, "rotation": -38.01, "x": -73.8, "y": 63.68 },
+	{ "name": "cross_1", "parent": "poster_5", "length": 178.36, "rotation": -123.27, "x": 32.66, "y": 87.38 }
+],
+"slots": [
+	{ "name": "poster_add", "bone": "poster_5", "blend": "additive" },
+	{ "name": "poster_5", "bone": "poster_5" },
+	{ "name": "cross_1", "bone": "cross_1" },
+	{ "name": "cross_2", "bone": "cross_2" }
+],
+"skins": [
+	{
+		"name": "default",
+		"attachments": {
+			"cross_1": {
+				"cross_1": { "x": 83.91, "y": 2.23, "rotation": 123.27, "width": 119, "height": 161 }
+			},
+			"cross_2": {
+				"cross_2": { "x": 88.66, "y": -0.1, "rotation": 38.01, "width": 150, "height": 123 }
+			},
+			"poster_5": {
+				"poster": { "width": 218, "height": 263 }
+			},
+			"poster_add": {
+				"poster_add": { "width": 218, "height": 263 }
+			}
+		}
+	}
+],
+"animations": {
+	"bonus_poster_appearance": {
+		"slots": {
+			"cross_1": {
+				"attachment": [
+					{ "time": 0.3333, "name": "cross_1" }
+				]
+			},
+			"cross_2": {
+				"attachment": [
+					{ "time": 0.4667, "name": "cross_2" }
+				]
+			},
+			"poster_5": {
+				"color": [
+					{ "color": "ffffff00" },
+					{ "time": 0.1, "color": "ffffffff" }
+				],
+				"attachment": [
+					{ "name": "poster" }
+				]
+			},
+			"poster_add": {
+				"color": [
+					{ "time": 0.1, "color": "ffffff00" },
+					{ "time": 0.2, "color": "ffffffff" },
+					{ "time": 0.3333, "color": "ffffff00" }
+				],
+				"attachment": [
+					{ "time": 0.1, "name": "poster_add" },
+					{ "time": 0.3333, "name": null }
+				]
+			}
+		},
+		"bones": {
+			"poster_5": {
+				"rotate": [
+					{ "time": 0.6333 }
+				],
+				"translate": [
+					{ "time": 0.6333 }
+				],
+				"scale": [
+					{ "time": 0.6333 }
+				],
+				"shear": [
+					{ "time": 0.6333 }
+				]
+			},
+			"cross_1": {
+				"rotate": [
+					{ "time": 0.5, "curve": "stepped" },
+					{ "time": 0.6333 }
+				],
+				"translate": [
+					{ "time": 0.5, "curve": "stepped" },
+					{ "time": 0.6333 }
+				],
+				"scale": [
+					{ "time": 0.3333, "x": 0.005, "curve": 0.25, "c3": 0.642, "c4": 0.28 },
+					{ "time": 0.5, "curve": "stepped" },
+					{ "time": 0.6333 }
+				],
+				"shear": [
+					{ "time": 0.6333 }
+				]
+			},
+			"cross_2": {
+				"rotate": [
+					{ "time": 0.6333 }
+				],
+				"translate": [
+					{ "time": 0.6333 }
+				],
+				"scale": [
+					{ "time": 0.4667, "x": -0.009, "curve": 0.25, "c3": 0.692, "c4": 0.37 },
+					{ "time": 0.6333 }
+				],
+				"shear": [
+					{ "time": 0.6333 }
+				]
+			}
+		}
+	},
+	"bonus_poster_disappearance": {
+		"slots": {
+			"cross_1": {
+				"color": [
+					{ "color": "ffffffff" },
+					{ "time": 0.3333, "color": "ffffff00" }
+				],
+				"attachment": [
+					{ "name": "cross_1" }
+				]
+			},
+			"cross_2": {
+				"color": [
+					{ "color": "ffffffff" },
+					{ "time": 0.3333, "color": "ffffff00" }
+				],
+				"attachment": [
+					{ "name": "cross_2" }
+				]
+			},
+			"poster_5": {
+				"color": [
+					{ "color": "ffffffff" },
+					{ "time": 0.3333, "color": "ffffff00" }
+				],
+				"attachment": [
+					{ "name": "poster" }
+				]
+			},
+			"poster_add": {
+				"color": [
+					{ "color": "ffffff00" }
+				],
+				"attachment": [
+					{ "name": "poster_add" }
+				]
+			}
+		},
+		"bones": {
+			"cross_1": {
+				"rotate": [
+					{}
+				],
+				"translate": [
+					{}
+				],
+				"scale": [
+					{}
+				]
+			},
+			"cross_2": {
+				"scale": [
+					{}
+				]
+			}
+		}
+	},
+	"bonus_poster_idle": {
+		"slots": {
+			"cross_1": {
+				"attachment": [
+					{ "name": "cross_1" }
+				]
+			},
+			"cross_2": {
+				"attachment": [
+					{ "name": "cross_2" }
+				]
+			},
+			"poster_5": {
+				"color": [
+					{ "color": "ffffffff" }
+				],
+				"attachment": [
+					{ "name": "poster" }
+				]
+			},
+			"poster_add": {
+				"color": [
+					{ "color": "ffffff00" }
+				],
+				"attachment": [
+					{ "name": "poster_add" }
+				]
+			}
+		},
+		"bones": {
+			"cross_1": {
+				"rotate": [
+					{}
+				],
+				"translate": [
+					{}
+				],
+				"scale": [
+					{}
+				]
+			},
+			"cross_2": {
+				"scale": [
+					{}
+				]
+			}
+		}
+	}
+}
+}

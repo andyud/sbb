@@ -129,6 +129,7 @@ export class Login extends Component {
     }
     async connectLobby(){
         await APIMgr.instance.getGames();
+        await APIMgr.instance.getProductlist();
         for(let i=0;i<APIMgr.instance.gamesRes.list.length;i++){
             await APIMgr.instance.getJackpotPool(APIMgr.instance.gamesRes.list[i].id);
         }

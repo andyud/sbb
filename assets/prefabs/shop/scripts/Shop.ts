@@ -17,7 +17,7 @@ export class Shop extends Component {
     @property({ type: Prefab })
     pfNotice: Prefab | null = null;
     private notice: Node = null;
-    public selectedItem = { id: '1', name: '3,000,000 Chips', type: '', price: '', discount: 0 }
+    public selectedItem = {id:1,productId:'shop_chips_9.99',chips:3000000,payment:'9.99',bonus:1,flag:[]};
     public selectedIdx = 0;
     start() {
         this.purchaseResult.active = false;
@@ -39,8 +39,13 @@ export class Shop extends Component {
                     this.notice.getComponent(Notice).show({ title: 'Notice', content: "Purchase has canceled!" }, () => { });
                 } else if (res == 'invalid') {
                     this.notice.getComponent(Notice).show({ title: 'Notice', content: "Invalid payment!" }, () => { });
-                } else {
-                    this.lbPurchaseResult.string = this.selectedItem.name;
+                } else if (res == 'failed') {
+                    this.notice.getComponent(Notice).show({ title: 'Notice', content: "Purchase has failed!" }, () => { });
+                }
+                else {
+                    let newChips = GameMgr.instance.IAB_PRODUCTS[this.selectedIdx].chips*GameMgr.instance.IAB_PRODUCTS[this.selectedIdx].bonus;
+                    this.lbPurchaseResult.string = GameMgr.instance.numberWithCommas(newChips);
+                    this.purchaseResult.active = true;
                     let platform = (sys.os == sys.OS.ANDROID) ? 1 : 2;
                     let arr = res.split('@');
                     let token = "";
@@ -51,18 +56,9 @@ export class Shop extends Component {
                     if(arr.length>1){
                         token = arr[1];
                     }
-                    let goods_id = this.selectedIdx+1;
-                    let self = this;
-                    APIMgr.instance.purchase(receipt, goods_id, token,platform, (isSuccess:boolean,chips:number)=>{
-                        if(isSuccess){
-                            self.purchaseResult.active = true;
-                            GameMgr.instance.numberTo(self.lbPurchaseResult,0,chips,1000);
-                            GameEvent.DispatchEvent("updatebalance",APIMgr.instance.purchaseRes.balance);
-                        } else {
-                            self.purchaseResult.active = false;
-                            self.notice.getComponent(Notice).show({title: 'Notice', content: 'Purchase failed'},()=>{});
-                        }
-                    });
+                    let goods_id = GameMgr.instance.IAB_PRODUCTS[this.selectedIdx].id;
+                    APIMgr.instance.purchase(receipt, goods_id, token,platform);
+                    GameMgr.instance.numberTo(this.lbPurchaseResult,0,newChips,1000);
                 }
             });
         }
@@ -84,23 +80,14 @@ export class Shop extends Component {
         this.selectedItem = itemInfo;
         this.selectedIdx  = button.node.getComponent(ShopItemLong).idx;
         if (sys.isNative) {
-            native.jsbBridgeWrapper.dispatchEventToNative('buyproduct', itemInfo.id);
+            native.jsbBridgeWrapper.dispatchEventToNative('buyproduct', itemInfo.productId);
         } else {
             this.notice.getComponent(Notice).show({ title: 'Notice', content: "Invalid payment!" }, () => { });
 
             //test iap
-            // let str = "GPA.3351-3174-5970-74320@fpebnljpgaibpaafjlggpnkl.AO-J1OzXF2CgZJfIHdhTdnynXKUJSjNKwuEnu9mFhxV5z6WFH4fzLCERMqPyYjGp1HGjVXa7Q24GE4iiMMdSh0LufkvjyDhPeTkEMrawkpsc-gx-u9zM10Q@shop_chips_0.99";
+            // let str = "GPA.3376-9552-2976-57039@debhbblcllbmpojhfpgimgoo.AO-J1Oz_5-Sg5PAJy2Lt2m073Z5XYLOujH5oNLl_tmqaYlNOoXNUuTIcz0KmW2LKTJxPmT8_QGulJpglnpQxUEZYS-vaMc6OTqWSbE5MF39LUXZS2amF2U8";
             // let arr = str.split('@');
-            // APIMgr.instance.purchase(arr[0],1,arr[1],1,(isSuccess:boolean,chips:number)=>{
-            //     if(isSuccess){
-            //         this.purchaseResult.active = true;
-            //         GameMgr.instance.numberTo(this.lbPurchaseResult,0,chips,1000);
-            //         GameEvent.DispatchEvent("updatebalance",APIMgr.instance.purchaseRes.balance);
-            //     } else {
-            //         this.purchaseResult.active = false;
-            //         this.notice.getComponent(Notice).show({title: 'Notice', content: 'Purchase failed'},()=>{});
-            //     }
-            // });
+            // APIMgr.instance.purchase(arr[0],1,arr[1],1);
         }
     }
 }

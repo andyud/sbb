@@ -469,9 +469,10 @@ export class Kong extends Component {
                 if (this.countBonusRemain <= 0) return;
                 AudioMgr.inst.playOneShot(this.arrAudioClips[24]);
                 //count to end
-                this.lbBonusRemain.string = `${this.countBonusRemain}`;
                 let val = this.spinRes.bonusPayout[0].extendData[this.spinRes.bonusPayout[0].matchCount - this.countBonusRemain];
                 this.countBonusRemain--;
+		        this.lbBonusRemain.string = `${this.countBonusRemain}`;
+
                 let currVal = 0;
                 if(val.toString().indexOf('x')>=0){
                     let multiply = val.toString().replace('x','');
@@ -833,6 +834,7 @@ export class Kong extends Component {
                 AudioMgr.inst.bgmFreeSpin.clip = null;
                 AudioMgr.inst.bgmSpin.clip = null;
                 AudioMgr.inst.bgmTension.clip = null;
+                APIMgr.instance.signinRes.balance = this.spinRes.balance;
                 let timeout15 = setTimeout(() => {
                     clearTimeout(timeout15);
                     this.loadNewScene('lobby');
@@ -1115,17 +1117,12 @@ export class Kong extends Component {
                     const texId = arr[j]
                     const tex = this.icons[texId];
                     this.reels[i].children[startIdx - j].getComponent(KongItem).setTexture(tex, texId);
-                    if (texId == this.ICON_MAPPING.scatter || texId == this.ICON_MAPPING.coin || texId == this.ICON_MAPPING.jackpot || texId == this.ICON_MAPPING.wild) {
-                        // this.reels[i].children[startIdx - j].getComponent(KongItem).runSpecialEff();
-                        if (texId == this.ICON_MAPPING.scatter && this.spinRes.freeSpin && this.spinRes.freeSpin.remain && this.spinRes.freeSpin.remain == this.spinRes.freeSpin.count) {//scatter
-                            this.reels[i].children[startIdx - j].getComponent(KongItem).runScatter(this.items);
-                        } else if (texId == this.ICON_MAPPING.wild) {//wild
-                            this.reels[i].children[startIdx - j].getComponent(KongItem).runWild(this.items);
-                        } else if (texId == this.ICON_MAPPING.coin && this.spinRes.bonusPayout && this.spinRes.bonusPayout.length > 0 && this.spinRes.bonusPayout[0].extendData) {//bonus
-                            this.reels[i].children[startIdx - j].getComponent(KongItem).runWanted(this.items);
-                        } else if (texId == this.ICON_MAPPING.jackpot && this.spinRes.winType == 'Jackpot') {//jackpot
-                            this.reels[i].children[startIdx - j].getComponent(KongItem).runJackpot(this.items);
-                        }
+                    if (texId == this.ICON_MAPPING.scatter && this.spinRes.freeSpin && this.spinRes.freeSpin.remain && this.spinRes.freeSpin.remain == this.spinRes.freeSpin.count) {//scatter
+                        this.reels[i].children[startIdx - j].getComponent(KongItem).runScatter(this.items);
+                    } else if (texId == this.ICON_MAPPING.coin && this.spinRes.bonusPayout && this.spinRes.bonusPayout.length > 0 && this.spinRes.bonusPayout[0].extendData) {//bonus
+                        this.reels[i].children[startIdx - j].getComponent(KongItem).runWanted(this.items);
+                    } else if (texId == this.ICON_MAPPING.jackpot && this.spinRes.winType == 'Jackpot') {//jackpot
+                        this.reels[i].children[startIdx - j].getComponent(KongItem).runJackpot(this.items);
                     }
                 }
                 this.reels[i].setPosition(this.reels[i].getPosition().x, 18);
@@ -1153,7 +1150,11 @@ export class Kong extends Component {
                         let val2 = row[jj];
                         if (val1 == val2) {
                             this.reels[jj].children[2 - ii].getComponent(KongItem).zoomAnim();
-                            console.log(`anim [${jj},${2 - ii} val: ${val1}]`)
+                            //console.log(`anim [${jj},${2 - ii} val: ${val1}]`)
+                            let texId = this.reels[jj].children[2 - ii].getComponent(KongItem).idx;
+                            if (texId == this.ICON_MAPPING.wild) {//wild
+                                this.reels[jj].children[2 - ii].getComponent(KongItem).runWild(this.items);
+                            }
                         }
                     }
                 }

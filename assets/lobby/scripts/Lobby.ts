@@ -98,6 +98,7 @@ export class Lobby extends Component {
             this.notice.getComponent(UITransform).setContentSize(this.node.getComponent(UITransform).width, this.node.getComponent(UITransform).height);
             this.notice.getComponent(Notice).hide();
         }
+        this.lbBalance.string = GameMgr.instance.numberWithCommas(APIMgr.instance.signinRes.balance);
     }
     loadPlayerInfo() {
         this.lbDbDeviceId.string = `Device Id: ${APIMgr.instance.deviceId}`

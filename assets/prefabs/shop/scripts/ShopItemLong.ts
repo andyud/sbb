@@ -1,16 +1,17 @@
 import { _decorator, Component, Node, Label } from 'cc';
+import GameMgr from '../../../core/GameMgr';
 const { ccclass, property } = _decorator;
 
 @ccclass('ShopItemLong')
 export class ShopItemLong extends Component {
     @property({ type: Label })
-    lbName: Label | null = null;
+    lbPrice: Label | null = null;
     @property({ type: Label })
-    lbOldPrice: Label | null = null;
+    lbOldChip: Label | null = null;
     @property({ type: Node })
     iconLineThrough: Node | null = null;
     @property({ type: Label })
-    lbNewPrice: Label | null = null;
+    lbNewChip: Label | null = null;
     @property({ type: Label })
     lbDiscountPercent: Label | null = null;
     @property({ type: Node })
@@ -21,7 +22,7 @@ export class ShopItemLong extends Component {
     bestValue: Node | null = null;
     @property({ type: Node })
     mostPopular: Node | null = null;
-    info = {id:'1',name:'',type:'',price:'',discount:0}
+    info = {id:1,productId:'shop_chips_9.99',chips:3000000,payment:'9.99',bonus:1,flag:[]}
     idx = 0;
     start() {
 
@@ -29,22 +30,41 @@ export class ShopItemLong extends Component {
     setInfo(info:any, idx: number){
         this.info = info;
         this.idx  = idx;
-        this.lbName.string = info.name;
-        if(this.info.discount>0){
+        this.lbPrice.string = `$${info.payment}`;
+        if(this.info.bonus>1){
             this.lbDiscountPercent.node.active = true;
-            this.lbDiscountPercent.string = `${info.discount}%`;
-            this.lbOldPrice.node.active = true;
-            this.lbOldPrice.string = `${info.price.replace(' Chips(Shop)','')}`;
+            this.lbOldChip.node.active = true;
+            this.lbOldChip.string = GameMgr.instance.numberWithCommas(this.info.chips);
+            let newChip = this.info.chips * this.info.bonus;
+            this.lbNewChip.string = GameMgr.instance.numberWithCommas(newChip);
+            let percent = this.info.bonus*100;
+            this.lbDiscountPercent.string = `${percent}%`;
+            if(this.idx==2 || this.idx==3){
+                this.iconArrow.active = true;
+                this.lbDiscountPercent.node.active = true;
+            } else {
+                this.iconArrow.active = false;
+                this.lbDiscountPercent.node.active = false;
+            }
         } else {
-            // this.lbDiscountPercent.node.active = false;
-            // this.lbOldPrice.node.active = false;
-            // this.iconArrow.active = false;
+            this.lbDiscountPercent.node.active = false;
+            this.lbOldChip.node.active = false;
+            this.iconArrow.active = false;
+            this.lbNewChip.string = GameMgr.instance.numberWithCommas(this.info.chips);
         }
-        this.lbNewPrice.string = `${info.price.replace(' Chips(Shop)','')}`;
-        let arrInfo = info.price.split(' ');
-        if(arrInfo.length>2){
-            this.lbName.string = arrInfo[0];
-            this.lbNewPrice.string = arrInfo[2];
+        this.bestValue.active = false;
+        this.mostPopular.active = false;
+        if(this.info.flag.length>0){
+            if(this.info.flag[0]=='best' || this.info.flag[0]=='most'){
+                if(this.idx == 2 || this.idx==3){
+                    this.bestValue.active = true;
+                } else {
+                    this.mostPopular.active = true;
+                }
+            } else {
+                this.bestValue.active = false;
+                this.mostPopular.active = false;
+            }
         }
     }
 }

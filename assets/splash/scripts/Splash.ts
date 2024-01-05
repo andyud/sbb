@@ -18,7 +18,6 @@ export class Splash extends Component {
                 console.log(`getproductlist ${products}`);
                 if(this.isCheckingDone==false){
                     this.isCheckingDone = true;
-                    GameMgr.instance.IAB_PRODUCTS = [];
                     let arr = products.split('@');
 
                     for(let i=0;i<arr.length;i++){
@@ -31,10 +30,9 @@ export class Splash extends Component {
                                 price:`${arr2[3]}`,
                                 discount:0
                             };
-                            GameMgr.instance.IAB_PRODUCTS.push(item);
+                            // GameMgr.instance.IAB_PRODUCTS.push(item);
                         }
                     }
-                    console.log(JSON.stringify(GameMgr.instance.IAB_PRODUCTS));
                     if(this.percent>=100){
                         director.loadScene('login');
                     }
@@ -47,9 +45,8 @@ export class Splash extends Component {
                     if(i>0){
                         str+='@';
                     }
-                    str+=GameMgr.instance.IAB_PRODUCTS[i].id;
+                    str+=GameMgr.instance.IAB_PRODUCTS[i].productId;
                 }
-                GameMgr.instance.IAB_PRODUCTS = [];
                 native.jsbBridgeWrapper.dispatchEventToNative('getproductlist',str);
             } else {//web
                 this.isCheckingDone = true;

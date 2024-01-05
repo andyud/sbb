@@ -1,8 +1,9 @@
-import { JsonAsset } from "cc";
+import { JsonAsset, native,sys } from "cc";
 import JSEncrypt from "jsencrypt";
 import CryptoJS from "crypto-es";
 import { WordArray } from "crypto-es/lib/core";
 import { GameEvent } from "./GameEvent";
+import GameMgr from "./GameMgr";
 
 
 class APIMgr {
@@ -84,8 +85,74 @@ BfhZUWNOM6WQGMIJ53fwjXkhURECCgMLHOFuSBtkmbfj5tw=
         chips: 210000, 
         itemId: 1, 
         chips_id: 18, 
-        balance: 210000
+        balance: 0
     };
+    private productlisurl = 'https://devsession.777invegas.com/goods?platform=';
+    private productListTemp = [
+        {
+            "id": 1,
+            "platform": 1,
+            "payment": "0.99",
+            "chips": 200000,
+            "bonus": 1.05,
+            "flag": "[\"none\"]",
+            "productId": "shop_chips_0.99"
+        },
+        {
+            "id": 2,
+            "platform": 1,
+            "payment": "4.99",
+            "chips": 1000000,
+            "bonus": 1.2,
+            "flag": "[\"none\"]",
+            "productId": "shop_chips_4.99"
+        },
+        {
+            "id": 3,
+            "platform": 1,
+            "payment": "9.99",
+            "chips": 2000000,
+            "bonus": 1.5,
+            "flag": "[\"best\"]",
+            "productId": "shop_chips_9.99"
+        },
+        {
+            "id": 4,
+            "platform": 1,
+            "payment": "19.99",
+            "chips": 4000000,
+            "bonus": 2,
+            "flag": "[\"none\"]",
+            "productId": "shop_chips_19.99"
+        },
+        {
+            "id": 5,
+            "platform": 1,
+            "payment": "49.99",
+            "chips": 10000000,
+            "bonus": 2.5,
+            "flag": "[\"none\"]",
+            "productId": "shop_chips_49.99"
+        },
+        {
+            "id": 6,
+            "platform": 1,
+            "payment": "99.99",
+            "chips": 20000000,
+            "bonus": 3,
+            "flag": "[\"most\"]",
+            "productId": "shop_chips_99.99"
+        },
+        {
+            "id": 14,
+            "platform": 1,
+            "payment": "99.99",
+            "chips": 20000000,
+            "bonus": 3,
+            "flag": "[\"most\"]",
+            "productId": null
+        }
+    ];
     //--end mockup data ----------------------------------------------------------------------
    
     public async doPost(api: string, data: {}, authorization: string = ""): Promise<any> {
@@ -127,7 +194,7 @@ BfhZUWNOM6WQGMIJ53fwjXkhURECCgMLHOFuSBtkmbfj5tw=
             console.log('Something went wrong....');
         }
     }
-    public deviceId = 'asdasdasdaabba';
+    public deviceId = 'asdasdasdaabbae';
     async signin(cb:(res:boolean)=>void) {
         let modulus = btoa(this.PUB_KEY);
         await this.doPost("signin", {
@@ -190,7 +257,30 @@ BfhZUWNOM6WQGMIJ53fwjXkhURECCgMLHOFuSBtkmbfj5tw=
                 console.error("Error:", error);
             });
     }
-
+    async getProductlist(){
+        let platform = (sys.os == sys.OS.IOS) ? 2 : 1;
+        let url = `${this.productlisurl}${platform}`
+        let res = await fetch(url, {
+            method: "GET",
+        })
+        .then(response => response.text())
+        .then(result => {
+            console.log(result);
+            this.productListTemp = JSON.parse(result).goods;
+            for(let i=0;i<GameMgr.instance.IAB_PRODUCTS.length;i++){
+                for(let j=0;j<this.productListTemp.length;j++){
+                    if(GameMgr.instance.IAB_PRODUCTS[i].productId == this.productListTemp[j].productId){
+                        GameMgr.instance.IAB_PRODUCTS[i].id = this.productListTemp[j].id;
+                        GameMgr.instance.IAB_PRODUCTS[i].chips = this.productListTemp[j].chips;
+                        GameMgr.instance.IAB_PRODUCTS[i].bonus = this.productListTemp[j].bonus;
+                        GameMgr.instance.IAB_PRODUCTS[i].payment = this.productListTemp[j].payment;
+                        GameMgr.instance.IAB_PRODUCTS[i].flag = JSON.parse(this.productListTemp[j].flag);
+                    }
+                }
+            }
+        })
+        .catch(error => console.log('error', error));
+    }
     async getGames() {
         let api = 'games';
         await this.doGet(api, this.signinRes.authorization)
@@ -237,9 +327,10 @@ BfhZUWNOM6WQGMIJ53fwjXkhURECCgMLHOFuSBtkmbfj5tw=
             }
         }
     }
-    async purchase(receipt:string,goods_id:number,purchase_token:string,platform:number,cb:any){
+    async purchase(receipt:string,goods_id:number,purchase_token:string,platform:number){
         let data = {receipt: receipt, goods_id: goods_id, purchase_token: purchase_token,platform:platform};
         let strData = JSON.stringify(data);
+        console.log(strData);
         let cipherDataB64 = this.encodeData(strData);
         await this.doPost("purchase", {
             t: cipherDataB64
@@ -248,11 +339,10 @@ BfhZUWNOM6WQGMIJ53fwjXkhURECCgMLHOFuSBtkmbfj5tw=
         .then((data) => {
             let newData = this.decodeData(data.encrypted);
             this.purchaseRes = JSON.parse(newData);
-            cb(true,this.purchaseRes.chips);
+            GameEvent.DispatchEvent("updatebalance",APIMgr.instance.purchaseRes.balance);
         })
         .catch((error) => {
             console.error("Error:", error);
-            cb(false,0);
         });
     }
 }

@@ -7,14 +7,14 @@ class GameMgr {
         this._instance = new GameMgr();
         return this._instance;
     }
-    public isDebugMode = true;
+    public isDebugMode = false;
     public IAB_PRODUCTS = [
-        {id:'shop_chips_9.99',name:'3,000,000 Chips',price:'$9.99 - 3,000,000 Chips(Shop)',discount:0},//0
-        {id:'shop_chips_0.99',name:'210,000 Chips',price:'$0.99 - 210,000 Chips(Shop)',discount:0},//1
-        {id:'shop_chips_99.99',name:'60,000,000 Chips',price:'$99.99 - 60,000,000 Chips(Shop)',discount:0},//2
-        {id:'shop_chips_49.99',name:'25,000,000 Chips',price:'$49.99 - 25,000,000 Chips(Shop)',discount:0},//3
-        {id:'shop_chips_4.99',name:'1,200,000 Chips',price:'$4.99 - 1,200,000 Chips(Shop)',discount:0}, //4
-        {id:'shop_chips_19.99',name:'12,000,000 Chips',price:'$19.99 - 12,000,000 Chips(Shop)',discount:0}//5
+        {id:1,productId:'shop_chips_9.99',chips:3000000,payment:'9.99',bonus:1,flag:[]},//0
+        {id:2,productId:'shop_chips_0.99',chips:210000,payment:'0.99',bonus:1,flag:[]},//1
+        {id:3,productId:'shop_chips_99.99',chips:60000000,payment:'99.99',bonus:1,flag:[]},//2
+        {id:4,productId:'shop_chips_49.99',chips:25000000,payment:'49.99',bonus:0,flag:[]},//3
+        {id:5,productId:'shop_chips_4.99',chips:1200000,payment:'4.99',bonus:1,flag:[]}, //4
+        {id:6,productId:'shop_chips_19.99',chips:12000000,payment:'19.99',bonus:1,flag:[]}//5
         
     ];
     
