@@ -42,8 +42,6 @@ export class Cowboy extends Component {
     bonusPlayNode: Node | null = null;
     @property({ type: sp.Skeleton })
     skeBonusPlay: sp.Skeleton | null = null;
-    @property({ type: sp.Skeleton })
-    skeBonusIcon: sp.Skeleton | null = null;
     @property({ type: Node })
     bonusPlayBg: Node | null = null;
     @property({ type: Node })
@@ -369,6 +367,7 @@ export class Cowboy extends Component {
         [2, 0, 2, 0, 2],//23
         [0, 2, 0, 2, 0]//24
     ];
+    private totalLines = this.lineMatrix.length;
     private ICON_MAPPING = {
         scatter:0,
         wild:1,
@@ -402,7 +401,7 @@ export class Cowboy extends Component {
             if (this.gameName === APIMgr.instance.currentGame.gameName) {
                 this.lbBalance.string = GameMgr.instance.numberWithCommas(APIMgr.instance.signinRes.balance);
                 this.lbLevel.string = `lv: ${APIMgr.instance.signinRes.level}`;
-                this.lbTotalBet.string = GameMgr.instance.numberWithCommas(this.loginRes.lineBet * 25);
+                this.lbTotalBet.string = GameMgr.instance.numberWithCommas(this.loginRes.lineBet * this.totalLines);
                 this.lbWin.string = '0';
                 this.connect(data.url);
             }
@@ -655,11 +654,10 @@ export class Cowboy extends Component {
         switch (data.pid) {
             case "loginRes":
                 this.loginRes = data;
-                this.spinRes.linebet = this.loginRes.lineBet;
                 this.spinRes.balance = this.loginRes.balance;
                 this.lbBalance.string = GameMgr.instance.numberWithCommas(this.loginRes.balance);
                 // this.lbLevel.string = `lv: ${this.loginRes.level}`;
-                this.lbTotalBet.string = GameMgr.instance.numberWithCommas(this.loginRes.lineBet * 25);
+                this.lbTotalBet.string = GameMgr.instance.numberWithCommas(this.loginRes.lineBet * this.totalLines);
                 //clear & add new
                 if (this.loginRes && this.loginRes.reelInfo && this.loginRes.reelInfo.normal && this.loginRes.reelInfo.normal.length > 0) {
                     let arr = this.loginRes.reelInfo.normal[0];
@@ -795,7 +793,6 @@ export class Cowboy extends Component {
                 break;
             case 'btnCloseFreeSpin':
                 this.freeSpinNode.active = false;
-                this.playCoinEffect();
                 this.setAutoSpin(true);
                 this.preSpin();
                 break;
@@ -815,7 +812,7 @@ export class Cowboy extends Component {
                 this.spin(true, [3, 10, 17, 18, 12])//13, 15]);
                 break;
             case 'btnDbJackpot':
-                this.spin(true, [34, 21, 28, 24, 23]);
+                this.spin(true, [33, 22, 29, 25, 23]);
                 break;
             case 'btnFreeSpin':
                 this.spin(false, []);
@@ -847,7 +844,7 @@ export class Cowboy extends Component {
                 break;
             case 'btnMaxBet':
                 this.loginRes.lineBet = this.loginRes.betOptions[this.loginRes.betOptions.length - 1];
-                this.lbTotalBet.string = GameMgr.instance.numberWithCommas(this.loginRes.lineBet * 25);
+                this.lbTotalBet.string = GameMgr.instance.numberWithCommas(this.loginRes.lineBet * this.totalLines);
                 break;
             case 'btnRunDebugData':
                 let strData = this.edDebugData.getComponent(EditBox).string;
@@ -871,15 +868,9 @@ export class Cowboy extends Component {
                 this.skeBonusPlay.setAnimation(0,'bonus_frame',false);
                 let timeout16 = setTimeout(()=>{
                     clearTimeout(timeout16);
-                    this.skeBonusIcon.node.active = true;
-                    this.skeBonusIcon.setAnimation(0,'bonus_poster_appearance',false);
-                    let timeout17 = setTimeout(()=>{
-                        clearTimeout(timeout17);
-                        this.skeBonusPlay.node.active = false;
-                        this.skeBonusIcon.node.active = false;
-                        this.bonusPlayBg.active = true;
-                        this.bonusPlayGroup.active = true;
-                    },1000)
+                    this.skeBonusPlay.node.active = false;
+                    this.bonusPlayBg.active = true;
+                    this.bonusPlayGroup.active = true;
                 },1000)
                 
                 this.countBonusRemain = this.spinRes.bonusPayout[0].matchCount;
@@ -921,7 +912,7 @@ export class Cowboy extends Component {
                 currentIndex = 0;
             }
         }
-        this.lbTotalBet.string = GameMgr.instance.numberWithCommas(this.loginRes.betOptions[currentIndex] * 25);
+        this.lbTotalBet.string = GameMgr.instance.numberWithCommas(this.loginRes.betOptions[currentIndex] * this.totalLines);
         this.loginRes.lineBet = this.loginRes.betOptions[currentIndex];
     }
 
@@ -985,7 +976,7 @@ export class Cowboy extends Component {
     }
     spin(isDebug: boolean = false, data: any) {
         //check balance
-        if (this.spinRes.balance < (this.loginRes.lineBet * 25)) {//check balance
+        if (this.spinRes.balance < (this.loginRes.lineBet * this.totalLines)) {//check balance
             this.notice.getComponent(Notice).show({ title: 'Notice', content: 'Insufficient chip, please buy more!' }, (data) => {
                 this.shop.active = true;
             });
@@ -1025,7 +1016,7 @@ export class Cowboy extends Component {
 
         //2. update balance
         if (!this.isFreeSpin) {
-            let newBalance = this.spinRes.balance - this.spinRes.linebet * 25;
+            let newBalance = this.spinRes.balance - this.loginRes.lineBet * this.totalLines;
             this.lbBalance.string = GameMgr.instance.numberWithCommas(newBalance);
         } else {
             this.lbFreeSpinCount.string = `${this.spinRes.freeSpin.remain}`;
@@ -1238,6 +1229,10 @@ export class Cowboy extends Component {
             default:
                 //freespin
                 if (this.spinRes.freeSpin && this.spinRes.freeSpin.remain && this.spinRes.freeSpin.remain > 0) {
+                    if(this.isFreeSpin==false  && this.spinRes.totalWinBalance > 0){
+                        GameMgr.instance.numberTo(this.lbWin,0,this.spinRes.totalWinBalance,1000);
+                        this.playCoinEffect();
+                    }
                     let timeout8 = setTimeout(() => {
                         clearTimeout(timeout8);
                         this.lbFreeSpinCount.string = `${this.spinRes.freeSpin.remain}`;
@@ -1255,7 +1250,7 @@ export class Cowboy extends Component {
                             this.playCoinEffect();
                             this.preSpin();
                         }
-                    }, (isDelay && this.spinRes.totalWinBalance > 0) ? this.cowboyConfig.showResultDelay : this.cowboyConfig.showResultNotDelay);
+                    }, (isDelay && this.spinRes.totalWinBalance > 0) ? (this.cowboyConfig.showResultDelay+1000) : this.cowboyConfig.showResultNotDelay);
                 } else {//normal
                     if (this.spinRes.totalWinBalance > 0) {
                         AudioMgr.inst.playOneShot(this.arrAudioClips[11]);//normal win
@@ -1283,7 +1278,7 @@ export class Cowboy extends Component {
 
     }
     getWinType() {
-        if (this.spinRes.bonusPayout && this.spinRes.bonusPayout.length > 0 && this.spinRes.bonusPayout[0].extendData) {
+        if (this.spinRes.bonusPayout && this.spinRes.bonusPayout.length > 0 && this.spinRes.bonusPayout[0].bonusType=='bonus') {
             return 'bonus';
         } else if (this.spinRes.freeSpin && this.spinRes.freeSpin.remain && this.spinRes.freeSpin.remain > 0) {
             return 'freespin';

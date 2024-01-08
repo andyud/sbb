@@ -1,0 +1,174 @@
+
+KInkong_Long.png
+size: 2048,2048
+format: RGBA8888
+filter: Linear,Linear
+repeat: none
+Body
+  rotate: false
+  xy: 1260, 1773
+  size: 163, 269
+  orig: 163, 269
+  offset: 0, 0
+  index: -1
+Head
+  rotate: false
+  xy: 1922, 1931
+  size: 82, 111
+  orig: 82, 111
+  offset: 0, 0
+  index: -1
+Head_bright
+  rotate: false
+  xy: 1659, 1781
+  size: 52, 57
+  orig: 58, 64
+  offset: 3, 4
+  index: -1
+L_Foot
+  rotate: false
+  xy: 1592, 1784
+  size: 65, 57
+  orig: 72, 62
+  offset: 4, 2
+  index: -1
+L_Lower Reg
+  rotate: false
+  xy: 1638, 1843
+  size: 67, 93
+  orig: 71, 97
+  offset: 2, 2
+  index: -1
+L_Lower arm
+  rotate: false
+  xy: 1828, 1844
+  size: 61, 105
+  orig: 65, 109
+  offset: 2, 2
+  index: -1
+L_Upper Reg
+  rotate: false
+  xy: 1744, 1909
+  size: 95, 133
+  orig: 95, 133
+  offset: 0, 0
+  index: -1
+L_Upper arm
+  rotate: false
+  xy: 1841, 1951
+  size: 79, 91
+  orig: 84, 95
+  offset: 2, 2
+  index: -1
+L_arm
+  rotate: false
+  xy: 1409, 1905
+  size: 132, 137
+  orig: 136, 141
+  offset: 2, 2
+  index: -1
+L_punch
+  rotate: true
+  xy: 1891, 1790
+  size: 63, 74
+  orig: 68, 78
+  offset: 3, 2
+  index: -1
+L_punch_Hit
+  rotate: false
+  xy: 1891, 1855
+  size: 79, 74
+  orig: 83, 78
+  offset: 2, 2
+  index: -1
+Layer 677
+  rotate: false
+  xy: 918, 1547
+  size: 169, 495
+  orig: 173, 499
+  offset: 2, 2
+  index: -1
+Layer 679
+  rotate: false
+  xy: 1089, 1547
+  size: 169, 495
+  orig: 173, 499
+  offset: 2, 2
+  index: -1
+R_Lower Reg
+  rotate: true
+  xy: 1707, 1840
+  size: 67, 87
+  orig: 71, 91
+  offset: 2, 2
+  index: -1
+R_Lower arm
+  rotate: false
+  xy: 1425, 1836
+  size: 86, 67
+  orig: 90, 71
+  offset: 2, 2
+  index: -1
+R_Punch
+  rotate: false
+  xy: 1972, 1869
+  size: 69, 60
+  orig: 73, 64
+  offset: 2, 2
+  index: -1
+R_Upper Reg
+  rotate: false
+  xy: 1543, 1893
+  size: 93, 149
+  orig: 93, 149
+  offset: 0, 0
+  index: -1
+R_Upper arm
+  rotate: false
+  xy: 1638, 1938
+  size: 104, 104
+  orig: 108, 108
+  offset: 2, 2
+  index: -1
+R_foot
+  rotate: false
+  xy: 1796, 1788
+  size: 70, 54
+  orig: 74, 58
+  offset: 2, 2
+  index: -1
+R_punch_Hit
+  rotate: false
+  xy: 1972, 1807
+  size: 69, 60
+  orig: 73, 64
+  offset: 2, 2
+  index: -1
+Starburst 1
+  rotate: false
+  xy: 2, 1605
+  size: 456, 437
+  orig: 460, 441
+  offset: 2, 2
+  index: -1
+Starburst 1 copy
+  rotate: false
+  xy: 460, 1605
+  size: 456, 437
+  orig: 460, 441
+  offset: 2, 2
+  index: -1
+crash_1
+  rotate: false
+  xy: 1713, 1781
+  size: 50, 57
+  orig: 54, 62
+  offset: 2, 2
+  index: -1
+crash_2
+  rotate: false
+  xy: 1513, 1821
+  size: 77, 70
+  orig: 81, 74
+  offset: 2, 2
+  index: -1

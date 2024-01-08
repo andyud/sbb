@@ -1,17 +1,17 @@
-import { _decorator, Component, Node, Label, Game, Button, tween, Vec3, Color } from 'cc';
+import { _decorator, Component, Node, Label, Game, Button, tween, Vec3, Color, sp } from 'cc';
 import GameMgr from '../../../core/GameMgr';
 const { ccclass, property } = _decorator;
 
 @ccclass('CowboyBonusItem')
 export class CowboyBonusItem extends Component {
-    @property({ type: Node })
-    sp: Node | null = null;
     @property({ type: Label })
     lb: Label | null = null;
+    @property({type: sp.Skeleton})
+    pickEff : sp.Skeleton | null = null;
     callback: (idx: number) => void;
     private idx: number = -1;
     start() {
-        this.sp.active = true;
+        this.pickEff.setAnimation(0, 'bonus_poster_idle',false);
         this.lb.node.active = false;
     }
     init(cb: (idx: number) => void, idx: number) {
@@ -19,11 +19,15 @@ export class CowboyBonusItem extends Component {
         this.idx = idx;
     }
     reset() {
-        this.sp.active = true;
-        this.lb.node.active = false;
-        this.setTouchEnable(true);
-        this.sp.scale = new Vec3(1,1,1);
-        this.lb.color = Color.WHITE;
+        this.setTouchEnable(false);
+        this.pickEff.setAnimation(0,'bonus_poster_appearance',false);
+        let timeout = setTimeout(()=>{
+            clearTimeout(timeout);
+            this.pickEff.setAnimation(0, 'bonus_poster_idle',false);
+            this.lb.node.active = false;
+            this.setTouchEnable(true);
+            this.lb.color = Color.WHITE;
+        },2000);
     }
     setIdx(idx: number) {
         this.idx = idx;
@@ -38,10 +42,7 @@ export class CowboyBonusItem extends Component {
             this.lb.string = plus + GameMgr.instance.numberWithCommas(val);
         }
         this.lb.node.active = true;
-        tween(this.sp).to(0.3,{scale:new Vec3(-1,1,1)})
-        .call(()=>{
-            this.sp.active = false;
-        }).start()
+        this.pickEff.setAnimation(0, 'bonus_poster_disappearance',false);
     }
     setTouchEnable(isEnable:boolean){
         this.node.getComponent(Button).interactable = isEnable;

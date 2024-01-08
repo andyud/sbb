@@ -41,6 +41,11 @@ export class KongItem extends Component {
         this.sprite.node.addChild(wild);
         wild.setPosition(0,0,0);
     }
+    runWildLong(items:any){
+        let wild = instantiate(items[15]);
+        this.sprite.node.addChild(wild);
+        wild.setPosition(0,0,0);
+    }
     runJackpot(items:any){
         let jackpot = instantiate(items[14]);
         this.sprite.node.addChild(jackpot);

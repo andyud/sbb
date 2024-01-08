@@ -1,4 +1,4 @@
-import { _decorator, AudioClip, Button, Component, director, Animation, instantiate, Label, Node, Prefab, SpriteFrame, Tween, UIOpacity, UITransform, tween, EditBox, Mask, Color } from 'cc';
+import { _decorator, AudioClip, Button, Component, director, Animation, instantiate, Label, Node, Prefab, SpriteFrame, Tween, UIOpacity, UITransform, tween, EditBox, Mask, Color, sp } from 'cc';
 import { GameEvent } from '../../../core/GameEvent';
 import APIMgr from '../../../core/APIMgr';
 import { Loading } from '../../../prefabs/loading/Loading';
@@ -26,6 +26,8 @@ export class Snow extends Component {
     private notice: Node = null;
     @property({ type: Node })
     jackpotNode: Node | null = null;
+    @property({type:sp.Skeleton})
+    skeJackpot:sp.Skeleton | null = null;
     @property({ type: Label })
     lbJackpotWinCoin: Label | null = null;
     @property({ type: Node })
@@ -58,6 +60,8 @@ export class Snow extends Component {
 
     @property({ type: Node })
     bigWinNode: Node | null = null;
+    @property({ type: sp.Skeleton })
+    skeBigWin: sp.Skeleton | null = null;
     @property({ type: Node })
     btnCloseBigWin: Node | null = null;
     @property({ type: Label })
@@ -349,6 +353,7 @@ export class Snow extends Component {
         [2, 0, 2, 0, 2],//23
         [0, 2, 0, 2, 0]//24
     ];
+    private totalLines = this.lineMatrix.length;
     private ICON_MAPPING = {
         brooch:0,
         crown:1,
@@ -382,7 +387,7 @@ export class Snow extends Component {
             if (this.gameName === APIMgr.instance.currentGame.gameName) {
                 this.lbBalance.string = GameMgr.instance.numberWithCommas(APIMgr.instance.signinRes.balance);
                 this.lbLevel.string = `lv: ${APIMgr.instance.signinRes.level}`;
-                this.lbTotalBet.string = GameMgr.instance.numberWithCommas(this.loginRes.lineBet * 25);
+                this.lbTotalBet.string = GameMgr.instance.numberWithCommas(this.loginRes.lineBet * this.totalLines);
                 this.lbWin.string = '0';
                 this.connect(data.url);
             }
@@ -633,11 +638,10 @@ export class Snow extends Component {
         switch (data.pid) {
             case "loginRes":
                 this.loginRes = data;
-                this.spinRes.linebet = this.loginRes.lineBet;
                 this.spinRes.balance = this.loginRes.balance;
                 this.lbBalance.string = GameMgr.instance.numberWithCommas(this.loginRes.balance);
                 // this.lbLevel.string = `lv: ${this.loginRes.level}`;
-                this.lbTotalBet.string = GameMgr.instance.numberWithCommas(this.loginRes.lineBet * 25);
+                this.lbTotalBet.string = GameMgr.instance.numberWithCommas(this.loginRes.lineBet * this.totalLines);
                 //clear & add new
                 if (this.loginRes && this.loginRes.reelInfo && this.loginRes.reelInfo.normal && this.loginRes.reelInfo.normal.length > 0) {
                     let arr = this.loginRes.reelInfo.normal[0];
@@ -773,7 +777,6 @@ export class Snow extends Component {
                 break;
             case 'btnCloseFreeSpin':
                 this.freeSpinNode.active = false;
-                this.playCoinEffect();
                 this.setAutoSpin(true);
                 this.preSpin();
                 break;
@@ -790,7 +793,7 @@ export class Snow extends Component {
                 this.spin(true, [9, 7, 20, 6, 8]);
                 break;
             case 'btnDbFreeSpin':
-                this.spin(true, [3, 10, 17, 18, 12])//13, 15]);
+                this.spin(true, [3, 10, 7, 18, 16])//13, 15]);
                 break;
             case 'btnDbJackpot':
                 this.spin(true, [34, 21, 28, 24, 23]);
@@ -825,7 +828,7 @@ export class Snow extends Component {
                 break;
             case 'btnMaxBet':
                 this.loginRes.lineBet = this.loginRes.betOptions[this.loginRes.betOptions.length - 1];
-                this.lbTotalBet.string = GameMgr.instance.numberWithCommas(this.loginRes.lineBet * 25);
+                this.lbTotalBet.string = GameMgr.instance.numberWithCommas(this.loginRes.lineBet * this.totalLines);
                 break;
             case 'btnRunDebugData':
                 let strData = this.edDebugData.getComponent(EditBox).string;
@@ -881,7 +884,7 @@ export class Snow extends Component {
                 currentIndex = 0;
             }
         }
-        this.lbTotalBet.string = GameMgr.instance.numberWithCommas(this.loginRes.betOptions[currentIndex] * 25);
+        this.lbTotalBet.string = GameMgr.instance.numberWithCommas(this.loginRes.betOptions[currentIndex] * this.totalLines);
         this.loginRes.lineBet = this.loginRes.betOptions[currentIndex];
     }
 
@@ -945,7 +948,7 @@ export class Snow extends Component {
     }
     spin(isDebug: boolean = false, data: any) {
         //check balance
-        if (this.spinRes.balance < (this.loginRes.lineBet * 25)) {//check balance
+        if (this.spinRes.balance < (this.loginRes.lineBet * this.totalLines)) {//check balance
             this.notice.getComponent(Notice).show({ title: 'Notice', content: 'Insufficient chip, please buy more!' }, (data) => {
                 this.shop.active = true;
             });
@@ -986,7 +989,7 @@ export class Snow extends Component {
 
         //2. update balance
         if (!this.isFreeSpin) {
-            let newBalance = this.spinRes.balance - this.spinRes.linebet * 25;
+            let newBalance = this.spinRes.balance - this.loginRes.lineBet * this.totalLines;
             this.lbBalance.string = GameMgr.instance.numberWithCommas(newBalance);
         } else {
             this.lbFreeSpinCount.string = `${this.spinRes.freeSpin.remain}`;
@@ -1179,6 +1182,7 @@ export class Snow extends Component {
                 let timeout6 = setTimeout(() => {
                     clearTimeout(timeout6);
                     this.jackpotNode.active = true;
+                    this.skeJackpot.setAnimation(0,'animation',false);
                     GameMgr.instance.numberTo(this.lbJackpotWinCoin, 0, this.spinRes.totalWinBalance, 2000);
                     AudioMgr.inst.playOneShot(this.arrAudioClips[13]);
                 }, isDelay ? this.snowConfig.showResultDelay : this.snowConfig.showResultNotDelay);
@@ -1190,6 +1194,7 @@ export class Snow extends Component {
                 let timeout7 = setTimeout(() => {
                     clearTimeout(timeout7);
                     this.bigWinNode.active = true;
+                    this.skeBigWin.setAnimation(0,'big_win',false);
                     GameMgr.instance.numberTo(this.lbBigWinCoin, 0, this.spinRes.totalWinBalance, 2000);
                     AudioMgr.inst.playOneShot(this.arrAudioClips[12]);
                 }, isDelay ? this.snowConfig.showResultDelay : this.snowConfig.showResultNotDelay);
@@ -1197,6 +1202,10 @@ export class Snow extends Component {
             default:
                 //freespin
                 if (this.spinRes.freeSpin && this.spinRes.freeSpin.remain && this.spinRes.freeSpin.remain > 0) {
+                    if(this.isFreeSpin==false  && this.spinRes.totalWinBalance > 0){
+                        GameMgr.instance.numberTo(this.lbWin,0,this.spinRes.totalWinBalance,1000);
+                        this.playCoinEffect();
+                    }
                     let timeout8 = setTimeout(() => {
                         clearTimeout(timeout8);
                         this.lbFreeSpinCount.string = `${this.spinRes.freeSpin.remain}`;
@@ -1213,7 +1222,7 @@ export class Snow extends Component {
                             this.playCoinEffect();
                             this.preSpin();
                         }
-                    }, (isDelay && this.spinRes.totalWinBalance > 0) ? this.snowConfig.showResultDelay : this.snowConfig.showResultNotDelay);
+                    }, (isDelay && this.spinRes.totalWinBalance > 0) ? (this.snowConfig.showResultDelay+1000) : this.snowConfig.showResultNotDelay);
                 } else {//normal
                     if (this.spinRes.totalWinBalance > 0) {
                         AudioMgr.inst.playOneShot(this.arrAudioClips[11]);//normal win
@@ -1240,7 +1249,7 @@ export class Snow extends Component {
 
     }
     getWinType() {
-        if (this.spinRes.bonusPayout && this.spinRes.bonusPayout.length > 0 && this.spinRes.bonusPayout[0].extendData) {
+        if (this.spinRes.bonusPayout && this.spinRes.bonusPayout.length > 0 && this.spinRes.bonusPayout[0].bonusType=='bonus') {
             return 'bonus';
         } else if (this.spinRes.freeSpin && this.spinRes.freeSpin.remain && this.spinRes.freeSpin.remain > 0) {
             return 'freespin';

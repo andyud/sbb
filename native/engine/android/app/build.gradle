@@ -20,7 +20,7 @@ android {
         applicationId APPLICATION_ID
         minSdkVersion PROP_MIN_SDK_VERSION
         targetSdkVersion PROP_TARGET_SDK_VERSION
-        versionCode 9
+        versionCode 11
         versionName "1.0"
 
         externalNativeBuild {

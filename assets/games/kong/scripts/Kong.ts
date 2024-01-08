@@ -26,6 +26,8 @@ export class Kong extends Component {
     private notice: Node = null;
     @property({ type: Node })
     jackpotNode: Node | null = null;
+    @property({type:sp.Skeleton})
+    skeJackpot:sp.Skeleton | null = null;
     @property({ type: Label })
     lbJackpotWinCoin: Label | null = null;
     @property({ type: Node })
@@ -66,7 +68,7 @@ export class Kong extends Component {
     @property({ type: Node })
     bigWinNode: Node | null = null;
     @property({type:sp.Skeleton})
-    bigWinSke: sp.Skeleton | null = null;
+    skeBigWin: sp.Skeleton | null = null;
     @property({ type: Node })
     btnCloseBigWin: Node | null = null;
     @property({ type: Label })
@@ -105,6 +107,8 @@ export class Kong extends Component {
     lbBonusReward: Label | null = null;
     @property([Node])
     arrPlayBonusItem: Node[] = []
+    @property([Node])
+    arrWildLong: Node[] = []
     private countBonusRemain = 0;
     private totalBonusWin = 0;
 
@@ -658,7 +662,6 @@ export class Kong extends Component {
         switch (data.pid) {
             case "loginRes":
                 this.loginRes = data;
-                this.spinRes.linebet = this.loginRes.lineBet;
                 this.spinRes.balance = this.loginRes.balance;
                 this.lbBalance.string = GameMgr.instance.numberWithCommas(this.loginRes.balance);
                 // this.lbLevel.string = `lv: ${this.loginRes.level}`;
@@ -798,7 +801,6 @@ export class Kong extends Component {
                 break;
             case 'btnCloseFreeSpin':
                 this.freeSpinNode.active = false;
-                this.playCoinEffect();
                 this.setAutoSpin(true);
                 this.preSpin();
                 break;
@@ -812,10 +814,10 @@ export class Kong extends Component {
                 this.spin(true, [9, 2, 2, 2, 8]);
                 break;
             case 'btnDbBonus':
-                this.spin(true, [9, 7, 20, 6, 5]);
+                this.spin(true, [9, 7, 22, 7, 8]);
                 break;
             case 'btnDbFreeSpin':
-                this.spin(true, [3, 10, 17, 18, 12])//13, 15]);
+                this.spin(true, [3, 10, 20, 12, 14])//13, 15]);
                 break;
             case 'btnDbJackpot':
                 this.spin(true, [34, 21, 28, 24, 23]);
@@ -1001,6 +1003,11 @@ export class Kong extends Component {
         }
         this.lineEffects = [];
 
+        //hide wildlong
+        for(let i=0;i<this.arrWildLong.length;i++){
+            this.arrWildLong[i].active = false;
+        }
+
         //hide line
         for (let i = 0; i < this.lines.length; i++) {
             this.lines[i].active = false;
@@ -1011,7 +1018,7 @@ export class Kong extends Component {
 
         //2. update balance
         if (!this.isFreeSpin) {
-            let newBalance = this.spinRes.balance - this.spinRes.linebet * this.totalLines;
+            let newBalance = this.spinRes.balance - this.loginRes.lineBet * this.totalLines;
             this.lbBalance.string = GameMgr.instance.numberWithCommas(newBalance);
         } else {
             this.lbFreeSpinCount.string = `${this.spinRes.freeSpin.remain}`;
@@ -1154,7 +1161,19 @@ export class Kong extends Component {
                             //console.log(`anim [${jj},${2 - ii} val: ${val1}]`)
                             let texId = this.reels[jj].children[2 - ii].getComponent(KongItem).idx;
                             if (texId == this.ICON_MAPPING.wild) {//wild
-                                this.reels[jj].children[2 - ii].getComponent(KongItem).runWild(this.items);
+                                if(this.isFreeSpin){
+                                    //this.reels[jj].children[2 - ii].getComponent(KongItem).runWildLong(this.items);
+                                    if(jj>0){
+                                        this.arrWildLong[jj-1].active = true;
+                                        //stop all zoom anim on this reels
+                                        for(let ll = 0;ll<this.reels[jj].children.length;ll++){
+                                            this.reels[jj].children[ll].getComponent(KongItem).stopZoomAnim();
+                                        }
+                                    }
+                                } else {
+                                    this.reels[jj].children[2 - ii].getComponent(KongItem).runWild(this.items);
+                                }
+                                
                             }
                         }
                     }
@@ -1210,6 +1229,7 @@ export class Kong extends Component {
                 let timeout6 = setTimeout(() => {
                     clearTimeout(timeout6);
                     this.jackpotNode.active = true;
+                    this.skeJackpot.setAnimation(0,'animation',false);
                     GameMgr.instance.numberTo(this.lbJackpotWinCoin, 0, this.spinRes.totalWinBalance, 2000);
                     AudioMgr.inst.playOneShot(this.arrAudioClips[13]);
                 }, isDelay ? this.kongConfig.showResultDelay : this.kongConfig.showResultNotDelay);
@@ -1221,7 +1241,7 @@ export class Kong extends Component {
                 let timeout7 = setTimeout(() => {
                     clearTimeout(timeout7);
                     this.bigWinNode.active = true;
-                    this.bigWinSke.setAnimation(0,'start',false);
+                    this.skeBigWin.setAnimation(0,'big_win',false);
                     GameMgr.instance.numberTo(this.lbBigWinCoin, 0, this.spinRes.totalWinBalance, 2000);
                     AudioMgr.inst.playOneShot(this.arrAudioClips[12]);
                 }, isDelay ? this.kongConfig.showResultDelay : this.kongConfig.showResultNotDelay);
@@ -1229,6 +1249,10 @@ export class Kong extends Component {
             default:
                 //freespin
                 if (this.spinRes.freeSpin && this.spinRes.freeSpin.remain && this.spinRes.freeSpin.remain > 0) {
+                    if(this.isFreeSpin==false  && this.spinRes.totalWinBalance > 0){
+                        GameMgr.instance.numberTo(this.lbWin,0,this.spinRes.totalWinBalance,1000);
+                        this.playCoinEffect();
+                    }
                     let timeout8 = setTimeout(() => {
                         clearTimeout(timeout8);
                         this.lbFreeSpinCount.string = `${this.spinRes.freeSpin.remain}`;
@@ -1246,7 +1270,7 @@ export class Kong extends Component {
                             this.playCoinEffect();
                             this.preSpin();
                         }
-                    }, (isDelay && this.spinRes.totalWinBalance > 0) ? this.kongConfig.showResultDelay : this.kongConfig.showResultNotDelay);
+                    }, (isDelay && this.spinRes.totalWinBalance > 0) ? (this.kongConfig.showResultDelay+1000) : this.kongConfig.showResultNotDelay);
                 } else {//normal
                     if (this.spinRes.totalWinBalance > 0) {
                         AudioMgr.inst.playOneShot(this.arrAudioClips[11]);//normal win
@@ -1273,7 +1297,7 @@ export class Kong extends Component {
         }
     }
     getWinType() {
-        if (this.spinRes.bonusPayout && this.spinRes.bonusPayout.length > 0 && this.spinRes.bonusPayout[0].extendData) {
+        if (this.spinRes.bonusPayout && this.spinRes.bonusPayout.length > 0 && this.spinRes.bonusPayout[0].bonusType=='bonus') {
             return 'bonus';
         } else if (this.spinRes.freeSpin && this.spinRes.freeSpin.remain && this.spinRes.freeSpin.remain > 0) {
             return 'freespin';
