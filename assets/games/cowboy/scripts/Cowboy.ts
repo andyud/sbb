@@ -434,6 +434,7 @@ export class Cowboy extends Component {
 
         this.btnCloseFreeSpin.on(Button.EventType.CLICK, this.onCloseEnd, this);
         this.freeSpinNode.active = false;
+        this.btnCloseFreeSpin.active = false;
         this.btnCloseBigWin.on(Button.EventType.CLICK, this.onCloseEnd, this);
         this.bigWinNode.active = false;
         this.btnCloseFreeSpinRes.on(Button.EventType.CLICK, this.onCloseEnd, this);
@@ -793,6 +794,7 @@ export class Cowboy extends Component {
                 break;
             case 'btnCloseFreeSpin':
                 this.freeSpinNode.active = false;
+                this.btnCloseFreeSpin.active = false;
                 this.setAutoSpin(true);
                 this.preSpin();
                 break;
@@ -1240,6 +1242,10 @@ export class Cowboy extends Component {
                             this.isFreeSpin = true;
                             this.iTotalWinFreeSpin = 0;
                             this.freeSpinNode.active = true;
+                            let timeout17 = setTimeout(()=>{
+                                clearTimeout(timeout17);
+                                this.btnCloseFreeSpin.active = true;
+                            },1000)
                             this.skeFreeSpin.setAnimation(0,'animation',false);
                             this.lbFreeSpinEff.string = `${this.spinRes.freeSpin.remain}`;
                             this.btnFreeSpin.active = true;

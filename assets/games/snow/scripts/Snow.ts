@@ -420,6 +420,7 @@ export class Snow extends Component {
 
         this.btnCloseFreeSpin.on(Button.EventType.CLICK, this.onCloseEnd, this);
         this.freeSpinNode.active = false;
+        this.btnCloseFreeSpin.active = false;
         this.btnCloseBigWin.on(Button.EventType.CLICK, this.onCloseEnd, this);
         this.bigWinNode.active = false;
         this.btnCloseFreeSpinRes.on(Button.EventType.CLICK, this.onCloseEnd, this);
@@ -777,6 +778,7 @@ export class Snow extends Component {
                 break;
             case 'btnCloseFreeSpin':
                 this.freeSpinNode.active = false;
+                this.btnCloseFreeSpin.active = false;
                 this.setAutoSpin(true);
                 this.preSpin();
                 break;
@@ -796,7 +798,7 @@ export class Snow extends Component {
                 this.spin(true, [3, 10, 7, 18, 16])//13, 15]);
                 break;
             case 'btnDbJackpot':
-                this.spin(true, [34, 21, 28, 24, 23]);
+                this.spin(true, [37, 24, 35, 33, 25]);
                 break;
             case 'btnFreeSpin':
                 this.spin(false, []);
@@ -1213,6 +1215,11 @@ export class Snow extends Component {
                             this.isFreeSpin = true;
                             this.iTotalWinFreeSpin = 0;
                             this.freeSpinNode.active = true;
+                            let timeout17 = setTimeout(()=>{
+                                clearTimeout(timeout17);
+                                this.btnCloseFreeSpin.active = true;
+                            },1000)
+                            tween(this.btnCloseFreeSpin.getComponent(UIOpacity)).to(0.2,{opacity:255}).start();
                             this.lbFreeSpinEff.string = `${this.spinRes.freeSpin.remain}`;
                             this.btnFreeSpin.active = true;
                             this.btnSpin.active = false;

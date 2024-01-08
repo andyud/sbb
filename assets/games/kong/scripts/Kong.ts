@@ -36,7 +36,7 @@ export class Kong extends Component {
     @property({ type: Node })
     bonusResNode: Node | null = null;
     @property({type:sp.Skeleton})
-    bonusResSke:sp.Skeleton | null = null;
+    skeBonusRes:sp.Skeleton | null = null;
     @property({ type: Node })
     bonusPlayNode: Node | null = null;
     @property({ type: Node })
@@ -98,7 +98,7 @@ export class Kong extends Component {
     @property({ type: Node })
     lbBonusInfo: Node | null = null;
     @property({type:sp.Skeleton})
-    bonusIntro:sp.Skeleton | null = null;
+    skeBonusStart:sp.Skeleton | null = null;
     @property({ type: Node })
     btnBonusInfo: Node | null = null;
     @property({ type: Label })
@@ -426,6 +426,7 @@ export class Kong extends Component {
 
         this.btnCloseFreeSpin.on(Button.EventType.CLICK, this.onCloseEnd, this);
         this.freeSpinNode.active = false;
+        this.btnCloseFreeSpin.active = false;
         this.btnCloseBigWin.on(Button.EventType.CLICK, this.onCloseEnd, this);
         this.bigWinNode.active = false;
         this.btnCloseFreeSpinRes.on(Button.EventType.CLICK, this.onCloseEnd, this);
@@ -529,13 +530,14 @@ export class Kong extends Component {
                             this.countBonusRemain = -1;
                             this.bonusPlayNode.active = false;
                             this.bonusResNode.active = true;
-                            this.bonusResSke.setAnimation(0,'start',false);
+                            this.skeBonusRes.setAnimation(0,'start',false);
                             GameMgr.instance.numberTo(this.lbBonusWinCoin, 0, this.spinRes.bonusPayout[0].balance, 2000);
                             AudioMgr.inst.bgmBonus.stop();
                             AudioMgr.inst.playOneShot(this.arrAudioClips[17]);
                             let timeout12 = setTimeout(() => {
                                 clearTimeout(timeout12);
                                 AudioMgr.inst.playOneShot(this.arrAudioClips[26]);
+                                this.skeBonusRes.setAnimation(0,'idle',false);
                             }, 2000)
                         }, 3000)
                     }, 500);//delay 1.5s
@@ -779,7 +781,11 @@ export class Kong extends Component {
                 this.preSpin();
                 break;
             case 'btnCloseBonusRes':
-                this.bonusResNode.active = false;
+                this.skeBonusRes.setAnimation(0,'close',false);
+                let timeout18 = setTimeout(()=>{
+                    clearTimeout(timeout18);
+                    this.bonusResNode.active = false;
+                },1500);
                 this.showWinResult(false);
                 break;
             case 'btnCloseBigWin':
@@ -801,6 +807,7 @@ export class Kong extends Component {
                 break;
             case 'btnCloseFreeSpin':
                 this.freeSpinNode.active = false;
+                this.btnCloseFreeSpin.active = false;
                 this.setAutoSpin(true);
                 this.preSpin();
                 break;
@@ -867,21 +874,26 @@ export class Kong extends Component {
                 this.spin(true, dataTemp);
                 break;
             case 'btnBonusInfo':
-                this.bonusInfoNode.active = false;
-                this.bonusPlayNode.active = true;
-                this.countBonusRemain = this.spinRes.bonusPayout[0].matchCount;
-                this.totalBonusWin = 0;
-                this.lbBonusRemain.string = `${this.countBonusRemain}`;
-                this.lbBonusReward.string = `${this.totalBonusWin}`;
-                for (let i = 0; i < this.arrPlayBonusItem.length; i++) {
-                    this.arrPlayBonusItem[i].getComponent(KongBonusItem).reset();
-                }
-                if (this.isFreeSpin) {
-                    AudioMgr.inst.bgmFreeSpin.volume = 0.3;
-                } else {
-                    AudioMgr.inst.bgmSpin.volume = 0.3;
-                }
-                AudioMgr.inst.playBonus();
+                this.skeBonusStart.setAnimation(0,'close',false);
+                this.lbBonusInfo.active = false;
+                let timeout19 = setTimeout(()=>{
+                    clearTimeout(timeout19);
+                    this.bonusInfoNode.active = false;
+                    this.bonusPlayNode.active = true;
+                    this.countBonusRemain = this.spinRes.bonusPayout[0].matchCount;
+                    this.totalBonusWin = 0;
+                    this.lbBonusRemain.string = `${this.countBonusRemain}`;
+                    this.lbBonusReward.string = `${this.totalBonusWin}`;
+                    for (let i = 0; i < this.arrPlayBonusItem.length; i++) {
+                        this.arrPlayBonusItem[i].getComponent(KongBonusItem).reset();
+                    }
+                    if (this.isFreeSpin) {
+                        AudioMgr.inst.bgmFreeSpin.volume = 0.3;
+                    } else {
+                        AudioMgr.inst.bgmSpin.volume = 0.3;
+                    }
+                    AudioMgr.inst.playBonus();
+                },1000);
                 break;
         }
     }
@@ -1192,15 +1204,15 @@ export class Kong extends Component {
         // auto spin| -> time
         let wintype = this.getWinType();
         if (wintype == 'bonus') {
-
             let timeout5 = setTimeout(() => {
                 clearTimeout(timeout5);
                 this.bonusInfoNode.active = true;
-                this.lbBonusInfo.active = false;
-                this.bonusIntro.setAnimation(0,'start',false);
+                this.lbBonusInfo.active = true;
+                this.skeBonusStart.setAnimation(0,'start',false);
                 let timeout16 = setTimeout(()=>{
                     clearTimeout(timeout16);
                     this.lbBonusInfo.active = true;
+                    this.skeBonusStart.setAnimation(0,'idle',false);
                 },1000);
                 this.lbBonusInfo.children[0].active = false;
                 this.lbBonusInfo.children[1].active = false;
@@ -1260,6 +1272,10 @@ export class Kong extends Component {
                             this.isFreeSpin = true;
                             this.iTotalWinFreeSpin = 0;
                             this.freeSpinNode.active = true;
+                            let timeout17 = setTimeout(()=>{
+                                clearTimeout(timeout17);
+                                this.btnCloseFreeSpin.active = true;
+                            },1000)
                             this.skeFreeSpin.setAnimation(0,'start',false);
                             this.lbFreeSpinEff.string = `${this.spinRes.freeSpin.remain}`;
                             this.btnFreeSpin.active = true;
