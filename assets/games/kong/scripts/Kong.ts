@@ -355,6 +355,7 @@ export class Kong extends Component {
         [0, 2, 0, 2, 0],//18
         [0, 2, 1, 2, 0]//19
     ];
+    private totalLines = this.lineMatrix.length;
     private ICON_MAPPING = {
         ship:0,
         dragon:1,
@@ -388,7 +389,7 @@ export class Kong extends Component {
             if (this.gameName === APIMgr.instance.currentGame.gameName) {
                 this.lbBalance.string = GameMgr.instance.numberWithCommas(APIMgr.instance.signinRes.balance);
                 this.lbLevel.string = `lv: ${APIMgr.instance.signinRes.level}`;
-                this.lbTotalBet.string = GameMgr.instance.numberWithCommas(this.loginRes.lineBet * 25);
+                this.lbTotalBet.string = GameMgr.instance.numberWithCommas(this.loginRes.lineBet * this.totalLines);
                 this.lbWin.string = '0';
                 this.connect(data.url);
             }
@@ -849,7 +850,7 @@ export class Kong extends Component {
                 break;
             case 'btnMaxBet':
                 this.loginRes.lineBet = this.loginRes.betOptions[this.loginRes.betOptions.length - 1];
-                this.lbTotalBet.string = GameMgr.instance.numberWithCommas(this.loginRes.lineBet * 25);
+                this.lbTotalBet.string = GameMgr.instance.numberWithCommas(this.loginRes.lineBet * this.totalLines);
                 break;
             case 'btnRunDebugData':
                 let strData = this.edDebugData.getComponent(EditBox).string;
@@ -905,7 +906,7 @@ export class Kong extends Component {
                 currentIndex = 0;
             }
         }
-        this.lbTotalBet.string = GameMgr.instance.numberWithCommas(this.loginRes.betOptions[currentIndex] * 25);
+        this.lbTotalBet.string = GameMgr.instance.numberWithCommas(this.loginRes.betOptions[currentIndex] * this.totalLines);
         this.loginRes.lineBet = this.loginRes.betOptions[currentIndex];
     }
 
@@ -969,7 +970,7 @@ export class Kong extends Component {
     }
     spin(isDebug: boolean = false, data: any) {
         //check balance
-        if (this.spinRes.balance < (this.loginRes.lineBet * 25)) {//check balance
+        if (this.spinRes.balance < (this.loginRes.lineBet * this.totalLines)) {//check balance
             this.notice.getComponent(Notice).show({ title: 'Notice', content: 'Insufficient chip, please buy more!' }, (data) => {
                 this.shop.active = true;
             });
@@ -1010,7 +1011,7 @@ export class Kong extends Component {
 
         //2. update balance
         if (!this.isFreeSpin) {
-            let newBalance = this.spinRes.balance - this.spinRes.linebet * 25;
+            let newBalance = this.spinRes.balance - this.spinRes.linebet * this.totalLines;
             this.lbBalance.string = GameMgr.instance.numberWithCommas(newBalance);
         } else {
             this.lbFreeSpinCount.string = `${this.spinRes.freeSpin.remain}`;
