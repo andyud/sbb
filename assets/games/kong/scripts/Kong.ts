@@ -827,7 +827,7 @@ export class Kong extends Component {
                 this.spin(true, [3, 10, 20, 12, 14])//13, 15]);
                 break;
             case 'btnDbJackpot':
-                this.spin(true, [34, 21, 28, 24, 23]);
+                this.spin(true, [31, 25, 32, 26, 25]);
                 break;
             case 'btnFreeSpin':
                 this.spin(false, []);
@@ -849,7 +849,6 @@ export class Kong extends Component {
                     clearTimeout(timeout15);
                     this.loadNewScene('lobby');
                 }, this.kongConfig.showResultDelay);
-
                 break;
             case 'btnBetMinus':
                 this.setBettingLine(false);

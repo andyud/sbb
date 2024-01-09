@@ -163,6 +163,10 @@ public class AppActivity extends CocosActivity implements PurchasesUpdatedListen
                         // App code
                         System.out.println("Facebook login success");
                         AccessToken accessToken = AccessToken.getCurrentAccessToken();
+//                        CharSequence text = accessToken.toString();
+//                        int duration = Toast.LENGTH_SHORT;
+//                        Toast toast = Toast.makeText(getApplicationContext() /* MyActivity */, text, duration);
+//                        toast.show();
                         JsbBridgeWrapper.getInstance().dispatchEventToScript("getfacebookid", accessToken.getUserId());
                     }
 
@@ -177,6 +181,10 @@ public class AppActivity extends CocosActivity implements PurchasesUpdatedListen
                     public void onError(FacebookException exception) {
                         // App code
                         System.out.println("Facebook login error");
+//                        CharSequence text = exception.toString();
+//                        int duration = Toast.LENGTH_SHORT;
+//                        Toast toast = Toast.makeText(getApplicationContext() /* MyActivity */, text, duration);
+//                        toast.show();
                         JsbBridgeWrapper.getInstance().dispatchEventToScript("getfacebookid", "error");
                     }
                 });

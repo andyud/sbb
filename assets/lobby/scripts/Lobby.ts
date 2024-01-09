@@ -1,10 +1,11 @@
-import { _decorator, Button, Component, director, Label, Node, AudioClip, Prefab, instantiate, UITransform } from 'cc';
+import { _decorator, Button, Component, director, Label, Node, AudioClip, Prefab, instantiate, UITransform, ScrollView } from 'cc';
 import APIMgr from '../../core/APIMgr';
 import { AudioMgr } from '../../core/AudioMgr';
 import GameMgr from '../../core/GameMgr';
 import { GameEvent } from '../../core/GameEvent';
 import { Loading } from '../../prefabs/loading/Loading';
 import { Notice } from '../../prefabs/popups/scripts/Notice';
+import { LobbyStage } from './LobbyStage';
 const { ccclass, property } = _decorator;
 
 @ccclass('Lobby')
@@ -22,6 +23,10 @@ export class Lobby extends Component {
     btnShop: Node | null = null;
     @property({ type: Node })
     btnMenu: Node | null = null;
+    @property({type:Node})
+    btnMiniGame: Node | null = null;
+    @property({type:Node})
+    btnMission: Node | null = null;
     @property({ type: Node })
     btnInbox: Node | null = null;
     @property({ type: Label })
@@ -45,17 +50,19 @@ export class Lobby extends Component {
 
     @property({type:Node})
     contentCenter: Node | null = null;
-    @property([Node])
-    arrGames: Node[] = []
     @property([AudioClip])
     arrAudioClips: AudioClip[] = [];
     @property([Label])
     jackpotPools: Label[] = [];
     private countUpdate = 0;
+    @property([Node])
+    arrGame:Node[] = []
+    @property({type:ScrollView})
+    maps:ScrollView | null = null;
     start() {
         //--add listener
-        for (let i = 0; i < this.arrGames.length; i++) {
-            this.arrGames[i].on(Button.EventType.CLICK, this.gameClickHandler, this);
+        for (let i = 0; i < this.arrGame.length; i++) {
+            this.arrGame[i].on(Button.EventType.CLICK, this.gameClickHandler, this);
         }
 
         this.loadPlayerInfo();
@@ -80,6 +87,8 @@ export class Lobby extends Component {
         this.btnBack.on(Button.EventType.CLICK, this.onClick, this);
         this.btnMenu.on(Button.EventType.CLICK, this.onClick, this);
         this.btnInbox.on(Button.EventType.CLICK, this.onClick, this);
+        this.btnMiniGame.on(Button.EventType.CLICK, this.onClick, this);
+        this.btnMission.on(Button.EventType.CLICK, this.onClick, this);
         //--get jackpot pool
         GameEvent.AddEventListener("updatebalance", (balance: number) => {
             GameMgr.instance.numberTo(this.lbBalance, 0, balance, 1000);
@@ -99,6 +108,16 @@ export class Lobby extends Component {
             this.notice.getComponent(Notice).hide();
         }
         this.lbBalance.string = GameMgr.instance.numberWithCommas(APIMgr.instance.signinRes.balance);
+
+        //--responsive size
+        let width = this.maps.getComponent(UITransform).width;
+        let height= this.maps.getComponent(UITransform).height;
+        this.maps.content.getComponent(UITransform).width = width*3;
+        for(let i=0;i<this.maps.content.children.length;i++){
+            this.maps.content.children[i].setPosition(width/2 + i*width,0);
+            this.maps.content.children[i].getComponent(UITransform).setContentSize(width,height);
+            this.maps.content.children[i].children[0].setPosition(0,0);
+        }
     }
     loadPlayerInfo() {
         this.lbDbDeviceId.string = `Device Id: ${APIMgr.instance.deviceId}`
@@ -112,8 +131,30 @@ export class Lobby extends Component {
     }
     gameClickHandler(button: Button) {
         AudioMgr.inst.playOneShot(this.arrAudioClips[2]);
-        
-        this.loadNewScene(button.node.name)
+        let gameid = button.node.getComponent(LobbyStage).gameid;
+        if(button.node.getComponent(LobbyStage).isLock()){
+            this.notice.getComponent(Notice).show({ title: 'Notice', content: "Please unlock first!" }, () => {  });
+            return;
+        }
+        if(gameid<20){
+            this.loadNewScene('WildKong');
+        } else if(gameid<30){
+            this.loadNewScene('snowQueen');
+        } else {
+            this.loadNewScene('cowboy');
+        }
+    }
+    openKong(){
+        AudioMgr.inst.playOneShot(this.arrAudioClips[2]);
+        this.loadNewScene('WildKong');
+    }
+    openSnow(){
+        AudioMgr.inst.playOneShot(this.arrAudioClips[2]);
+        this.loadNewScene('snowQueen');
+    }
+    openCowboy(){
+        AudioMgr.inst.playOneShot(this.arrAudioClips[2]);
+        this.loadNewScene('cowboy');
     }
     loadNewScene(sceneName:string){
         this.loading.getComponent(Loading).show();
@@ -133,7 +174,6 @@ export class Lobby extends Component {
                 break;
             case 'btnLuckyWheel':
                 this.notice.getComponent(Notice).show({ title: 'Notice', content: "Comming soon!" }, () => {  });
-                // this.loadNewScene('fruit');
                 break;
             case 'btnBack':
                 break;
@@ -141,6 +181,13 @@ export class Lobby extends Component {
                 this.notice.getComponent(Notice).show({ title: 'Notice', content: "Comming soon!" }, () => {  });
                 break;
             case 'btnInbox':
+                this.notice.getComponent(Notice).show({ title: 'Notice', content: "Comming soon!" }, () => {  });
+                break;
+            case 'minigame':
+                this.notice.getComponent(Notice).show({ title: 'Notice', content: "Comming soon!" }, () => {  });
+                // this.loadNewScene('fruit');
+                break;
+            case 'mission':
                 this.notice.getComponent(Notice).show({ title: 'Notice', content: "Comming soon!" }, () => {  });
                 break;
         }

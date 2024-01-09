@@ -20,7 +20,7 @@ android {
         applicationId APPLICATION_ID
         minSdkVersion PROP_MIN_SDK_VERSION
         targetSdkVersion PROP_TARGET_SDK_VERSION
-        versionCode 11
+        versionCode 13
         versionName "1.0"
 
         externalNativeBuild {
@@ -109,6 +109,7 @@ dependencies {
     def billing_version = "6.1.0"
     implementation "com.android.billingclient:billing:$billing_version"
     implementation 'com.google.guava:guava:24.1-jre'
+    implementation 'com.google.guava:listenablefuture:9999.0-empty-to-avoid-conflict-with-guava'
     implementation 'com.google.android.gms:play-services-auth:20.7.0'
-    implementation 'com.facebook.android:facebook-android-sdk:[8,9)'
+    implementation 'com.facebook.android:facebook-android-sdk:12.3.0'
 }

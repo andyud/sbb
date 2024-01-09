@@ -1276,7 +1276,7 @@ export class Cowboy extends Component {
                 clearTimeout(timeout9);
                 this.isFreeSpin = false;
                 this.freeSpinResNode.active = true;
-                this.skeFreeSpinRes.setAnimation(0,'animation2',false);
+                this.skeFreeSpinRes.setAnimation(0,'animation',false);
                 GameMgr.instance.numberTo(this.lbFreeSpinWon, 0, this.iTotalWinFreeSpin, 2000);
                 AudioMgr.inst.playOneShot(this.arrAudioClips[16]);
             }, this.cowboyConfig.showResultDelay);

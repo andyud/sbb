@@ -27,14 +27,19 @@ export class FruitTutorial extends Component {
             let item = instantiate(pfItem);
             let itembg = instantiate(this.pfItemBg);
             itembg.setPosition(this.arrPath[i].x,this.arrPath[i].y);
-            itembg.getComponent(UITransform).priority = 1;
+            // itembg.getComponent(UITransform).priority = 1;
+            // itembg.setSiblingIndex(1);
             item.setPosition(this.arrPath[i].x,this.arrPath[i].y);
-            item.getComponent(UITransform).priority = 2;
+            // item.getComponent(UITransform).priority = 2;
+            // item.setSiblingIndex(2);
             item.getComponent(FruitItem).setScaleAnim(true);
             this.node.addChild(itembg);
             this.node.addChild(item);
         }
-        this.hand.getComponent(UITransform).priority = 3;
+        // this.hand.getComponent(UITransform).priority = 3;
+        // this.hand.setSiblingIndex(3);
+        this.hand.removeFromParent();
+        this.node.addChild(this.hand);
     }
     playTutorial(){
         if(this.isDone) return;

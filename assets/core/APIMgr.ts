@@ -194,7 +194,7 @@ BfhZUWNOM6WQGMIJ53fwjXkhURECCgMLHOFuSBtkmbfj5tw=
             console.log('Something went wrong....');
         }
     }
-    public deviceId = 'asdcsdaseaabbae';
+    public deviceId = 'asddsdaseaabbae';
     async signin(cb:(res:boolean)=>void) {
         let modulus = btoa(this.PUB_KEY);
         await this.doPost("signin", {
