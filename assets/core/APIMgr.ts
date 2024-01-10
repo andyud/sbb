@@ -1,4 +1,4 @@
-import { JsonAsset, native,sys } from "cc";
+import {JsonAsset, native,sys } from "cc";
 import JSEncrypt from "jsencrypt";
 import CryptoJS from "crypto-es";
 import { WordArray } from "crypto-es/lib/core";
@@ -153,6 +153,20 @@ BfhZUWNOM6WQGMIJ53fwjXkhURECCgMLHOFuSBtkmbfj5tw=
             "productId": null
         }
     ];
+    public rewardRes = {
+        "statusCode": 0,
+        "list": [
+          {
+            "id": 9,
+            "balance": 10000,
+            "message": "post message",
+            "title" : "title ",
+            "name": "balance",
+            "bonusType": 1, //1 chips , 2 exp, 3 ticket,
+            "messageType": 0// 0 gift , 1 only message
+            }
+        ]
+      };
     //--end mockup data ----------------------------------------------------------------------
    
     public async doPost(api: string, data: {}, authorization: string = ""): Promise<any> {
@@ -194,7 +208,7 @@ BfhZUWNOM6WQGMIJ53fwjXkhURECCgMLHOFuSBtkmbfj5tw=
             console.log('Something went wrong....');
         }
     }
-    public deviceId = 'asddsdaseaabbae';
+    public deviceId = 'asdasdaseaabbae';
     async signin(cb:(res:boolean)=>void) {
         let modulus = btoa(this.PUB_KEY);
         await this.doPost("signin", {
@@ -252,6 +266,45 @@ BfhZUWNOM6WQGMIJ53fwjXkhURECCgMLHOFuSBtkmbfj5tw=
             .then((response) => response.json())
             .then((data) => {
                 console.log("Success:", data);
+            })
+            .catch((error) => {
+                console.error("Error:", error);
+            });
+    }
+    async getReward(){
+        let api = 'reward';
+        await this.doGet(api, this.signinRes.authorization)
+            .then((response) => response.json())
+            .then((data) => {
+                console.log("Success:", data);
+                if(data && data.encrypted){
+                    let newData =  this.decodeData(data.encrypted);
+                    let jData =  JSON.parse(newData);
+                    console.log(JSON.stringify(jData));
+                    this.rewardRes = jData;
+                    if(jData && jData.list && jData.list.length>0){
+                        GameEvent.DispatchEvent('rewardlist',jData.list);
+                    } else {
+                        GameEvent.DispatchEvent('rewardlist',[]);
+                    }
+                }
+            })
+            .catch((error) => {
+                console.error("Error:", error);
+            });
+    }
+    public useReward() {
+        let data = {reward_id: 9};
+        let cipherDataB64 = this.encodeData(JSON.stringify(data));
+        this.doPost("reward", {
+            t: cipherDataB64
+        }, this.signinRes.authorization)
+            .then((response) => response.json())
+            .then((data) => {
+                console.log("Success:", data);
+                let newData = this.decodeData(data.encrypted);
+                let jdata = JSON.parse(newData);
+                console.log(JSON.stringify(jdata))
             })
             .catch((error) => {
                 console.error("Error:", error);

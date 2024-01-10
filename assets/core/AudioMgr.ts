@@ -40,6 +40,19 @@ export class AudioMgr {
 
     public soundIdx: number = -1;
     public isPause:boolean = false;
+    public isSoundOn:boolean = true;
+    setSoundOn(){
+        this.isSoundOn = !this.isSoundOn;
+        if(this.isSoundOn){
+            if(this.bgm && this.bgm.clip!=null){
+                this.playBgm();
+            }
+            console.log('sound on');
+        } else {
+            console.log('sound off');
+            this.pauseAllBgm();
+        }
+    }
     constructor() {
         //@en create a node as audioMgr
         //@zh 创建一个节点作为 audioMgr
@@ -123,83 +136,80 @@ export class AudioMgr {
     }
     
     /**
-     * @en
-     * play short audio, such as strikes,explosions
-     * @zh
-     * 播放短音频,比如 打击音效，爆炸音效等
-     * @param sound clip or url for the audio
-     * @param volume 
+      play short sound
      */
     playOneShot(sound: AudioClip | string, volume: number = 1.0) {
+        if(!this.isSoundOn) return;
         if (sound instanceof AudioClip) {
             this.bgm.playOneShot(sound, volume);
-        }
-        else {
-            resources.load(sound, (err, clip: AudioClip) => {
-                if (err) {
-                    console.log(err);
-                }
-                else {
-                    this.bgm.playOneShot(clip, volume);
-                }
-            });
         }
     }
 
     /**
-     * @en
-     * play long audio, such as the bg music
-     * @zh
-     * 播放长音频，比如 背景音乐
-     * @param sound clip or url for the sound
-     * @param volume 
+     play bg sound
      */
-    play(sound: AudioClip | string, soundIdx:number, volume: number = 1.0) {
-        if(this.soundIdx == soundIdx){
-            if(this.isPause){
-                this.bgm.play();
-            }
-            return;
-        } 
-        this.bgm.stop();
-        this.soundIdx = soundIdx;
-        if (sound instanceof AudioClip) {
-            this.bgm.clip = sound;
-            this.bgm.loop = true;
+    // play(sound: AudioClip | string, soundIdx:number, volume: number = 1.0) {
+    //     if(this.soundIdx == soundIdx){
+    //         if(this.isPause){
+    //             this.bgm.play();
+    //         }
+    //         return;
+    //     } 
+    //     this.bgm.stop();
+    //     this.soundIdx = soundIdx;
+    //     if (sound instanceof AudioClip) {
+    //         this.bgm.clip = sound;
+    //         this.bgm.loop = true;
+    //         this.bgm.play();
+    //         this.bgm.volume = volume;
+    //     }
+    // }
+    playBgm(){
+        if(!this.isSoundOn) return;
+        if(this.bgm.clip==null) return;
+        if(this.bgm.playing){
+            this.bgm.volume = 1;
+        } else {
             this.bgm.play();
-            this.bgm.volume = volume;
-        }
-        else {
-            resources.load(sound, (err, clip: AudioClip) => {
-                if (err) {
-                    console.log(err);
-                }
-                else {
-                    this.bgm.clip = clip;
-                    this.bgm.play();
-                    this.bgm.volume = volume;
-                }
-            });
         }
     }
+
 
     /**
      * stop the audio play
      */
     stop() {
-        this.bgm.stop();
-        this.bgmBonus.stop();
-        this.bgmFreeSpin.stop();
-        this.bgmSpin.stop();
-        this.bgmCoin.stop();
-        this.bgmTension.stop();
+        if(this.bgm!=null && this.bgm.clip!=null){
+            this.bgm.stop();
+            this.bgm.clip = null;
+        }
+        if(this.bgmBonus!=null && this.bgmBonus.clip!=null){
+            this.bgmBonus.stop();
+            this.bgmBonus.clip = null;
+        }
+        if(this.bgmFreeSpin && this.bgmFreeSpin.clip!=null){
+            this.bgmFreeSpin.stop();
+            this.bgmFreeSpin.clip = null;
+        }
+        if(this.bgmSpin && this.bgmSpin.clip!=null){
+            this.bgmSpin.stop();
+            this.bgmSpin.clip=null;
+        }
+        if(this.bgmCoin && this.bgmCoin.clip!=null){
+            this.bgmCoin.stop();
+            this.bgmCoin.clip = null;
+        }
+        if(this.bgmTension && this.bgmTension.clip!=null){
+            this.bgmTension.stop();
+            this.bgmTension.clip = null;
+        }
     }
 
     /**
      * pause the audio play
      */
     pause() {
-        this.isPause = true;
+        this.isSoundOn = false;
         this.bgm.pause();
     }
 
@@ -218,8 +228,8 @@ export class AudioMgr {
         this.bgmTension.volume = val;
         this.bgmSpin.volume = val;
     }
-
     playSpin(){
+        if(!this.isSoundOn) return;
         if(this.bgmSpin.playing){
             this.bgmSpin.volume = 1;
         } else {
@@ -230,18 +240,21 @@ export class AudioMgr {
         this.bgmSpin.pause();
     }
     playTension(){
+        if(!this.isSoundOn) return;
         this.bgmTension.play();
     }
     pauseTension(){
         this.bgmTension.pause();
     }
     playBonus(){
+        if(!this.isSoundOn) return;
         this.bgmBonus.play();
     }
     pauseBonus(){
         this.bgmBonus.pause();
     }
     playFreeSpin(){
+        if(!this.isSoundOn) return;
         if(this.bgmFreeSpin.playing){
             this.bgmFreeSpin.volume = 1;
         } else {
@@ -252,12 +265,14 @@ export class AudioMgr {
         this.bgmFreeSpin.pause();
     }
     playCoin(){
+        if(!this.isSoundOn) return;
         this.bgmCoin.play();
     }
     pauseCoin(){
         this.bgmCoin.pause();
     }
     pauseAllBgm(){
+        this.bgm.pause();
         this.bgmBonus.pause();
         this.bgmFreeSpin.pause();
         this.bgmSpin.pause();

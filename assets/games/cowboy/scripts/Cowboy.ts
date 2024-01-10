@@ -11,6 +11,7 @@ import { CowboyItem } from './CowboyItem';
 import { CowboyBonusItem } from './CowboyBonusItem';
 import { CowboyCoinEff } from './CowboyCoinEff';
 import { Shop } from '../../../prefabs/shop/scripts/Shop';
+import { LobbyOption } from '../../../lobby/scripts/LobbyOption';
 const { ccclass, property } = _decorator;
 declare var io: any;
 
@@ -188,7 +189,11 @@ export class Cowboy extends Component {
     @property({ type: Node })
     loadingBar: Node | null = null;
     private percent = 0;
-    //--
+
+    //--option
+    @property({type:Node})
+    ppOption:Node | null = null;
+
     private loginRes = {
         "pid": "loginRes",
         "betOptions": [100],
@@ -468,6 +473,7 @@ export class Cowboy extends Component {
         this.btnDbJackpot.on(Button.EventType.CLICK, this.onClick, this);
         this.btnRunDebugData.on(Button.EventType.CLICK, this.onClick, this);
         this.btnShop.on(Button.EventType.CLICK, this.onClick, this);
+        this.btnMenu.on(Button.EventType.CLICK, this.onClick, this);
 
         //--set temp reels
         let arr = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
@@ -546,12 +552,8 @@ export class Cowboy extends Component {
             GameMgr.instance.numberTo(this.lbBalance, 0, balance, 1000);
         });
 
-        // if (this.loadingSmall == null) {
-        //     this.loadingSmall = instantiate(this.pfLoading);
-        //     this.node.parent.addChild(this.loading);
-        //     this.loadingSmall.getComponent(UITransform).setContentSize(this.node.getComponent(UITransform).width, this.node.getComponent(UITransform).height);
-        // }
-        // this.loadingSmall.getComponent(Loading).show();
+        //--menu option
+        this.ppOption.getComponent(LobbyOption).init(this.arrAudioClips[1]);
     }
     setMaskEnable(isEnable: boolean) {
         this.reelMask.enabled = isEnable;
@@ -657,7 +659,9 @@ export class Cowboy extends Component {
                 this.loginRes = data;
                 this.spinRes.balance = this.loginRes.balance;
                 this.lbBalance.string = GameMgr.instance.numberWithCommas(this.loginRes.balance);
-                // this.lbLevel.string = `lv: ${this.loginRes.level}`;
+                this.lbLevel.string = `lv: ${this.loginRes.level.level}`;
+                let maxWidth = this.levelProgress.parent.getComponent(UITransform).width; //<=>100
+                this.levelProgress.getComponent(UITransform).width = (this.loginRes.level.exp/this.loginRes.level.maxExp)*maxWidth;
                 this.lbTotalBet.string = GameMgr.instance.numberWithCommas(this.loginRes.lineBet * this.totalLines);
                 //clear & add new
                 if (this.loginRes && this.loginRes.reelInfo && this.loginRes.reelInfo.normal && this.loginRes.reelInfo.normal.length > 0) {
@@ -825,12 +829,6 @@ export class Cowboy extends Component {
             case 'btnBack':
                 this.isBackPressed = true;
                 this.disconnect();
-                AudioMgr.inst.stop();
-                AudioMgr.inst.bgmBonus.clip = null;
-                AudioMgr.inst.bgmCoin.clip = null;
-                AudioMgr.inst.bgmFreeSpin.clip = null;
-                AudioMgr.inst.bgmSpin.clip = null;
-                AudioMgr.inst.bgmTension.clip = null;
                 APIMgr.instance.signinRes.balance = this.spinRes.balance;
                 let timeout15 = setTimeout(() => {
                     clearTimeout(timeout15);
@@ -888,6 +886,11 @@ export class Cowboy extends Component {
                     AudioMgr.inst.bgmSpin.volume = 0.3;
                 }
                 AudioMgr.inst.playBonus();
+                break;
+            case 'btnMenu':
+                this.ppOption.active = true;
+                this.ppOption.getComponent(LobbyOption).bg.active = true;
+                this.ppOption.getComponent(LobbyOption).show();
                 break;
         }
     }
@@ -1355,9 +1358,7 @@ export class Cowboy extends Component {
         }
     }
     loadNewScene(sceneName:string){
-        // this.loadingSmall.getComponent(Loading).show();
-        AudioMgr.inst.bgm.stop();
-        AudioMgr.inst.bgm.clip = null;
+        AudioMgr.inst.stop();
         this.removeListener();
         director.loadScene(sceneName);
     }

@@ -10,6 +10,7 @@ import { KongSpinBtn } from './KongSpinBtn';
 import { KongItem } from './KongItem';
 import { KongBonusItem } from './KongBonusItem';
 import { KongCoinEff } from './KongCoinEff';
+import { LobbyOption } from '../../../lobby/scripts/LobbyOption';
 const { ccclass, property } = _decorator;
 declare var io: any;
 
@@ -185,7 +186,11 @@ export class Kong extends Component {
     @property({ type: Node })
     loadingBar: Node | null = null;
     private percent = 0;
-    //--
+
+    //--option
+    @property({type:Node})
+    ppOption:Node | null = null;
+
     private loginRes = {
         "pid": "loginRes",
         "betOptions": [100],
@@ -460,6 +465,7 @@ export class Kong extends Component {
         this.btnDbJackpot.on(Button.EventType.CLICK, this.onClick, this);
         this.btnRunDebugData.on(Button.EventType.CLICK, this.onClick, this);
         this.btnShop.on(Button.EventType.CLICK, this.onClick, this);
+        this.btnMenu.on(Button.EventType.CLICK, this.onClick, this);
 
         //--set temp reels
         let arr = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
@@ -556,11 +562,8 @@ export class Kong extends Component {
             GameMgr.instance.numberTo(this.lbBalance, 0, balance, 1000);
         });
 
-        // if (this.loadingSmall == null) {
-        //     this.loadingSmall = instantiate(this.pfLoading);
-        //     this.node.addChild(this.loading);
-        //     this.loadingSmall.getComponent(UITransform).setContentSize(this.node.getComponent(UITransform).width, this.node.getComponent(UITransform).height);
-        // }
+        //--menu option
+        this.ppOption.getComponent(LobbyOption).init(this.arrAudioClips[1]);
     }
     setMaskEnable(isEnable: boolean) {
         this.reelMask.enabled = isEnable;
@@ -666,7 +669,9 @@ export class Kong extends Component {
                 this.loginRes = data;
                 this.spinRes.balance = this.loginRes.balance;
                 this.lbBalance.string = GameMgr.instance.numberWithCommas(this.loginRes.balance);
-                // this.lbLevel.string = `lv: ${this.loginRes.level}`;
+                this.lbLevel.string = `lv: ${this.loginRes.level.level}`;
+                let maxWidth = this.levelProgress.parent.getComponent(UITransform).width; //<=>100
+                this.levelProgress.getComponent(UITransform).width = (this.loginRes.level.exp/this.loginRes.level.maxExp)*maxWidth;
                 this.lbTotalBet.string = GameMgr.instance.numberWithCommas(this.loginRes.lineBet * 20);
                 //clear & add new
                 if (this.loginRes && this.loginRes.reelInfo && this.loginRes.reelInfo.normal && this.loginRes.reelInfo.normal.length > 0) {
@@ -838,12 +843,6 @@ export class Kong extends Component {
             case 'btnBack':
                 this.isBackPressed = true;
                 this.disconnect();
-                AudioMgr.inst.stop();
-                AudioMgr.inst.bgmBonus.clip = null;
-                AudioMgr.inst.bgmCoin.clip = null;
-                AudioMgr.inst.bgmFreeSpin.clip = null;
-                AudioMgr.inst.bgmSpin.clip = null;
-                AudioMgr.inst.bgmTension.clip = null;
                 APIMgr.instance.signinRes.balance = this.spinRes.balance;
                 let timeout15 = setTimeout(() => {
                     clearTimeout(timeout15);
@@ -893,6 +892,11 @@ export class Kong extends Component {
                     }
                     AudioMgr.inst.playBonus();
                 },1000);
+                break;
+            case 'btnMenu':
+                this.ppOption.active = true;
+                this.ppOption.getComponent(LobbyOption).bg.active = true;
+                this.ppOption.getComponent(LobbyOption).show();
                 break;
         }
     }
@@ -1206,12 +1210,14 @@ export class Kong extends Component {
             let timeout5 = setTimeout(() => {
                 clearTimeout(timeout5);
                 this.bonusInfoNode.active = true;
-                this.lbBonusInfo.active = true;
+                this.lbBonusInfo.active = false;
                 this.skeBonusStart.setAnimation(0,'start',false);
                 let timeout16 = setTimeout(()=>{
                     clearTimeout(timeout16);
-                    this.lbBonusInfo.active = true;
-                    this.skeBonusStart.setAnimation(0,'idle',false);
+                    if(this.lbBonusInfo){
+                        this.lbBonusInfo.active = true;
+                        this.skeBonusStart.setAnimation(0,'idle',false);
+                    }
                 },1000);
                 this.lbBonusInfo.children[0].active = false;
                 this.lbBonusInfo.children[1].active = false;
@@ -1383,9 +1389,7 @@ export class Kong extends Component {
         }
     }
     loadNewScene(sceneName:string){
-        // this.loadingSmall.getComponent(Loading).show();
-        AudioMgr.inst.bgm.stop();
-        AudioMgr.inst.bgm.clip = null;
+        AudioMgr.inst.stop();
         this.removeListener();
         director.loadScene(sceneName);
     }

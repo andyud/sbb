@@ -1,4 +1,4 @@
-import { _decorator, Component, EventTouch, Graphics, instantiate, LightingStage, Node, Prefab, SpriteFrame, tween, UITransform, Vec2, Vec3, AudioClip, director, Button, Label } from 'cc';
+import { _decorator, Component, EventTouch, Graphics, instantiate, LightingStage, Node, Prefab, Animation, tween, UITransform, Vec2, Vec3, AudioClip, director, Button, Label } from 'cc';
 import GameMgr from '../../../core/GameMgr';
 import { FruitItem } from './FruitItem';
 import { GameEvent } from '../../../core/GameEvent';
@@ -50,6 +50,25 @@ export class Fruit extends Component {
     // star:Node | null = null;
     private percent = 0;
     //--end loading ----------------
+    //--result
+    @property({type:Node})
+    ppResult: Node | null = null;
+    @property({type:Node})
+    ppResultBg: Node | null = null;
+    @property({type:Node})
+    animPPResult: Node | null = null;
+    @property({type:Node})
+    btnPlayAgainPPResult:Node | null = null;
+    @property({type:Node})
+    btnClosePPResult:Node | null = null;
+    @property({type:Node})
+    btnRankingPPResult:Node | null = null;
+    @property({type:Label})
+    lbYourScorePPResult:Label | null = null;
+    @property({type:Label})
+    lbWeeklyScorePPResult:Label | null = null;
+    @property({type:Label})
+    lbWeeklyRankPPResult:Label | null = null;
 
     private screenW: number = 1920;
     private screenH: number = 1080;
@@ -152,7 +171,7 @@ export class Fruit extends Component {
                     itemInfo.playDestroy();
                     let timeout = setTimeout(()=>{
                         clearTimeout(timeout);
-                        AudioMgr.inst.playOneShot(this.arrAudioClips[12+i%4]);
+                        // AudioMgr.inst.playOneShot(this.arrAudioClips[12+i%4]);
                     },i*50)
                 }
                 this.iMovesCount--;
@@ -258,15 +277,20 @@ export class Fruit extends Component {
         })
 
         //--buttons
-        this.btnBack.on(Button.EventType.CLICK, this.onButtonTouch, this);
+        this.btnBack.on(Button.EventType.CLICK, this.onClick, this);
 
         //--sound
         AudioMgr.inst.setAudioSouce('main',this.arrAudioClips[0]);
-        AudioMgr.inst.bgm.play();
+        AudioMgr.inst.playBgm();
 
         //--
         this.loading.active = true;
 
+        //--result
+        this.ppResult.active = false;
+        this.btnPlayAgainPPResult.on(Button.EventType.CLICK, this.onClick, this);
+        this.btnClosePPResult.on(Button.EventType.CLICK, this.onClick, this);
+        this.btnRankingPPResult.on(Button.EventType.CLICK, this.onClick, this);
     }
     initTables() {
         console.log(">>>initTables");
@@ -513,17 +537,41 @@ export class Fruit extends Component {
             }
         }
     }
-    onButtonTouch(button: Button) {
+    onClick(button: Button) {
         AudioMgr.inst.playOneShot(this.arrAudioClips[11]);
         switch (button.node.name) {
             case 'btnBack':
                 if (this.isBackPressed) return;
                 this.isBackPressed = true;
                 AudioMgr.inst.stop();
-                AudioMgr.inst.bgm.clip = null;
                 GameEvent.RemoveEventListener('FRUIT_DESTROY_DONE');
                 GameEvent.RemoveEventListener('FRUIT_CHECK_MOVE_DONE');
                 director.loadScene('lobby');
+                break;
+            case 'btnPlayAgainPPResult':
+                this.animPPResult.getComponent(Animation).play('hidepopup');
+                this.ppResultBg.active = false;
+                let timeout1 = setTimeout(()=>{
+                    clearTimeout(timeout1);
+                    this.ppResult.active = false;
+                    this.playAgain();
+                },1000);
+                break;
+            case 'btnClosePPResult':
+                this.animPPResult.getComponent(Animation).play('hidepopup');
+                this.ppResultBg.active = false;
+                let timeout2 = setTimeout(()=>{
+                    clearTimeout(timeout2);
+                    this.ppResult.active = false;
+                },1000);
+                break;
+            case 'btnRankingPPResult':
+                this.animPPResult.getComponent(Animation).play('hidepopup');
+                this.ppResultBg.active = false;
+                let timeout3 = setTimeout(()=>{
+                    clearTimeout(timeout3);
+                    this.ppResult.active = false;
+                },1000);
                 break;
         }
     }
@@ -541,6 +589,17 @@ export class Fruit extends Component {
             this.percent = 0;
         }
 	}
+    private showPPResult(){
+        this.ppResult.active = true;
+        this.ppResultBg.active = true;
+        this.animPPResult.getComponent(Animation).play('showpopup');
+        this.lbYourScorePPResult.string = `1000`;
+        this.lbWeeklyScorePPResult.string = `1000`;
+        this.lbWeeklyRankPPResult.string = `1000`;
+    }
+    private playAgain(){
+
+    }
     update(deltaTime: number) {
         if(this.percent<100){
             this.percent++;

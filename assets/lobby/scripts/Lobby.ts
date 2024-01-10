@@ -1,4 +1,4 @@
-import { _decorator, Button, Component, director, Label, Node, AudioClip, Prefab, instantiate, UITransform, ScrollView } from 'cc';
+import { _decorator, Button, Component, director, Label, Node, AudioClip, Prefab, instantiate, UITransform, ScrollView, Animation } from 'cc';
 import APIMgr from '../../core/APIMgr';
 import { AudioMgr } from '../../core/AudioMgr';
 import GameMgr from '../../core/GameMgr';
@@ -6,6 +6,7 @@ import { GameEvent } from '../../core/GameEvent';
 import { Loading } from '../../prefabs/loading/Loading';
 import { Notice } from '../../prefabs/popups/scripts/Notice';
 import { LobbyStage } from './LobbyStage';
+import { LobbyOption } from './LobbyOption';
 const { ccclass, property } = _decorator;
 
 @ccclass('Lobby')
@@ -21,6 +22,8 @@ export class Lobby extends Component {
     private shop: Node = null;
     @property({ type: Node })
     btnShop: Node | null = null;
+    @property({ type: Node })
+    btnGift: Node | null = null;
     @property({ type: Node })
     btnMenu: Node | null = null;
     @property({type:Node})
@@ -59,6 +62,22 @@ export class Lobby extends Component {
     arrGame:Node[] = []
     @property({type:ScrollView})
     maps:ScrollView | null = null;
+    //--minigame
+    @property({type:Node})
+    ppPlayMN: Node | null = null;
+    @property({type:Node})
+    ppPlayMNBg: Node | null = null;
+    @property({type:Node})
+    btnPlayMiniGame: Node | null = null;
+    @property({type:Label})
+    lbSticketPPStartMNGame: Label | null = null;
+    @property({type:Node})
+    btnClosePPStartMNGame:Node | null = null;
+    @property({type:Node})
+    animPPMNGame: Node | null = null;
+    //--option
+    @property({type:Node})
+    ppOption:Node | null = null;
     start() {
         //--add listener
         for (let i = 0; i < this.arrGame.length; i++) {
@@ -73,7 +92,7 @@ export class Lobby extends Component {
             this.lbDbDeviceId.node.active = false;
         }
         AudioMgr.inst.setAudioSouce('main', this.arrAudioClips[1]);
-        AudioMgr.inst.bgm.play();
+        AudioMgr.inst.playBgm();
         AudioMgr.inst.bgm.volume = 1;
 
         if (this.shop == null) {
@@ -89,9 +108,20 @@ export class Lobby extends Component {
         this.btnInbox.on(Button.EventType.CLICK, this.onClick, this);
         this.btnMiniGame.on(Button.EventType.CLICK, this.onClick, this);
         this.btnMission.on(Button.EventType.CLICK, this.onClick, this);
+        this.btnPlayMiniGame.on(Button.EventType.CLICK, this.onClick, this);
+        this.btnClosePPStartMNGame.on(Button.EventType.CLICK, this.onClick, this);
         //--get jackpot pool
         GameEvent.AddEventListener("updatebalance", (balance: number) => {
             GameMgr.instance.numberTo(this.lbBalance, 0, balance, 1000);
+        });
+        this.btnGift.active = false;
+        this.btnGift.on(Button.EventType.CLICK, this.onClick, this);
+        GameEvent.AddEventListener("rewardlist", (arr: any) => {
+            if(arr.length>0){
+                this.btnGift.active = true;
+            } else {
+                this.btnGift.active = false;
+            }
         });
 
         //--
@@ -108,6 +138,7 @@ export class Lobby extends Component {
             this.notice.getComponent(Notice).hide();
         }
         this.lbBalance.string = GameMgr.instance.numberWithCommas(APIMgr.instance.signinRes.balance);
+        this.lbLevel.string = `lv: ${APIMgr.instance.signinRes.level}`;
 
         //--responsive size
         let width = this.maps.getComponent(UITransform).width;
@@ -118,6 +149,11 @@ export class Lobby extends Component {
             this.maps.content.children[i].getComponent(UITransform).setContentSize(width,height);
             this.maps.content.children[i].children[0].setPosition(0,0);
         }
+
+        APIMgr.instance.getReward();
+
+        //--menu option
+        this.ppOption.getComponent(LobbyOption).init(this.arrAudioClips[2]);
     }
     loadPlayerInfo() {
         this.lbDbDeviceId.string = `Device Id: ${APIMgr.instance.deviceId}`
@@ -157,9 +193,12 @@ export class Lobby extends Component {
         this.loadNewScene('cowboy');
     }
     loadNewScene(sceneName:string){
+        //--remove listener
+        GameEvent.RemoveEventListener('updatebalance');
+        GameEvent.RemoveEventListener('rewardlist');
+
         this.loading.getComponent(Loading).show();
-        AudioMgr.inst.bgm.stop();
-        AudioMgr.inst.bgm.clip = null;
+        AudioMgr.inst.stop();
         this.removeListener();
         director.loadScene(sceneName);
     }
@@ -172,23 +211,47 @@ export class Lobby extends Component {
             case 'btnShop':
                 this.shop.active = true;
                 break;
+            case 'btnGift':
+                this.btnGift.active = false;
+                break;
             case 'btnLuckyWheel':
                 this.notice.getComponent(Notice).show({ title: 'Notice', content: "Comming soon!" }, () => {  });
                 break;
             case 'btnBack':
                 break;
             case 'btnMenu':
-                this.notice.getComponent(Notice).show({ title: 'Notice', content: "Comming soon!" }, () => {  });
+                this.ppOption.active = true;
+                this.ppOption.getComponent(LobbyOption).bg.active = true;
+                this.ppOption.getComponent(LobbyOption).show();
                 break;
             case 'btnInbox':
                 this.notice.getComponent(Notice).show({ title: 'Notice', content: "Comming soon!" }, () => {  });
                 break;
-            case 'minigame':
-                this.notice.getComponent(Notice).show({ title: 'Notice', content: "Comming soon!" }, () => {  });
-                // this.loadNewScene('fruit');
-                break;
             case 'mission':
                 this.notice.getComponent(Notice).show({ title: 'Notice', content: "Comming soon!" }, () => {  });
+                break;
+            case 'minigame':
+                // this.notice.getComponent(Notice).show({ title: 'Notice', content: "Comming soon!" }, () => {  });
+                this.ppPlayMN.active = true;
+                this.ppPlayMNBg.active = true;
+                this.animPPMNGame.getComponent(Animation).play('showpopup');
+                break;
+            case 'btnPlayMiniGame':
+                this.ppPlayMNBg.active = false;
+                this.animPPMNGame.getComponent(Animation).play('hidepopup');
+                let timeout1 = setTimeout(()=>{
+                    clearTimeout(timeout1);
+                    this.ppPlayMN.active = false;
+                    this.loadNewScene('fruit');
+                },1000);
+                break;
+            case 'btnClosePPStartMNGame':
+                this.animPPMNGame.getComponent(Animation).play('hidepopup');
+                this.ppPlayMNBg.active = false;
+                let timeout2 = setTimeout(()=>{
+                    clearTimeout(timeout2);
+                    this.ppPlayMN.active = false;
+                },1000);
                 break;
         }
     }

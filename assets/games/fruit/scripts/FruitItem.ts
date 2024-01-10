@@ -14,7 +14,7 @@ export class FruitItem extends Component {
     spHorizontal: Node | null = null;
     @property({type:Node})
     spVertical: Node | null = null;
-    speed = 0.3;
+    speed = 0.2;
     //--control moving & avoid move douplicate
     moveCount = 0;
     isMoving = false;
