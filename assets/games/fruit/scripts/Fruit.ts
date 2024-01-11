@@ -1,9 +1,12 @@
-import { _decorator, Component, EventTouch, Graphics, instantiate, LightingStage, Node, Prefab, Animation, tween, UITransform, Vec2, Vec3, AudioClip, director, Button, Label } from 'cc';
+import { _decorator, Component, EventTouch, Graphics, instantiate, LightingStage, Node, Prefab, SpriteFrame, tween, UITransform, Vec2, Vec3, AudioClip, director, Button, Label } from 'cc';
 import GameMgr from '../../../core/GameMgr';
 import { FruitItem } from './FruitItem';
 import { GameEvent } from '../../../core/GameEvent';
 import { AudioMgr } from '../../../core/AudioMgr';
 import { FruitTutorial } from './FruitTutorial';
+import { FruitResult } from './FruitResult';
+import { FruitQuest } from './FruitQuest';
+import { FruitItemTop } from './FruitItemTop';
 const { ccclass, property } = _decorator;
 
 @ccclass('Fruit')
@@ -15,25 +18,24 @@ export class Fruit extends Component {
     @property({ type: Prefab })
     pfItemTop: Prefab | null = null;
     @property({type:Node})
+    infoNode: Node | null = null;
+    @property({type:Node})
+    blockNode: Node | null = null;
+    @property({type:Node})
     tutorial: Node | null = null;
     @property({ type: Label })
     lbMoves: Label | null = null;
-    @property({ type: Label })
-    lbCount1: Label | null = null;
-    @property({ type: Label })
-    lbCount2: Label | null = null;
-    @property({ type: Label })
-    lbCount3: Label | null = null;
-    @property({ type: Label })
-    lbCount4: Label | null = null;
-    // @property([SpriteFrame])
-    // arrIcon: SpriteFrame[] = []
-    // @property([SpriteFrame])
-    // arrIconHL: SpriteFrame[] = []
-    // @property([SpriteFrame])
-    // arrBomb: SpriteFrame[] = []
+    @property([SpriteFrame])
+    icons: SpriteFrame[] = []
+    @property({type:Node})
+    infoListItem:Node | null = null;
+
     @property({ type: Graphics })
     graphics: Graphics | null = null;
+    @property({ type: Label })
+    lbScore: Label | null = null;
+    @property({type:Node})
+    progressbar:Node | null = null;
     @property({ type: Node })
     btnBack: Node | null = null;
     @property([AudioClip])
@@ -50,25 +52,10 @@ export class Fruit extends Component {
     // star:Node | null = null;
     private percent = 0;
     //--end loading ----------------
-    //--result
     @property({type:Node})
     ppResult: Node | null = null;
     @property({type:Node})
-    ppResultBg: Node | null = null;
-    @property({type:Node})
-    animPPResult: Node | null = null;
-    @property({type:Node})
-    btnPlayAgainPPResult:Node | null = null;
-    @property({type:Node})
-    btnClosePPResult:Node | null = null;
-    @property({type:Node})
-    btnRankingPPResult:Node | null = null;
-    @property({type:Label})
-    lbYourScorePPResult:Label | null = null;
-    @property({type:Label})
-    lbWeeklyScorePPResult:Label | null = null;
-    @property({type:Label})
-    lbWeeklyRankPPResult:Label | null = null;
+    ppQuest: Node | null = null;
 
     private screenW: number = 1920;
     private screenH: number = 1080;
@@ -81,7 +68,8 @@ export class Fruit extends Component {
     readonly ITEM_SIZE = 100;
     //--
     arrSelectedItems = [];//selected item have order,
-    iCountDestroy= 0;
+    totalScore: number = 0;
+    iCountDestroy = 0;
     //--define
     ItemsTypes = {
         NONE: 0,
@@ -107,10 +95,23 @@ export class Fruit extends Component {
     arrCorrectRow = [];
     isEnableTouch: boolean = true;
     isBackPressed: boolean = false;
-    iMovesCount: number = 1000;
+    iMovesCount: number = 0;
+
+    level = {
+        MODE:2,
+        SIZE:[7,5],
+        LIMIT:[0,16],
+        COLOR_LIMIT: 4,
+        STARS:[500,1200,2100],
+        COLLECT_ITEMS:[0,1,2,3],
+        COLLECT_COUNT:[3,3,3,3],
+        MATRIX:[[10, 10, 10, 10, 10, 10, 10],
+                [10, 10, 10, 10, 10, 10, 10],
+                [10, 10, 10, 10, 10, 10, 10],
+                [10, 10, 10, 10, 10, 10, 10],
+                [10, 10, 10, 10, 10, 10, 10]]
+    };
     start() {
-        this.lbMoves.string = `${this.iMovesCount}`;
-        this.initTables();
         this.tutorial.on(Node.EventType.TOUCH_END, (event: EventTouch) => {
             AudioMgr.inst.playOneShot(this.arrAudioClips[11]);
             this.tutorial.getComponent(FruitTutorial).isDone = true;
@@ -142,30 +143,10 @@ export class Fruit extends Component {
                 for (let i = 0; i < this.arrSelectedItems.length; i++) {
                     let idx = this.arrSelectedItems[i];
                     let itemInfo = this.arrItems[idx].getComponent(FruitItem);
-                    if (itemInfo.info.type == 1) {
-                        let currentCount = parseInt(this.lbCount1.string);
-                        currentCount++;
-                        if (currentCount < 90) {
-                            this.lbCount1.string = `${currentCount}`;
-                        }
-                    } else if (itemInfo.info.type == 2) {
-                        let currentCount = parseInt(this.lbCount2.string);
-                        currentCount++;
-                        if (currentCount < 90) {
-                            this.lbCount2.string = `${currentCount}`;
-                        }
-
-                    } else if (itemInfo.info.type == 3) {
-                        let currentCount = parseInt(this.lbCount3.string);
-                        currentCount++;
-                        if (currentCount < 90) {
-                            this.lbCount3.string = `${currentCount}`;
-                        }
-                    } else if (itemInfo.info.type == 4) {
-                        let currentCount = parseInt(this.lbCount4.string);
-                        currentCount++;
-                        if (currentCount < 90) {
-                            this.lbCount4.string = `${currentCount}`;
+                    for(let j=0;j<this.level.COLLECT_ITEMS.length;j++){
+                        if(itemInfo.info.type==this.level.COLLECT_ITEMS[j]){
+                            let iNode = this.infoListItem.children[j];
+                            iNode.getComponent(FruitItemTop).setIncreaseCount();
                         }
                     }
                     itemInfo.playDestroy();
@@ -175,7 +156,27 @@ export class Fruit extends Component {
                     },i*50)
                 }
                 this.iMovesCount--;
+                if(this.iMovesCount==0){
+                    this.checkEndGame();
+                }
                 this.lbMoves.string = `${this.iMovesCount}`;
+                GameMgr.instance.numberTo(this.lbScore,this.totalScore,this.totalScore+this.arrSelectedItems.length*10,1000);
+                this.totalScore+=this.arrSelectedItems.length*10;
+
+                //--update progress
+                let maxCount = 0;
+                for(let i=0;i<this.level.COLLECT_COUNT.length;i++){
+                    maxCount+=this.level.COLLECT_COUNT[i];
+                }
+                let currentCount = 0;
+                for(let i=0;i<this.infoListItem.children.length;i++){
+                    currentCount+=this.infoListItem.children[i].getComponent(FruitItemTop).currentCount;
+                }
+                if(currentCount==maxCount){
+                    this.checkEndGame();
+                }
+                let maxWidth = this.progressbar.parent.getComponent(UITransform).width;
+                this.progressbar.getComponent(UITransform).width = (currentCount/maxCount)*maxWidth;
             } else {
                 this.clearSelectedItem();
             }
@@ -196,10 +197,6 @@ export class Fruit extends Component {
         this.boardX = this.board.getWorldPosition().x;
         this.boardY = this.board.getWorldPosition().y;
         console.log(`>>>W:${this.screenW}, H:${this.screenH}`);
-
-        //--Auto suggest
-        this.suggestLinkItems();
-
         //--
         GameEvent.AddEventListener("FRUIT_DESTROY_DONE", (info: any) => {
             let w = this.board.getComponent(UITransform).width;
@@ -286,16 +283,52 @@ export class Fruit extends Component {
         //--
         this.loading.active = true;
 
-        //--result
-        this.ppResult.active = false;
-        this.btnPlayAgainPPResult.on(Button.EventType.CLICK, this.onClick, this);
-        this.btnClosePPResult.on(Button.EventType.CLICK, this.onClick, this);
-        this.btnRankingPPResult.on(Button.EventType.CLICK, this.onClick, this);
+        //--popup
+        this.ppResult.getComponent(FruitResult).init(this.arrAudioClips[11],()=>{});
+        this.ppQuest.getComponent(FruitQuest).init(this.arrAudioClips[11],this.level,this.icons,()=>{
+            this.restartGame();
+        });
+    }
+    checkEndGame(){
+
+    }
+    restartGame(){
+        //1. show info and blocks
+        this.infoNode.active = true;
+        this.blockNode.active = true;
+        //2. update info
+        this.iMovesCount = this.level.LIMIT[1];
+        GameMgr.instance.numberTo(this.lbMoves,0,this.iMovesCount,1000);
+        //--
+        let maxScore = 0;
+        this.infoListItem.removeAllChildren();
+        for(let i=0;i<this.level.COLLECT_ITEMS.length;i++){
+            let item = instantiate(this.pfItemTop);
+            let idx  = this.level.COLLECT_ITEMS[i];
+            let count= this.level.COLLECT_COUNT[i];
+            maxScore+=this.level.COLLECT_COUNT[i]*10;
+            item.getComponent(FruitItemTop).init(this.icons[idx],{idx:i, type:idx,count:count});
+            this.infoListItem.addChild(item);
+        }
+        //--score
+        this.totalScore = 0;
+        this.lbScore.string  = `${this.totalScore}`;
+        //level
+        let maxWidth = this.progressbar.parent.getComponent(UITransform).width; //<=>100
+        this.progressbar.getComponent(UITransform).width = (this.totalScore/maxScore)*maxWidth;
+        //--
+        this.initTables();
+        this.arrSelectedItems = [];
+        this.clearSelectedItem();
+        this.arrSuggest = [];
+        //--Auto suggest
+        this.suggestLinkItems();
     }
     initTables() {
         console.log(">>>initTables");
-        // for(let i=0;i<this.icons.length;)
-        // GameMgr.instance.random
+        this.arrItems = [];
+        this.board.removeAllChildren();
+
         let row = 0;
         let col = 0;
         let w = this.board.getComponent(UITransform).width;
@@ -449,10 +482,6 @@ export class Fruit extends Component {
         this.arrSelectedItems = [];
         this.iCountDestroy = 0;
     }
-    //input 1 path, return new path
-    // findNextNode(path:number):newpath{
-    //     let cells = this.get8CellsAround(path[i])
-    // }
     arrSuggest = [];//level 0: root
     printArray(arr: any) {
         let str = "";
@@ -548,32 +577,14 @@ export class Fruit extends Component {
                 GameEvent.RemoveEventListener('FRUIT_CHECK_MOVE_DONE');
                 director.loadScene('lobby');
                 break;
-            case 'btnPlayAgainPPResult':
-                this.animPPResult.getComponent(Animation).play('hidepopup');
-                this.ppResultBg.active = false;
-                let timeout1 = setTimeout(()=>{
-                    clearTimeout(timeout1);
-                    this.ppResult.active = false;
-                    this.playAgain();
-                },1000);
-                break;
-            case 'btnClosePPResult':
-                this.animPPResult.getComponent(Animation).play('hidepopup');
-                this.ppResultBg.active = false;
-                let timeout2 = setTimeout(()=>{
-                    clearTimeout(timeout2);
-                    this.ppResult.active = false;
-                },1000);
-                break;
-            case 'btnRankingPPResult':
-                this.animPPResult.getComponent(Animation).play('hidepopup');
-                this.ppResultBg.active = false;
-                let timeout3 = setTimeout(()=>{
-                    clearTimeout(timeout3);
-                    this.ppResult.active = false;
-                },1000);
-                break;
         }
+    }
+    showQuest(){
+        this.infoNode.active = false;
+        this.blockNode.active = false;
+        this.ppQuest.active = true;
+        this.ppQuest.getComponent(FruitQuest).bg.active = true;
+        this.ppQuest.getComponent(FruitQuest).show();
     }
     private updateProgress(){
         if(this.loadingBar && this.loadingBar.parent){
@@ -583,23 +594,13 @@ export class Fruit extends Component {
             if(progress>w*0.99){
                 progress = w*0.99;
                 this.loading.active = false;
+                this.showQuest();
             }
             // this.star.position    =  new Vec3(progress - w/2 - this.star.getComponent(UITransform).width/2, 0);
         } else {
             this.percent = 0;
         }
 	}
-    private showPPResult(){
-        this.ppResult.active = true;
-        this.ppResultBg.active = true;
-        this.animPPResult.getComponent(Animation).play('showpopup');
-        this.lbYourScorePPResult.string = `1000`;
-        this.lbWeeklyScorePPResult.string = `1000`;
-        this.lbWeeklyRankPPResult.string = `1000`;
-    }
-    private playAgain(){
-
-    }
     update(deltaTime: number) {
         if(this.percent<100){
             this.percent++;

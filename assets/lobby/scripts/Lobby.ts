@@ -7,6 +7,9 @@ import { Loading } from '../../prefabs/loading/Loading';
 import { Notice } from '../../prefabs/popups/scripts/Notice';
 import { LobbyStage } from './LobbyStage';
 import { LobbyOption } from './LobbyOption';
+import { LobbyInbox } from './LobbyInbox';
+import { LobbyRanking } from './LobbyRanking';
+import { LobbyMiniGame } from './LobbyMiniGame';
 const { ccclass, property } = _decorator;
 
 @ccclass('Lobby')
@@ -32,6 +35,8 @@ export class Lobby extends Component {
     btnMission: Node | null = null;
     @property({ type: Node })
     btnInbox: Node | null = null;
+    @property({ type: Node })
+    btnRanking: Node | null = null;
     @property({ type: Label })
     lbNickName: Label | null = null;
     @property({ type: Node })
@@ -41,12 +46,16 @@ export class Lobby extends Component {
 
     @property({type:Node})
     btnBack:Node | null = null;
-
     @property({ type: Label })
     lbBalance: Label | null = null;
-
     @property({ type: Label })
     lbLevel: Label | null = null;
+    @property({ type: Node })
+    levelProgress: Node | null = null;
+    @property({type:Node})
+    btnTicket:Node |null = null;
+    @property({type:Label})
+    lbTicket:Label | null = null;
 
     @property({ type: Label })
     lbDbDeviceId: Label | null = null;
@@ -64,20 +73,13 @@ export class Lobby extends Component {
     maps:ScrollView | null = null;
     //--minigame
     @property({type:Node})
-    ppPlayMN: Node | null = null;
-    @property({type:Node})
-    ppPlayMNBg: Node | null = null;
-    @property({type:Node})
-    btnPlayMiniGame: Node | null = null;
-    @property({type:Label})
-    lbSticketPPStartMNGame: Label | null = null;
-    @property({type:Node})
-    btnClosePPStartMNGame:Node | null = null;
-    @property({type:Node})
-    animPPMNGame: Node | null = null;
-    //--option
+    ppMiniGame: Node | null = null;
     @property({type:Node})
     ppOption:Node | null = null;
+    @property({type:Node})
+    ppInbox:Node | null = null;
+    @property({type:Node})
+    ppRanking:Node | null = null;
     start() {
         //--add listener
         for (let i = 0; i < this.arrGame.length; i++) {
@@ -106,10 +108,10 @@ export class Lobby extends Component {
         this.btnBack.on(Button.EventType.CLICK, this.onClick, this);
         this.btnMenu.on(Button.EventType.CLICK, this.onClick, this);
         this.btnInbox.on(Button.EventType.CLICK, this.onClick, this);
+        this.btnRanking.on(Button.EventType.CLICK, this.onClick, this);
         this.btnMiniGame.on(Button.EventType.CLICK, this.onClick, this);
+        this.btnTicket.on(Button.EventType.CLICK, this.onClick, this);
         this.btnMission.on(Button.EventType.CLICK, this.onClick, this);
-        this.btnPlayMiniGame.on(Button.EventType.CLICK, this.onClick, this);
-        this.btnClosePPStartMNGame.on(Button.EventType.CLICK, this.onClick, this);
         //--get jackpot pool
         GameEvent.AddEventListener("updatebalance", (balance: number) => {
             GameMgr.instance.numberTo(this.lbBalance, 0, balance, 1000);
@@ -137,8 +139,6 @@ export class Lobby extends Component {
             this.notice.getComponent(UITransform).setContentSize(this.node.getComponent(UITransform).width, this.node.getComponent(UITransform).height);
             this.notice.getComponent(Notice).hide();
         }
-        this.lbBalance.string = GameMgr.instance.numberWithCommas(APIMgr.instance.signinRes.balance);
-        this.lbLevel.string = `lv: ${APIMgr.instance.signinRes.level}`;
 
         //--responsive size
         let width = this.maps.getComponent(UITransform).width;
@@ -153,12 +153,33 @@ export class Lobby extends Component {
         APIMgr.instance.getReward();
 
         //--menu option
+        this.ppMiniGame.getComponent(LobbyMiniGame).init(this.arrAudioClips[2],()=>{
+            this.loadNewScene('fruit');
+        });
         this.ppOption.getComponent(LobbyOption).init(this.arrAudioClips[2]);
+        this.ppInbox.getComponent(LobbyInbox).init(this.arrAudioClips[2]);
+        this.ppRanking.getComponent(LobbyRanking).init(this.arrAudioClips[2]);
+
+        //get balance
+        this.loading.getComponent(Loading).show();
+        APIMgr.instance.getUserInfo((success:boolean,res:any)=>{
+            if(success){
+                GameMgr.instance.numberTo(this.lbBalance,0,res.balance,1000);
+                this.lbLevel.string = `lv: ${res.level}`;
+                let maxWidth = this.levelProgress.parent.getComponent(UITransform).width; //<=>100
+                if(res.maxExp<res.exp){
+                    res.maxExp = res.exp;
+                }
+                this.levelProgress.getComponent(UITransform).width = (res.exp/res.maxExp)*maxWidth;
+                this.lbTicket.string = `${res.ticket>0?res.ticket:0}`;
+            }
+            this.loading.getComponent(Loading).hide();
+        })
     }
     loadPlayerInfo() {
         this.lbDbDeviceId.string = `Device Id: ${APIMgr.instance.deviceId}`
         this.lbBalance.string = GameMgr.instance.numberWithCommas(APIMgr.instance.signinRes.balance);
-        this.lbLevel.string = `${APIMgr.instance.signinRes.level}`;
+        this.lbLevel.string = `lv: ${APIMgr.instance.signinRes.level}`;
     }
     loadJackpotPool() {
         for (let i = 0; i < APIMgr.instance.gamesRes.list.length; i++) {
@@ -225,33 +246,35 @@ export class Lobby extends Component {
                 this.ppOption.getComponent(LobbyOption).show();
                 break;
             case 'btnInbox':
-                this.notice.getComponent(Notice).show({ title: 'Notice', content: "Comming soon!" }, () => {  });
+                this.ppInbox.active = true;
+                this.ppInbox.getComponent(LobbyInbox).bg.active = true;
+                this.ppInbox.getComponent(LobbyInbox).show();
+                break;
+            case 'btnRanking':
+                this.ppRanking.active = true;
+                this.ppRanking.getComponent(LobbyRanking).bg.active = true;
+                this.ppRanking.getComponent(LobbyRanking).show();
                 break;
             case 'mission':
                 this.notice.getComponent(Notice).show({ title: 'Notice', content: "Comming soon!" }, () => {  });
                 break;
-            case 'minigame':
-                // this.notice.getComponent(Notice).show({ title: 'Notice', content: "Comming soon!" }, () => {  });
-                this.ppPlayMN.active = true;
-                this.ppPlayMNBg.active = true;
-                this.animPPMNGame.getComponent(Animation).play('showpopup');
-                break;
-            case 'btnPlayMiniGame':
-                this.ppPlayMNBg.active = false;
-                this.animPPMNGame.getComponent(Animation).play('hidepopup');
-                let timeout1 = setTimeout(()=>{
-                    clearTimeout(timeout1);
-                    this.ppPlayMN.active = false;
-                    this.loadNewScene('fruit');
-                },1000);
-                break;
-            case 'btnClosePPStartMNGame':
-                this.animPPMNGame.getComponent(Animation).play('hidepopup');
-                this.ppPlayMNBg.active = false;
-                let timeout2 = setTimeout(()=>{
-                    clearTimeout(timeout2);
-                    this.ppPlayMN.active = false;
-                },1000);
+            case 'minigame': case 'btnTicket':
+                this.loading.getComponent(Loading).show();
+                APIMgr.instance.puzzleStart((iSuccess:boolean,res:any)=>{
+                    this.loading.getComponent(Loading).hide();
+                    if(iSuccess){
+                        if(res.ticket && res.ticket>0){
+                            this.ppMiniGame.active = true;
+                            this.ppMiniGame.getComponent(LobbyMiniGame).bg.active = true;
+                            this.ppMiniGame.getComponent(LobbyMiniGame).show();
+                            this.ppMiniGame.getComponent(LobbyMiniGame).lbTicket.string = `${res.ticket}`;
+                        } else {
+                            this.notice.getComponent(Notice).show({ title: 'System Info', content: 'There are no tickets!' }, () => {  });
+                        }
+                    } else {
+                        this.notice.getComponent(Notice).show({ title: 'System Info', content: res }, () => {  });
+                    }
+                });
                 break;
         }
     }

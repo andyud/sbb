@@ -180,6 +180,16 @@ BfhZUWNOM6WQGMIJ53fwjXkhURECCgMLHOFuSBtkmbfj5tw=
         });
         return res;
     }
+    public async doPostEmpty(api: string, authorization: string = ""): Promise<any> {
+        let res = await fetch(`${this.BASE_URL}/${api}`, {
+            method: "POST", // or 'PUT'
+            headers: {
+                "Content-Type": "application/json",
+                "authorization": authorization
+            }
+        });
+        return res;
+    }
     public async doGet(api: string, authorization: string = ""): Promise<any> {
         let res = await fetch(`${this.BASE_URL}/${api}`, {
             method: "GET", // or 'PUT'
@@ -208,7 +218,7 @@ BfhZUWNOM6WQGMIJ53fwjXkhURECCgMLHOFuSBtkmbfj5tw=
             console.log('Something went wrong....');
         }
     }
-    public deviceId = 'asdasdaseaabbae';
+    public deviceId = 'aadasdaseaabbae';
     async signin(cb:(res:boolean)=>void) {
         let modulus = btoa(this.PUB_KEY);
         await this.doPost("signin", {
@@ -291,6 +301,25 @@ BfhZUWNOM6WQGMIJ53fwjXkhURECCgMLHOFuSBtkmbfj5tw=
             })
             .catch((error) => {
                 console.error("Error:", error);
+            });
+    }
+    async getUserInfo(cb:(success:boolean,res:any)=>void){
+        let api = 'userinfo';
+        await this.doGet(api, this.signinRes.authorization)
+            .then((response) => response.json())
+            .then((data) => {
+                console.log("Success:", data);
+                if(data && data.encrypted){
+                    let newData =  this.decodeData(data.encrypted);
+                    let jData =  JSON.parse(newData);
+                    console.log(JSON.stringify(jData));
+                    this.rewardRes = jData;
+                    cb(true,jData);
+                }
+            })
+            .catch((error) => {
+                console.error("Error:", error);
+                cb(false,null);
             });
     }
     public useReward() {
@@ -396,6 +425,26 @@ BfhZUWNOM6WQGMIJ53fwjXkhURECCgMLHOFuSBtkmbfj5tw=
         })
         .catch((error) => {
             console.error("Error:", error);
+        });
+    }
+    //--mini game
+    async puzzleStart(cb:(iSuccess:boolean, res:any)=>void){
+        await this.doPostEmpty("puzzle/ticket",this.signinRes.authorization)
+        .then((response) => response.json())
+        .then((data) => {
+            if(data && data.statusCode==0){
+                let newData = this.decodeData(data.encrypted);
+                let jData = JSON.parse(newData);
+                cb(true,jData);
+            } else if(data && data.errorMessage){
+                cb(false,data.errorMessage);
+            } else {
+                cb(false,"Can't get ticket please try again later");
+            }
+        })
+        .catch((error) => {
+            console.error("Error:", error);
+            cb(false,"Can't get ticket please try again later");
         });
     }
 }
