@@ -13,27 +13,33 @@ export class LobbyRankingItem extends Component {
     @property({ type: Label })
     lbRank: Label | null = null;
     @property({ type: Label })
-    lbChips: Label | null = null;
-    rank:number = 0;
-    chips:number = 0;
-    setRank(rank:number,chips: number){
-        this.rank = rank;
-        this.chips = chips;
+    lbScore: Label | null = null;
+    @property({ type: Label })
+    lbUserName: Label | null = null;
+    info = {
+        "userId": 1145,
+        "rank": 1,
+        "score": 2560,
+        "username": "user_1145"
+    }
+    setRank(info:any){
+        this.info = info;
         this.icon1st.active = false;
         this.icon2nd.active = false;
         this.icon3rd.active = false;
         this.lbRank.node.active = false;
-        if(rank==1){
+        if(this.info.rank==1){
             this.icon1st.active = true;
-        } else if(rank==2){
+        } else if(this.info.rank==2){
             this.icon2nd.active = true;
-        } else if(rank==3){
+        } else if(this.info.rank==3){
             this.icon3rd.active = true;
         } else {
             this.lbRank.node.active = true;
-            this.lbRank.string = `${this.rank}`;
+            this.lbRank.string = `${this.info.rank}`;
         }
-        this.lbChips.string = GameMgr.instance.numberWithCommas(this.chips);
+        this.lbScore.string = GameMgr.instance.numberWithCommas(this.info.score);
+        this.lbUserName.string = this.info.username;
     }
 }
 

@@ -375,6 +375,66 @@ BfhZUWNOM6WQGMIJ53fwjXkhURECCgMLHOFuSBtkmbfj5tw=
                 console.error("Error:", error);
             });
     }
+    async getMails(cb:(isSuccess:boolean,res:any)=>void) {
+        let api = 'reward';
+        await this.doGet(api, this.signinRes.authorization)
+            .then((response) => response.json())
+            .then((data) => {
+                if(data.statusCode==0){
+                    console.log("Success:", data);
+                    let newData = this.decodeData(data.encrypted);
+                    let jData = JSON.parse(newData);
+                    cb(true,jData);
+                } else {
+                    cb(false,"Empty mail list");
+                }
+            })
+            .catch((error) => {
+                console.error("Error:", error);
+                cb(false,"Can't access mail!");
+            });
+    }
+    async getMailGift(reward_id:number,cb:(iSuccess:boolean, res:any)=>void){
+        let data = {reward_id: reward_id};
+        let cipherDataB64 = this.encodeData(JSON.stringify(data));
+        await this.doPost("reward",{
+            t: cipherDataB64
+        },this.signinRes.authorization)
+        .then((response) => response.json())
+        .then((data) => {
+            if(data.statusCode==0){
+                console.log("Success:", data);
+                let newData = this.decodeData(data.encrypted);
+                let jData = JSON.parse(newData);
+                cb(true,jData);
+            } else {
+                cb(false,"Can't receive this gift");
+            }
+        })
+        .catch((error) => {
+            console.error("Error:", error);
+            cb(false,"Can't receive this gift");
+        });
+    }
+    async getRanking(displayStart:number,displayLength:number,cb:(isSuccess:boolean,res:any)=>void) {
+        let api = `puzzle/rank?displayStart=${displayStart}&displayLength=${displayLength}`;
+        await this.doGet(api, this.signinRes.authorization)
+            .then((response) => response.json())
+            .then((data) => {
+                if(data.statusCode==0){
+                    console.log("Success:", data);
+                    let newData = this.decodeData(data.encrypted);
+                    let jData = JSON.parse(newData);
+                    cb(true,jData);
+                } else {
+                    cb(false,"Empty ranking list");
+                }
+            })
+            .catch((error) => {
+                console.error("Error:", error);
+                cb(false,"Can't access ranking list!");
+            });
+    }
     async getJackpotPool(gameId:number){
         let api = `jackpotPool/${gameId}`;
         await this.doGet(api, this.signinRes.authorization)
@@ -469,7 +529,7 @@ BfhZUWNOM6WQGMIJ53fwjXkhURECCgMLHOFuSBtkmbfj5tw=
             cb(false,"Can't get ticket please try again later");
         });
     }
-    
+
 }
 
 export default APIMgr;

@@ -90,6 +90,7 @@ export class LobbyOption extends Component {
                 break;
             case 'btnSound':
                 AudioMgr.inst.setSoundOn();
+                AudioMgr.inst.setMusicOn();
                 if(AudioMgr.inst.isSoundOn){
                     this.soundOff.active = false;
                     this.soundOn.active = true;

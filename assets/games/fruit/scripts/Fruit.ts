@@ -9,6 +9,7 @@ import { FruitQuest } from './FruitQuest';
 import { FruitOutOfMove } from './FruitOutOfMove';
 import { FruitItemTop } from './FruitItemTop';
 import APIMgr from '../../../core/APIMgr';
+import { FruitPause } from './FruitPause';
 const { ccclass, property } = _decorator;
 
 @ccclass('Fruit')
@@ -39,7 +40,7 @@ export class Fruit extends Component {
     @property({type:Node})
     progressbar:Node | null = null;
     @property({ type: Node })
-    btnBack: Node | null = null;
+    btnPause: Node | null = null;
     @property([AudioClip])
     arrAudioClips: AudioClip[] = [];
     startPoint: Vec2 = null;
@@ -60,6 +61,9 @@ export class Fruit extends Component {
     ppQuest: Node | null = null;
     @property({type:Node})
     ppOutOfMove:Node | null = null;
+    @property({type:Node})
+    ppPause: Node | null = null;
+    iCurrentLevel = 0;
 
     private screenW: number = 1920;
     private screenH: number = 1080;
@@ -130,7 +134,7 @@ export class Fruit extends Component {
                 this.arrItems[i].getComponent(FruitItem).setScaleAnim(false);
             }
             this.resetSpeed();
-            AudioMgr.inst.bgm.volume = 0.5;
+            AudioMgr.inst.bgm.volume = 1;
         }, this);
         this.board.on(Node.EventType.TOUCH_MOVE, (event: EventTouch) => {
             if (this.isEnableTouch == false) return;
@@ -156,7 +160,7 @@ export class Fruit extends Component {
                     itemInfo.playDestroy();
                     let timeout = setTimeout(()=>{
                         clearTimeout(timeout);
-                        // AudioMgr.inst.playOneShot(this.arrAudioClips[12+i%4]);
+                        AudioMgr.inst.playOneShot(this.arrAudioClips[12+i%4]);
                     },i*50)
                 }
                 this.iMovesCount--;
@@ -278,7 +282,7 @@ export class Fruit extends Component {
         })
 
         //--buttons
-        this.btnBack.on(Button.EventType.CLICK, this.onClick, this);
+        this.btnPause.on(Button.EventType.CLICK, this.onClick, this);
 
         //--sound
         AudioMgr.inst.setAudioSouce('main',this.arrAudioClips[0]);
@@ -292,11 +296,17 @@ export class Fruit extends Component {
             if(cmd==1){
                 //back to lobby
                 this.backToLobby();
-            } if(cmd==2){//restart game
-                this.restartGame();
+            } if(cmd==2){//restart game //-random new level
+                this.iCurrentLevel++;
+                this.level.LIMIT[1] = GameMgr.instance.getRandomInt(10,10 + this.iCurrentLevel*5);
+                let arr = [0,1,2,3,4,5];
+                arr = GameMgr.instance.shuffle(arr);
+                this.level.COLLECT_ITEMS = [arr[0],arr[1],arr[2],arr[3]];
+                this.level.COLLECT_COUNT = [3+this.iCurrentLevel,3+this.iCurrentLevel,3+this.iCurrentLevel,3+this.iCurrentLevel];
+                this.showQuest();
             }
         });
-        this.ppQuest.getComponent(FruitQuest).init(this.arrAudioClips[11],this.level,this.icons,(cmd:number)=>{
+        this.ppQuest.getComponent(FruitQuest).init(this.arrAudioClips[11],this.icons,(cmd:number)=>{
             if(cmd==1){
                 //back to lobby
                 this.backToLobby();
@@ -308,7 +318,15 @@ export class Fruit extends Component {
             if(cmd==1){
                 //back to lobby
                 this.backToLobby();
-            } if(cmd==2){//restart game
+            } else if(cmd==2){//restart game
+                this.restartGame();
+            }
+        });
+        this.ppPause.getComponent(FruitPause).init(this.arrAudioClips[11],(cmd:number)=>{
+            if(cmd==1){
+                //back to lobby
+                this.backToLobby();
+            } else if(cmd==2){//restart game
                 this.restartGame();
             }
         });
@@ -316,11 +334,13 @@ export class Fruit extends Component {
     checkEndGame(){
         //--check done
         let isDone = true;
+        let totalStar = 0;
         for(let i=0;i<this.infoListItem.children.length;i++){
             let item = this.infoListItem.children[i].getComponent(FruitItemTop);
             if(item.currentCount<item.info.count){
                 isDone = false;
-                break;
+            } else {
+                totalStar++;
             }
         }
         if(isDone){
@@ -329,15 +349,11 @@ export class Fruit extends Component {
             APIMgr.instance.puzzleResult(this.totalScore,(iSuccess:boolean,res:any)=>{
                 if(iSuccess){
                     let timeout1= setTimeout(()=>{
+                        clearTimeout(timeout1)
                         this.ppResult.active = true;
                         this.ppResult.getComponent(FruitResult).bg.active = true;
-                        this.ppResult.getComponent(FruitResult).show();
-                        this.ppResult.getComponent(FruitResult).setScore(this.totalScore,res.score,res.rank);
-                    },1000);
-                } else {
-                    this.ppResult.active = true;
-                    this.ppResult.getComponent(FruitResult).bg.active = true;
-                    this.ppResult.getComponent(FruitResult).show();
+                        this.ppResult.getComponent(FruitResult).show(this.totalScore,this.maxScore);
+                    },500);
                 }
             });
             
@@ -346,12 +362,13 @@ export class Fruit extends Component {
                 //--game over
                 this.ppOutOfMove.active = true;
                 this.ppOutOfMove.getComponent(FruitOutOfMove).bg.active = true;
-                this.ppOutOfMove.getComponent(FruitOutOfMove).show();
+                this.ppOutOfMove.getComponent(FruitOutOfMove).show(this.totalScore,totalStar);
             } else {//continue
 
             }
         }
     }
+    maxScore = 0;
     restartGame(){
         //1. show info and blocks
         this.infoNode.active = true;
@@ -360,13 +377,13 @@ export class Fruit extends Component {
         this.iMovesCount = this.level.LIMIT[1];
         GameMgr.instance.numberTo(this.lbMoves,0,this.iMovesCount,1000);
         //--
-        let maxScore = 0;
+        this.maxScore = 0;
         this.infoListItem.removeAllChildren();
         for(let i=0;i<this.level.COLLECT_ITEMS.length;i++){
             let item = instantiate(this.pfItemTop);
             let idx  = this.level.COLLECT_ITEMS[i];
             let count= this.level.COLLECT_COUNT[i];
-            maxScore+=this.level.COLLECT_COUNT[i]*10;
+            this.maxScore+=this.level.COLLECT_COUNT[i]*10;
             item.getComponent(FruitItemTop).init(this.icons[idx],{idx:i, type:idx,count:count});
             this.infoListItem.addChild(item);
         }
@@ -375,7 +392,7 @@ export class Fruit extends Component {
         this.lbScore.string  = `${this.totalScore}`;
         //level
         let maxWidth = this.progressbar.parent.getComponent(UITransform).width; //<=>100
-        this.progressbar.getComponent(UITransform).width = (this.totalScore/maxScore)*maxWidth;
+        this.progressbar.getComponent(UITransform).width = (this.totalScore/this.maxScore)*maxWidth;
         //--
         this.initTables();
         this.arrSelectedItems = [];
@@ -395,7 +412,7 @@ export class Fruit extends Component {
         let w = this.board.getComponent(UITransform).width;
         let h = this.board.getComponent(UITransform).height;
         for (let i = 0; i < this.ITEM_PER_ROW * this.ITEM_PER_COL; i++) {
-            let texId = GameMgr.instance.getRandomInt(0, this.pfItems.length - 3);
+            let texId = GameMgr.instance.getRandomInt(0, this.pfItems.length - 2);
             let item = instantiate(this.pfItems[texId]);
             item.getComponent(FruitItem).init({ row: row, col: col, idx: i, type: texId });
 
@@ -630,8 +647,10 @@ export class Fruit extends Component {
     onClick(button: Button) {
         AudioMgr.inst.playOneShot(this.arrAudioClips[11]);
         switch (button.node.name) {
-            case 'btnBack':
-                this.backToLobby();
+            case 'btnPause':
+                this.ppPause.active = true;
+                this.ppPause.getComponent(FruitPause).bg.active = true;
+                this.ppPause.getComponent(FruitPause).show();
                 break;
         }
     }
@@ -648,7 +667,7 @@ export class Fruit extends Component {
         this.blockNode.active = false;
         this.ppQuest.active = true;
         this.ppQuest.getComponent(FruitQuest).bg.active = true;
-        this.ppQuest.getComponent(FruitQuest).show();
+        this.ppQuest.getComponent(FruitQuest).show(this.level);
     }
     private updateProgress(){
         if(this.loadingBar && this.loadingBar.parent){

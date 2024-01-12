@@ -83,9 +83,6 @@
         "__id__": 952
       },
       {
-        "__id__": 867
-      },
-      {
         "__id__": 940
       },
       {
@@ -110,9 +107,6 @@
         "__id__": 1205
       },
       {
-        "__id__": 958
-      },
-      {
         "__id__": 985
       },
       {
@@ -120,6 +114,12 @@
       },
       {
         "__id__": 1048
+      },
+      {
+        "__id__": 958
+      },
+      {
+        "__id__": 867
       }
     ],
     "_active": true,
@@ -17083,7 +17083,7 @@
         "__id__": 1014
       }
     ],
-    "_active": true,
+    "_active": false,
     "_components": [
       {
         "__id__": 1017
@@ -17718,7 +17718,7 @@
   },
   {
     "__type__": "cc.Node",
-    "_name": "btnAllReceived",
+    "_name": "btnReceiveAll",
     "_objFlags": 0,
     "_parent": {
       "__id__": 1001
@@ -17772,7 +17772,7 @@
   },
   {
     "__type__": "cc.Node",
-    "_name": "all received_button",
+    "_name": "spReceived",
     "_objFlags": 0,
     "_parent": {
       "__id__": 1033
@@ -17878,13 +17878,13 @@
   },
   {
     "__type__": "cc.Node",
-    "_name": "receive all_button",
+    "_name": "spReceive",
     "_objFlags": 0,
     "_parent": {
       "__id__": 1033
     },
     "_children": [],
-    "_active": true,
+    "_active": false,
     "_components": [
       {
         "__id__": 1038
@@ -18014,7 +18014,7 @@
     "__prefab": null,
     "clickEvents": [],
     "_interactable": true,
-    "_transition": 0,
+    "_transition": 3,
     "_normalColor": {
       "__type__": "cc.Color",
       "r": 255,
@@ -18205,6 +18205,11 @@
     "btnClose": {
       "__id__": 1003
     },
+    "btnReceiveAll": {
+      "__id__": 1033
+    },
+    "spReceive": null,
+    "spReceived": null,
     "pfItem": {
       "__uuid__": "30d418ef-c02c-4905-abcb-a7f18ae7a917",
       "__expectedType__": "cc.Prefab"
@@ -19632,7 +19637,7 @@
         "__id__": 1085
       }
     ],
-    "_active": true,
+    "_active": false,
     "_components": [
       {
         "__id__": 1088
@@ -20433,7 +20438,7 @@
   },
   {
     "__type__": "cc.Node",
-    "_name": "lbMyChip",
+    "_name": "lbMyUserName",
     "_objFlags": 0,
     "_parent": {
       "__id__": 1104
@@ -20451,7 +20456,116 @@
     "_prefab": null,
     "_lpos": {
       "__type__": "cc.Vec3",
-      "x": 348.2049999999999,
+      "x": 240.849,
+      "y": 0,
+      "z": 0
+    },
+    "_lrot": {
+      "__type__": "cc.Quat",
+      "x": 0,
+      "y": 0,
+      "z": 0,
+      "w": 1
+    },
+    "_lscale": {
+      "__type__": "cc.Vec3",
+      "x": 1,
+      "y": 1,
+      "z": 1
+    },
+    "_mobility": 0,
+    "_layer": 1073741824,
+    "_euler": {
+      "__type__": "cc.Vec3",
+      "x": 0,
+      "y": 0,
+      "z": 0
+    },
+    "_id": "81x4PcP41Af4cwOot7OmlT"
+  },
+  {
+    "__type__": "cc.UITransform",
+    "_name": "",
+    "_objFlags": 0,
+    "node": {
+      "__id__": 1108
+    },
+    "_enabled": true,
+    "__prefab": null,
+    "_contentSize": {
+      "__type__": "cc.Size",
+      "width": 500,
+      "height": 63
+    },
+    "_anchorPoint": {
+      "__type__": "cc.Vec2",
+      "x": 1,
+      "y": 0.5
+    },
+    "_id": "7bXK773DJCYLFcxSZVRbJ+"
+  },
+  {
+    "__type__": "cc.Label",
+    "_name": "",
+    "_objFlags": 0,
+    "node": {
+      "__id__": 1108
+    },
+    "_enabled": true,
+    "__prefab": null,
+    "_customMaterial": null,
+    "_srcBlendFactor": 2,
+    "_dstBlendFactor": 4,
+    "_color": {
+      "__type__": "cc.Color",
+      "r": 36,
+      "g": 36,
+      "b": 36,
+      "a": 255
+    },
+    "_string": "My user name",
+    "_horizontalAlign": 0,
+    "_verticalAlign": 1,
+    "_actualFontSize": 40,
+    "_fontSize": 40,
+    "_fontFamily": "Arial",
+    "_lineHeight": 50,
+    "_overflow": 1,
+    "_enableWrapText": true,
+    "_font": {
+      "__uuid__": "96943bce-af61-4fb8-be3a-16e7ac5e0db5",
+      "__expectedType__": "cc.TTFFont"
+    },
+    "_isSystemFontUsed": false,
+    "_spacingX": 0,
+    "_isItalic": false,
+    "_isBold": true,
+    "_isUnderline": false,
+    "_underlineHeight": 2,
+    "_cacheMode": 0,
+    "_id": "b2A8hSoTZHCpMDYLZM1vO7"
+  },
+  {
+    "__type__": "cc.Node",
+    "_name": "lbMyScore",
+    "_objFlags": 0,
+    "_parent": {
+      "__id__": 1104
+    },
+    "_children": [],
+    "_active": true,
+    "_components": [
+      {
+        "__id__": 1112
+      },
+      {
+        "__id__": 1113
+      }
+    ],
+    "_prefab": null,
+    "_lpos": {
+      "__type__": "cc.Vec3",
+      "x": 415.615,
       "y": 0,
       "z": 0
     },
@@ -20483,7 +20597,7 @@
     "_name": "",
     "_objFlags": 0,
     "node": {
-      "__id__": 1108
+      "__id__": 1111
     },
     "_enabled": true,
     "__prefab": null,
@@ -20504,7 +20618,7 @@
     "_name": "",
     "_objFlags": 0,
     "node": {
-      "__id__": 1108
+      "__id__": 1111
     },
     "_enabled": true,
     "__prefab": null,
@@ -20513,9 +20627,9 @@
     "_dstBlendFactor": 4,
     "_color": {
       "__type__": "cc.Color",
-      "r": 55,
-      "g": 27,
-      "b": 19,
+      "r": 36,
+      "g": 36,
+      "b": 36,
       "a": 255
     },
     "_string": "00,000,000,000",
@@ -20539,112 +20653,6 @@
     "_underlineHeight": 2,
     "_cacheMode": 0,
     "_id": "55JUD8XA9Oq6eNK9H3HqrS"
-  },
-  {
-    "__type__": "cc.Node",
-    "_name": "chips",
-    "_objFlags": 0,
-    "_parent": {
-      "__id__": 1104
-    },
-    "_children": [],
-    "_active": true,
-    "_components": [
-      {
-        "__id__": 1112
-      },
-      {
-        "__id__": 1113
-      }
-    ],
-    "_prefab": null,
-    "_lpos": {
-      "__type__": "cc.Vec3",
-      "x": 398.279,
-      "y": -5.88300000000001,
-      "z": 0
-    },
-    "_lrot": {
-      "__type__": "cc.Quat",
-      "x": 0,
-      "y": 0,
-      "z": 0,
-      "w": 1
-    },
-    "_lscale": {
-      "__type__": "cc.Vec3",
-      "x": 1,
-      "y": 1,
-      "z": 1
-    },
-    "_mobility": 0,
-    "_layer": 1073741824,
-    "_euler": {
-      "__type__": "cc.Vec3",
-      "x": 0,
-      "y": 0,
-      "z": 0
-    },
-    "_id": "e3UZvNQL5If7aY5hfnGFBL"
-  },
-  {
-    "__type__": "cc.UITransform",
-    "_name": "",
-    "_objFlags": 0,
-    "node": {
-      "__id__": 1111
-    },
-    "_enabled": true,
-    "__prefab": null,
-    "_contentSize": {
-      "__type__": "cc.Size",
-      "width": 91.68,
-      "height": 50.4
-    },
-    "_anchorPoint": {
-      "__type__": "cc.Vec2",
-      "x": 0.5,
-      "y": 0.5
-    },
-    "_id": "dapjFSsfBFDr237A2gqZEk"
-  },
-  {
-    "__type__": "cc.Label",
-    "_name": "",
-    "_objFlags": 0,
-    "node": {
-      "__id__": 1111
-    },
-    "_enabled": true,
-    "__prefab": null,
-    "_customMaterial": null,
-    "_srcBlendFactor": 2,
-    "_dstBlendFactor": 4,
-    "_color": {
-      "__type__": "cc.Color",
-      "r": 55,
-      "g": 27,
-      "b": 19,
-      "a": 255
-    },
-    "_string": "CHIPS",
-    "_horizontalAlign": 0,
-    "_verticalAlign": 1,
-    "_actualFontSize": 30,
-    "_fontSize": 30,
-    "_fontFamily": "Arial",
-    "_lineHeight": 40,
-    "_overflow": 0,
-    "_enableWrapText": true,
-    "_font": null,
-    "_isSystemFontUsed": true,
-    "_spacingX": 0,
-    "_isItalic": false,
-    "_isBold": true,
-    "_isUnderline": false,
-    "_underlineHeight": 2,
-    "_cacheMode": 0,
-    "_id": "f2i6Wo2ARLbLtLT9mtRzs7"
   },
   {
     "__type__": "cc.UITransform",
@@ -20868,7 +20876,10 @@
     "lbMyRank": {
       "__id__": 1107
     },
-    "lbMyChip": {
+    "lbMyUserName": {
+      "__id__": 1110
+    },
+    "lbMyScore": {
       "__id__": 1113
     },
     "lbLeftTime": {

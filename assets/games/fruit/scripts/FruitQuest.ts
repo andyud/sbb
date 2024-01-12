@@ -42,11 +42,17 @@ export class FruitQuest extends Component {
         this.btnClose.on(Button.EventType.CLICK, this.onClick, this);
     }
 
-    init(audioClip: AudioClip, level:any, icons:any ,cb:(cmd:number) => void) {
+    init(audioClip: AudioClip,icons:any ,cb:(cmd:number) => void) {
         this.audioClip = audioClip;
-        this.level = level;
         this.icons = icons;
         this.callback = cb;
+        
+    }
+    show(level:any) {
+        this.node.active = true;
+        this.bg.active = true;
+        this.pp.getComponent(Animation).play('showpopup');
+        this.level = level;
         this.questList.removeAllChildren();
         for(let i=0;i<this.level.COLLECT_ITEMS.length;i++){
             let item = instantiate(this.pfItem);
@@ -55,11 +61,6 @@ export class FruitQuest extends Component {
             item.getComponent(FruitItemQuest).init(this.icons[idx],{idx:i, type:idx,count:count});
             this.questList.addChild(item);
         }
-    }
-    show() {
-        this.node.active = true;
-        this.bg.active = true;
-        this.pp.getComponent(Animation).play('showpopup');
     }
     hide() {
         this.pp.getComponent(Animation).play('hidepopup');

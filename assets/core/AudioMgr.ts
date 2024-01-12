@@ -41,9 +41,13 @@ export class AudioMgr {
     public soundIdx: number = -1;
     public isPause:boolean = false;
     public isSoundOn:boolean = true;
+    public isMusicOn:boolean = true;
     setSoundOn(){
         this.isSoundOn = !this.isSoundOn;
-        if(this.isSoundOn){
+    }
+    setMusicOn(){
+        this.isMusicOn = !this.isMusicOn;
+        if(this.isMusicOn){
             if(this.bgm && this.bgm.clip!=null){
                 this.playBgm();
             }
@@ -165,7 +169,7 @@ export class AudioMgr {
     //     }
     // }
     playBgm(){
-        if(!this.isSoundOn) return;
+        if(!this.isMusicOn) return;
         if(this.bgm.clip==null) return;
         if(this.bgm.playing){
             this.bgm.volume = 1;
@@ -229,7 +233,7 @@ export class AudioMgr {
         this.bgmSpin.volume = val;
     }
     playSpin(){
-        if(!this.isSoundOn) return;
+        if(!this.isMusicOn) return;
         if(this.bgmSpin.playing){
             this.bgmSpin.volume = 1;
         } else {
@@ -240,7 +244,7 @@ export class AudioMgr {
         this.bgmSpin.pause();
     }
     playTension(){
-        if(!this.isSoundOn) return;
+        if(!this.isMusicOn) return;
         this.bgmTension.play();
     }
     pauseTension(){
@@ -254,7 +258,7 @@ export class AudioMgr {
         this.bgmBonus.pause();
     }
     playFreeSpin(){
-        if(!this.isSoundOn) return;
+        if(!this.isMusicOn) return;
         if(this.bgmFreeSpin.playing){
             this.bgmFreeSpin.volume = 1;
         } else {
@@ -265,7 +269,7 @@ export class AudioMgr {
         this.bgmFreeSpin.pause();
     }
     playCoin(){
-        if(!this.isSoundOn) return;
+        if(!this.isMusicOn) return;
         this.bgmCoin.play();
     }
     pauseCoin(){

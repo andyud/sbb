@@ -1,4 +1,4 @@
-import { _decorator, Component, Node, Label, Button, AudioClip, Animation} from 'cc';
+import { _decorator, Component, Node, Label, Button, AudioClip, Animation, tween, Vec3} from 'cc';
 import { AudioMgr } from '../../../core/AudioMgr';
 import GameMgr from '../../../core/GameMgr';
 const { ccclass, property } = _decorator;
@@ -13,15 +13,11 @@ export class FruitResult extends Component {
     btnClose: Node | null = null;
     
     @property({type:Node})
-    btnPlayAgain:Node | null = null;
-    @property({type:Node})
-    btnRanking:Node | null = null;
-    @property({type:Label})
-    lbYourScore:Label | null = null;
-    @property({type:Label})
-    lbWeeklyScore:Label | null = null;
-    @property({type:Label})
-    lbWeeklyRank:Label | null = null;
+    btnNext:Node | null = null;
+    @property({ type: Label })
+    lbScore: Label | null = null;
+    @property([Node])
+    stars: Node[] = [];
 
     audioClip: AudioClip = null;
     callback: (cmd:number) => void;
@@ -29,19 +25,29 @@ export class FruitResult extends Component {
         this.node.active = false;
         this.bg.active = false;
         this.pp.setPosition(0, -1400);
-        this.btnPlayAgain.on(Button.EventType.CLICK, this.onClick, this);
+        this.btnNext.on(Button.EventType.CLICK, this.onClick, this);
         this.btnClose.on(Button.EventType.CLICK, this.onClick, this);
-        this.btnRanking.on(Button.EventType.CLICK, this.onClick, this);
     }
 
     init(audioClip: AudioClip, cb:(cmd:number) => void) {
         this.audioClip = audioClip;
         this.callback = cb;
     }
-    show() {
+    show(score:number,totalStar:number) {
         this.node.active = true;
         this.bg.active = true;
         this.pp.getComponent(Animation).play('showpopup');
+
+        //--
+        this.stars[0].setPosition(-1103.72,-1638.903);
+        this.stars[1].setPosition(-1103.72,-1638.903);
+        this.stars[2].setPosition(-1103.72,-1638.903);
+        GameMgr.instance.numberTo(this.lbScore,0,score, 1000);
+        for(let i=0;i<totalStar;i++){
+            tween(this.stars[i])
+            .to(0.4 +i*0.1,{position:new Vec3(0,0)})
+            .start();
+        }
     }
     hide() {
         this.pp.getComponent(Animation).play('hidepopup');
@@ -57,7 +63,7 @@ export class FruitResult extends Component {
             case 'btnClose':
                 this.callback(1);
                 break;
-            case 'btnPlayAgain':
+            case 'btnNext':
                 this.pp.getComponent(Animation).play('hidepopup');
                 this.bg.active = false;
                 let timeout2 = setTimeout(() => {
@@ -67,12 +73,6 @@ export class FruitResult extends Component {
                 }, 200);
                 break;
         }
-    }
-    setScore(score:number,weeklyScore:number, rank:number){
-        this.lbYourScore.string = `${score}`;
-        GameMgr.instance.numberTo(this.lbYourScore,0,score,1000);
-        this.lbWeeklyScore.string = `${weeklyScore}`;
-        this.lbWeeklyRank.string = `${rank}`;
     }
 }
 

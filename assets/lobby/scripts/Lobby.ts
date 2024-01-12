@@ -157,10 +157,29 @@ export class Lobby extends Component {
             this.loadNewScene('fruit');
         });
         this.ppOption.getComponent(LobbyOption).init(this.arrAudioClips[2]);
-        this.ppInbox.getComponent(LobbyInbox).init(this.arrAudioClips[2]);
+        this.ppInbox.getComponent(LobbyInbox).init(this.arrAudioClips[2],(res:any)=>{
+            this.loading.getComponent(Loading).show();
+            APIMgr.instance.getMailGift(res.id,(isSuccess:boolean,res:any)=>{
+                this.loading.getComponent(Loading).hide();
+                    if(isSuccess){
+                        if(res.ticket && res.ticket>0){
+                            this.notice.getComponent(Notice).show({ title: 'System Info', content: 'Get gift success!' }, () => { 
+                                this.getBalance();
+                                this.getInbox();
+                            });
+                        } else {
+                            this.notice.getComponent(Notice).show({ title: 'System Info', content: res }, () => {  });
+                        }
+                    } else {
+                        this.notice.getComponent(Notice).show({ title: 'System Info', content: res }, () => {  });
+                    }
+            })
+        });
         this.ppRanking.getComponent(LobbyRanking).init(this.arrAudioClips[2]);
 
-        //get balance
+        this.getBalance();
+    }
+    getBalance(){
         this.loading.getComponent(Loading).show();
         APIMgr.instance.getUserInfo((success:boolean,res:any)=>{
             if(success){
@@ -246,14 +265,22 @@ export class Lobby extends Component {
                 this.ppOption.getComponent(LobbyOption).show();
                 break;
             case 'btnInbox':
-                this.ppInbox.active = true;
-                this.ppInbox.getComponent(LobbyInbox).bg.active = true;
-                this.ppInbox.getComponent(LobbyInbox).show();
+                this.getInbox();
                 break;
             case 'btnRanking':
-                this.ppRanking.active = true;
-                this.ppRanking.getComponent(LobbyRanking).bg.active = true;
-                this.ppRanking.getComponent(LobbyRanking).show();
+                this.loading.getComponent(Loading).show();
+                APIMgr.instance.getRanking(0,1000,(isSuccess:boolean,res:any)=>{
+                    this.loading.getComponent(Loading).hide();
+                    if(isSuccess){
+                        if(this.ppRanking.active==false){
+                            this.ppRanking.active = true;
+                            this.ppRanking.getComponent(LobbyRanking).bg.active = true;
+                        }
+                        this.ppRanking.getComponent(LobbyRanking).show(res);
+                    } else {
+                        this.notice.getComponent(Notice).show({ title: 'System Info', content: res }, () => {  });
+                    }
+                })
                 break;
             case 'mission':
                 this.notice.getComponent(Notice).show({ title: 'Notice', content: "Comming soon!" }, () => {  });
@@ -277,6 +304,21 @@ export class Lobby extends Component {
                 });
                 break;
         }
+    }
+    getInbox(){
+        this.loading.getComponent(Loading).show();
+        APIMgr.instance.getMails((isSuccess:boolean,res:any)=>{
+            this.loading.getComponent(Loading).hide();
+            if(isSuccess){
+                if(this.ppInbox.active==false){
+                    this.ppInbox.active = true;
+                    this.ppInbox.getComponent(LobbyInbox).bg.active = true;
+                }
+                this.ppInbox.getComponent(LobbyInbox).show(res);
+            } else {
+                this.notice.getComponent(Notice).show({ title: 'System Info', content: res }, () => {  });
+            }
+        })
     }
     update(deltaTime: number) {
         if(this.countUpdate>10){
