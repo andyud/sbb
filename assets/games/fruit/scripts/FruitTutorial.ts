@@ -11,6 +11,7 @@ export class FruitTutorial extends Component {
     isDone = false;
     isCurrentId = 0;
     arrPath = [];
+    arrNewNode = [];
     start() {
 
     }
@@ -35,6 +36,8 @@ export class FruitTutorial extends Component {
             item.getComponent(FruitItem).setScaleAnim(true);
             this.node.addChild(itembg);
             this.node.addChild(item);
+            this.arrNewNode.push(item);
+            this.arrNewNode.push(itembg);
         }
         // this.hand.getComponent(UITransform).priority = 3;
         // this.hand.setSiblingIndex(3);
@@ -59,7 +62,10 @@ export class FruitTutorial extends Component {
             this.playTutorial();
         }).start();
     }
-    // update(deltaTime: number) {
-        
-    // }
+    clearTutorial(){
+        for(let i=0;i<this.arrNewNode.length;i++){
+            this.arrNewNode[i].removeFromParent();
+        }
+        this.arrNewNode = [];
+    }
 }

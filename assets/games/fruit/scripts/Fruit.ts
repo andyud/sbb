@@ -1,4 +1,4 @@
-import { _decorator, Component, EventTouch, Graphics, instantiate, LightingStage, Node, Prefab, SpriteFrame, tween, UITransform, Vec2, Vec3, AudioClip, director, Button, Label } from 'cc';
+import { _decorator, Component, EventTouch, Graphics, instantiate, Node, Prefab, SpriteFrame, UITransform, Vec2, AudioClip, director, Button, Label } from 'cc';
 import GameMgr from '../../../core/GameMgr';
 import { FruitItem } from './FruitItem';
 import { GameEvent } from '../../../core/GameEvent';
@@ -6,7 +6,9 @@ import { AudioMgr } from '../../../core/AudioMgr';
 import { FruitTutorial } from './FruitTutorial';
 import { FruitResult } from './FruitResult';
 import { FruitQuest } from './FruitQuest';
+import { FruitOutOfMove } from './FruitOutOfMove';
 import { FruitItemTop } from './FruitItemTop';
+import APIMgr from '../../../core/APIMgr';
 const { ccclass, property } = _decorator;
 
 @ccclass('Fruit')
@@ -56,6 +58,8 @@ export class Fruit extends Component {
     ppResult: Node | null = null;
     @property({type:Node})
     ppQuest: Node | null = null;
+    @property({type:Node})
+    ppOutOfMove:Node | null = null;
 
     private screenW: number = 1920;
     private screenH: number = 1080;
@@ -284,13 +288,69 @@ export class Fruit extends Component {
         this.loading.active = true;
 
         //--popup
-        this.ppResult.getComponent(FruitResult).init(this.arrAudioClips[11],()=>{});
-        this.ppQuest.getComponent(FruitQuest).init(this.arrAudioClips[11],this.level,this.icons,()=>{
-            this.restartGame();
+        this.ppResult.getComponent(FruitResult).init(this.arrAudioClips[11],(cmd:number)=>{
+            if(cmd==1){
+                //back to lobby
+                this.backToLobby();
+            } if(cmd==2){//restart game
+                this.restartGame();
+            }
+        });
+        this.ppQuest.getComponent(FruitQuest).init(this.arrAudioClips[11],this.level,this.icons,(cmd:number)=>{
+            if(cmd==1){
+                //back to lobby
+                this.backToLobby();
+            } if(cmd==2){//restart game
+                this.restartGame();
+            }
+        });
+        this.ppOutOfMove.getComponent(FruitOutOfMove).init(this.arrAudioClips[11],(cmd:number)=>{
+            if(cmd==1){
+                //back to lobby
+                this.backToLobby();
+            } if(cmd==2){//restart game
+                this.restartGame();
+            }
         });
     }
     checkEndGame(){
+        //--check done
+        let isDone = true;
+        for(let i=0;i<this.infoListItem.children.length;i++){
+            let item = this.infoListItem.children[i].getComponent(FruitItemTop);
+            if(item.currentCount<item.info.count){
+                isDone = false;
+                break;
+            }
+        }
+        if(isDone){
+            //show game result
+            
+            APIMgr.instance.puzzleResult(this.totalScore,(iSuccess:boolean,res:any)=>{
+                if(iSuccess){
+                    let timeout1= setTimeout(()=>{
+                        this.ppResult.active = true;
+                        this.ppResult.getComponent(FruitResult).bg.active = true;
+                        this.ppResult.getComponent(FruitResult).show();
+                        this.ppResult.getComponent(FruitResult).setScore(this.totalScore,res.score,res.rank);
+                    },1000);
+                } else {
+                    this.ppResult.active = true;
+                    this.ppResult.getComponent(FruitResult).bg.active = true;
+                    this.ppResult.getComponent(FruitResult).show();
+                }
+            });
+            
+        } else {//check num of move
+            if(this.iMovesCount<=0){
+                //--game over
+                this.ppOutOfMove.active = true;
+                this.ppOutOfMove.getComponent(FruitOutOfMove).bg.active = true;
+                this.ppOutOfMove.getComponent(FruitOutOfMove).show();
+            } else {//continue
 
+            }
+        }
     }
     restartGame(){
         //1. show info and blocks
@@ -321,6 +381,7 @@ export class Fruit extends Component {
         this.arrSelectedItems = [];
         this.clearSelectedItem();
         this.arrSuggest = [];
+        this.tutorial.getComponent(FruitTutorial).clearTutorial();
         //--Auto suggest
         this.suggestLinkItems();
     }
@@ -570,14 +631,17 @@ export class Fruit extends Component {
         AudioMgr.inst.playOneShot(this.arrAudioClips[11]);
         switch (button.node.name) {
             case 'btnBack':
-                if (this.isBackPressed) return;
-                this.isBackPressed = true;
-                AudioMgr.inst.stop();
-                GameEvent.RemoveEventListener('FRUIT_DESTROY_DONE');
-                GameEvent.RemoveEventListener('FRUIT_CHECK_MOVE_DONE');
-                director.loadScene('lobby');
+                this.backToLobby();
                 break;
         }
+    }
+    backToLobby(){
+        if (this.isBackPressed) return;
+        this.isBackPressed = true;
+        AudioMgr.inst.stop();
+        GameEvent.RemoveEventListener('FRUIT_DESTROY_DONE');
+        GameEvent.RemoveEventListener('FRUIT_CHECK_MOVE_DONE');
+        director.loadScene('lobby');
     }
     showQuest(){
         this.infoNode.active = false;

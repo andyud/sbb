@@ -32,11 +32,13 @@ export class LobbyMiniGame extends Component {
     show() {
         this.node.active = true;
         this.bg.active = true;
+        this.lbTicket.node.active = true;
         this.pp.getComponent(Animation).play('showpopup');
     }
     hide() {
         this.pp.getComponent(Animation).play('hidepopup');
         this.bg.active = false;
+        this.lbTicket.node.active = false;
         let timeout1 = setTimeout(() => {
             clearTimeout(timeout1);
             this.node.active = false;
@@ -49,6 +51,7 @@ export class LobbyMiniGame extends Component {
                 this.hide();
                 break;
             case 'btnPlay':
+                this.lbTicket.node.active = false;
                 this.pp.getComponent(Animation).play('hidepopup');
                 this.bg.active = false;
                 let timeout2 = setTimeout(() => {

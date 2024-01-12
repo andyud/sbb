@@ -19,7 +19,7 @@ export class FruitQuest extends Component {
     pfItem:Prefab | null = null;
     icons = [];
     audioClip: AudioClip = null;
-    callback: () => void;
+    callback: (cmd:number) => void;
     level = {
         MODE:2,
         SIZE:[7,5],
@@ -42,7 +42,7 @@ export class FruitQuest extends Component {
         this.btnClose.on(Button.EventType.CLICK, this.onClick, this);
     }
 
-    init(audioClip: AudioClip, level:any, icons:any ,cb:() => void) {
+    init(audioClip: AudioClip, level:any, icons:any ,cb:(cmd:number) => void) {
         this.audioClip = audioClip;
         this.level = level;
         this.icons = icons;
@@ -73,7 +73,14 @@ export class FruitQuest extends Component {
         AudioMgr.inst.playOneShot(this.audioClip);
         switch (button.node.name) {
             case 'btnClose':
-                this.hide();
+                this.pp.getComponent(Animation).play('hidepopup');
+                this.bg.active = false;
+                let timeout1 = setTimeout(() => {
+                    clearTimeout(timeout1);
+                    this.node.active = false;
+                    //--back to lobby
+                    this.callback(1);
+                }, 200);
                 break;
             case 'btnPlay':
                 this.pp.getComponent(Animation).play('hidepopup');
@@ -81,7 +88,7 @@ export class FruitQuest extends Component {
                 let timeout2 = setTimeout(() => {
                     clearTimeout(timeout2);
                     this.node.active = false;
-                    this.callback();
+                    this.callback(2);
                 }, 200);
                 break;
         }

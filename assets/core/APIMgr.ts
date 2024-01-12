@@ -218,7 +218,7 @@ BfhZUWNOM6WQGMIJ53fwjXkhURECCgMLHOFuSBtkmbfj5tw=
             console.log('Something went wrong....');
         }
     }
-    public deviceId = 'aadasdaseaabbae';
+    public deviceId = 'acdasdaseaabbae';
     async signin(cb:(res:boolean)=>void) {
         let modulus = btoa(this.PUB_KEY);
         await this.doPost("signin", {
@@ -447,6 +447,29 @@ BfhZUWNOM6WQGMIJ53fwjXkhURECCgMLHOFuSBtkmbfj5tw=
             cb(false,"Can't get ticket please try again later");
         });
     }
+    async puzzleResult(score:number,cb:(iSuccess:boolean, res:any)=>void){
+        let data = {score: score};
+        let cipherDataB64 = this.encodeData(JSON.stringify(data));
+        await this.doPost("puzzle/result",{
+            t: cipherDataB64
+        },this.signinRes.authorization)
+        .then((response) => response.json())
+        .then((data) => {
+            if(data && data.statusCode==0){
+                //{"statusCode": 0,"rank": 1,"score": 710}
+                cb(true,data);
+            } else if(data && data.errorMessage){
+                cb(false,data.errorMessage);
+            } else {
+                cb(false,"Can't get ticket please try again later");
+            }
+        })
+        .catch((error) => {
+            console.error("Error:", error);
+            cb(false,"Can't get ticket please try again later");
+        });
+    }
+    
 }
 
 export default APIMgr;

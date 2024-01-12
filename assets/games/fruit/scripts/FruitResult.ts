@@ -1,5 +1,6 @@
 import { _decorator, Component, Node, Label, Button, AudioClip, Animation} from 'cc';
 import { AudioMgr } from '../../../core/AudioMgr';
+import GameMgr from '../../../core/GameMgr';
 const { ccclass, property } = _decorator;
 
 @ccclass('FruitResult')
@@ -23,7 +24,7 @@ export class FruitResult extends Component {
     lbWeeklyRank:Label | null = null;
 
     audioClip: AudioClip = null;
-    callback: () => void;
+    callback: (cmd:number) => void;
     start() {
         this.node.active = false;
         this.bg.active = false;
@@ -33,7 +34,7 @@ export class FruitResult extends Component {
         this.btnRanking.on(Button.EventType.CLICK, this.onClick, this);
     }
 
-    init(audioClip: AudioClip, cb:() => void) {
+    init(audioClip: AudioClip, cb:(cmd:number) => void) {
         this.audioClip = audioClip;
         this.callback = cb;
     }
@@ -54,7 +55,7 @@ export class FruitResult extends Component {
         AudioMgr.inst.playOneShot(this.audioClip);
         switch (button.node.name) {
             case 'btnClose':
-                this.hide();
+                this.callback(1);
                 break;
             case 'btnPlayAgain':
                 this.pp.getComponent(Animation).play('hidepopup');
@@ -62,10 +63,16 @@ export class FruitResult extends Component {
                 let timeout2 = setTimeout(() => {
                     clearTimeout(timeout2);
                     this.node.active = false;
-                    //this.callback();
+                    this.callback(2);
                 }, 200);
                 break;
         }
+    }
+    setScore(score:number,weeklyScore:number, rank:number){
+        this.lbYourScore.string = `${score}`;
+        GameMgr.instance.numberTo(this.lbYourScore,0,score,1000);
+        this.lbWeeklyScore.string = `${weeklyScore}`;
+        this.lbWeeklyRank.string = `${rank}`;
     }
 }
 
