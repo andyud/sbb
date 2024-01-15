@@ -113,26 +113,50 @@ export class AudioMgr {
     public setAudioSouce(src:string,sound: AudioClip){
         switch(src){
             case 'main':
+                if(this.bgm.clip!=null){
+                    this.bgm.stop();
+                    this.bgm.clip = null;
+                }
                 this.bgm.clip = sound;
                 this.bgm.loop = true;
                 break;
             case 'spin':
+                if(this.bgmSpin.clip!=null){
+                    this.bgmSpin.stop();
+                    this.bgmSpin.clip = null;
+                }
                 this.bgmSpin.clip = sound;
                 this.bgmSpin.loop = true;
                 break;
             case 'freespin':
+                if(this.bgmFreeSpin.clip!=null){
+                    this.bgmFreeSpin.stop();
+                    this.bgmFreeSpin.clip = null;
+                }
                 this.bgmFreeSpin.clip = sound;
                 this.bgmFreeSpin.loop = true;
                 break;
             case 'bonus':
+                if(this.bgmBonus.clip!=null){
+                    this.bgmBonus.stop();
+                    this.bgmBonus.clip = null;
+                }
                 this.bgmBonus.clip = sound;
                 this.bgmBonus.loop = true;
                 break;
             case 'tension':
+                if(this.bgmTension.clip!=null){
+                    this.bgmTension.stop();
+                    this.bgmTension.clip = null;
+                }
                 this.bgmTension.clip = sound;
                 this.bgmTension.loop = true;
                 break;
             case 'coin':
+                if(this.bgmCoin.clip!=null){
+                    this.bgmCoin.stop();
+                    this.bgmCoin.clip = null;
+                }
                 this.bgmCoin.clip = sound;
                 this.bgmCoin.loop = true;
                 break;

@@ -212,11 +212,18 @@ export class Lobby extends Component {
             this.notice.getComponent(Notice).show({ title: 'Notice', content: "Please unlock first!" }, () => {  });
             return;
         }
-        if(gameid<20){
+        AudioMgr.inst.stop();
+        if(gameid<20){  
+            AudioMgr.inst.setAudioSouce('spin',this.arrAudioClips[12]);
+            AudioMgr.inst.playSpin();
             this.loadNewScene('WildKong');
         } else if(gameid<30){
+            AudioMgr.inst.setAudioSouce('spin',this.arrAudioClips[13]);
+            AudioMgr.inst.playSpin();
             this.loadNewScene('snowQueen');
         } else {
+            AudioMgr.inst.setAudioSouce('spin',this.arrAudioClips[11]);
+            AudioMgr.inst.playSpin();
             this.loadNewScene('cowboy');
         }
     }
@@ -238,7 +245,7 @@ export class Lobby extends Component {
         GameEvent.RemoveEventListener('rewardlist');
 
         this.loading.getComponent(Loading).show();
-        AudioMgr.inst.stop();
+        
         this.removeListener();
         director.loadScene(sceneName);
     }

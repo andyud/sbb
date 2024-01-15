@@ -1,4 +1,4 @@
-import { _decorator, Animation, Component, easing, Node, Sprite, SpriteFrame, Tween, tween, UIOpacity, UITransform, Vec3 } from 'cc';
+import { _decorator, Animation, Component, easing, Label, Node, Sprite, SpriteFrame, Tween, tween, UIOpacity, UITransform, Vec3 } from 'cc';
 import { GameEvent } from '../../../core/GameEvent';
 const { ccclass, property } = _decorator;
 
@@ -10,10 +10,8 @@ export class FruitItem extends Component {
     hl:Node | null = null;
     @property({type:Node})
     bomb:Node | null = null;
-    @property({type:Node})
-    spHorizontal: Node | null = null;
-    @property({type:Node})
-    spVertical: Node | null = null;
+    @property({type:Label})
+    lbCoinEff: Label | null = null;
     speed = 0.2;
     //--control moving & avoid move douplicate
     moveCount = 0;
@@ -53,6 +51,18 @@ export class FruitItem extends Component {
         this.hl.active = true;
         this.bomb.active = false;
         this.node.getComponent(Animation).play('destroy');
+        this.lbCoinEff.string = `+${10}`;
+        this.lbCoinEff.node.setPosition(29,-10);
+        this.lbCoinEff.node.getComponent(UIOpacity).opacity = 0;
+        this.lbCoinEff.node.scale = new Vec3(1,1,1);
+        tween(this.lbCoinEff.node.getComponent(UIOpacity))
+        .to(0.1,{opacity:255})
+        .delay(0.2)
+        .to(0.1,{opacity:0})
+        .start()
+        tween(this.lbCoinEff.node)
+        .to(0.1,{position:new Vec3(29,20),scale:new Vec3(1.2,1.2,1.2)})
+        .start();
     }
     destroyDone(){
         this.node.active = false;

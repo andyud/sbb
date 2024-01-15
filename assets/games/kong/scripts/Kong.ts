@@ -551,7 +551,7 @@ export class Kong extends Component {
             }, i);
         }
         //--init sound
-        AudioMgr.inst.setAudioSouce('spin', this.arrAudioClips[21]);
+        // AudioMgr.inst.setAudioSouce('spin', this.arrAudioClips[21]);
         AudioMgr.inst.setAudioSouce('freespin', this.arrAudioClips[23]);
         AudioMgr.inst.setAudioSouce('bonus', this.arrAudioClips[22]);
         AudioMgr.inst.setAudioSouce('coin', this.arrAudioClips[2]);
