@@ -10397,7 +10397,7 @@
         "__id__": 335
       }
     ],
-    "_active": false,
+    "_active": true,
     "_components": [
       {
         "__id__": 448
@@ -11216,9 +11216,9 @@
     "_dstBlendFactor": 4,
     "_color": {
       "__type__": "cc.Color",
-      "r": 255,
-      "g": 214,
-      "b": 0,
+      "r": 119,
+      "g": 255,
+      "b": 66,
       "a": 255
     },
     "_string": "",

@@ -21,7 +21,7 @@ export class CowboyReel extends Component {
         for(let i=0;i<arr.length;i++){
             let idx = arr[i];
             let icon = instantiate(icons[idx]);
-            this.node.addChild(icon);   
+            this.node.addChild(icon);
         }
     }
     spin(index: number,speed: number){

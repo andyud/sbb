@@ -1,4 +1,4 @@
-import { _decorator, Component, Node, Label, Game, Button, tween, Vec3 } from 'cc';
+import { _decorator, Component, Node, Label, Game, Button, tween, Vec3, Color } from 'cc';
 import GameMgr from '../../../core/GameMgr';
 const { ccclass, property } = _decorator;
 
@@ -30,7 +30,8 @@ export class KongBonusItem extends Component {
     onClick() {
         this.callback(this.idx);
     }
-    setValue(val: number,plus:string='') {
+    setValue(val: number,plus:string='',sColor:string) {
+        this.lb.color = new  Color().fromHEX(sColor);
         if(val == null || val == 0){
             this.lb.string = '';
         } else {
@@ -42,7 +43,8 @@ export class KongBonusItem extends Component {
             this.sp.active = false;
         }).start()
     }
-    setValue2(val:string){
+    setValue2(val:string,sColor:string) {
+        this.lb.color = new  Color().fromHEX(sColor);
         this.lb.string = val;
         this.lb.node.active = true;
         tween(this.sp).to(0.3,{scale:new Vec3(-1,1,1)})

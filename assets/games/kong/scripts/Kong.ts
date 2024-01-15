@@ -18,7 +18,7 @@ declare var io: any;
 export class Kong extends Component {
     @property({ type: Prefab })
     pfLoading: Prefab | null = null;
-    private loadingSmall: Node = null;
+    private smallLoading: Node = null;
     @property({ type: Prefab })
     pfShop: Prefab | null = null;
     private shop: Node = null;
@@ -381,7 +381,7 @@ export class Kong extends Component {
     //----------------------------------------------------------------------------------------------------
     private kongConfig = {
         reelsSpeed: 0.015,//per symbol
-        showResultDelay: 1500,
+        showResultDelay: 2500,
         showResultNotDelay: 500,
     }
     private lastTimeUpdate = new Date().getTime();
@@ -413,6 +413,12 @@ export class Kong extends Component {
             this.node.addChild(this.notice);
             this.notice.getComponent(UITransform).setContentSize(this.node.getComponent(UITransform).width, this.node.getComponent(UITransform).height);
             this.notice.getComponent(Notice).hide();
+        }
+        if (this.smallLoading==null){
+            this.smallLoading = instantiate(this.pfLoading);
+            this.node.addChild(this.smallLoading);
+            this.smallLoading.getComponent(UITransform).setContentSize(this.node.getComponent(UITransform).width, this.node.getComponent(UITransform).height);
+            this.smallLoading.getComponent(Loading).hide();
         }
         if (this.shop == null) {
             this.shop = instantiate(this.pfShop);
@@ -490,10 +496,10 @@ export class Kong extends Component {
                     let multiply = val.toString().replace('x','');
                     currVal = this.totalBonusWin*parseInt(multiply) - this.totalBonusWin;
                     this.totalBonusWin = this.totalBonusWin * parseInt(multiply);
-                    this.arrPlayBonusItem[idx].getComponent(KongBonusItem).setValue2(`x${multiply}`);
+                    this.arrPlayBonusItem[idx].getComponent(KongBonusItem).setValue2(`x${multiply}`,'#77FF42');
                 } else {
                     currVal = val * this.loginRes.lineBet;
-                    this.arrPlayBonusItem[idx].getComponent(KongBonusItem).setValue(currVal, '+');
+                    this.arrPlayBonusItem[idx].getComponent(KongBonusItem).setValue(currVal, '+','#77FF42');
                     this.totalBonusWin += currVal;
                 }
                 GameMgr.instance.numberTo(this.lbBonusReward, this.totalBonusWin - currVal, this.totalBonusWin, 500);
@@ -524,12 +530,11 @@ export class Kong extends Component {
                                 continue;
                             }
                             if(arrTemp[ii].toString().indexOf('x')>=0){
-                                this.arrPlayBonusItem[ii].getComponent(KongBonusItem).setValue2(arrTemp[ii].toString());
+                                this.arrPlayBonusItem[ii].getComponent(KongBonusItem).setValue2(arrTemp[ii].toString(),'#464646');
                             } else {
                                 let currVal2 = parseInt(arrTemp[ii].toString()) * this.loginRes.lineBet;
-                                this.arrPlayBonusItem[ii].getComponent(KongBonusItem).setValue(currVal2);
+                                this.arrPlayBonusItem[ii].getComponent(KongBonusItem).setValue(currVal2,'','#464646');
                             }
-                            this.arrPlayBonusItem[ii].getComponent(KongBonusItem).lb.color = Color.GREEN;
                         }
                         const timeout13 = setTimeout(() => {
                             clearTimeout(timeout13);
@@ -841,6 +846,7 @@ export class Kong extends Component {
                 this.shop.active = true;
                 break;
             case 'btnBack':
+                this.smallLoading.getComponent(Loading).show();
                 this.isBackPressed = true;
                 this.disconnect();
                 APIMgr.instance.signinRes.balance = this.spinRes.balance;

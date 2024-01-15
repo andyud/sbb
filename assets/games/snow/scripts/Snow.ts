@@ -18,7 +18,7 @@ declare var io: any;
 export class Snow extends Component {
     @property({ type: Prefab })
     pfLoading: Prefab | null = null;
-    private loadingSmall: Node = null;
+    private smallLoading: Node = null;
     @property({ type: Prefab })
     pfShop: Prefab | null = null;
     private shop: Node = null;
@@ -375,7 +375,7 @@ export class Snow extends Component {
     //----------------------------------------------------------------------------------------------------
     private snowConfig = {
         reelsSpeed: 0.015,//per symbol
-        showResultDelay: 1500,
+        showResultDelay: 2500,
         showResultNotDelay: 500,
     }
     private lastTimeUpdate = new Date().getTime();
@@ -407,6 +407,12 @@ export class Snow extends Component {
             this.node.addChild(this.notice);
             this.notice.getComponent(UITransform).setContentSize(this.node.getComponent(UITransform).width, this.node.getComponent(UITransform).height);
             this.notice.getComponent(Notice).hide();
+        }
+        if (this.smallLoading==null){
+            this.smallLoading = instantiate(this.pfLoading);
+            this.node.addChild(this.smallLoading);
+            this.smallLoading.getComponent(UITransform).setContentSize(this.node.getComponent(UITransform).width, this.node.getComponent(UITransform).height);
+            this.smallLoading.getComponent(Loading).hide();
         }
         if (this.shop == null) {
             this.shop = instantiate(this.pfShop);
@@ -480,7 +486,7 @@ export class Snow extends Component {
                 this.lbBonusRemain.string = `${this.countBonusRemain}`;
 
                 let currVal = val * this.loginRes.lineBet;
-                this.arrPlayBonusItem[idx].getComponent(SnowBonusItem).setValue(currVal, '+');
+                this.arrPlayBonusItem[idx].getComponent(SnowBonusItem).setValue(currVal, '+','#77FF42');
                 this.totalBonusWin += currVal;
                 GameMgr.instance.numberTo(this.lbBonusReward, this.totalBonusWin - currVal, this.totalBonusWin, 500);
                 if (this.countBonusRemain == 0) { //--disable touch
@@ -505,8 +511,7 @@ export class Snow extends Component {
                                 continue;
                             }
                             let currVal2 = arrTemp[ii] * this.loginRes.lineBet;
-                            this.arrPlayBonusItem[ii].getComponent(SnowBonusItem).setValue(currVal2);
-                            this.arrPlayBonusItem[ii].getComponent(SnowBonusItem).lb.color = Color.GREEN;
+                            this.arrPlayBonusItem[ii].getComponent(SnowBonusItem).setValue(currVal2,'','#464646');
                         }
                         const timeout13 = setTimeout(() => {
                             clearTimeout(timeout13);
@@ -812,6 +817,7 @@ export class Snow extends Component {
                 this.shop.active = true;
                 break;
             case 'btnBack':
+                this.smallLoading.getComponent(Loading).show();
                 this.isBackPressed = true;
                 this.disconnect();
                 APIMgr.instance.signinRes.balance = this.spinRes.balance;

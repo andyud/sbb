@@ -35,12 +35,19 @@ export class CowboyBonusItem extends Component {
     onClick() {
         this.callback(this.idx);
     }
-    setValue(val: number,plus:string='') {
+    setValue(val: number,plus:string='',sColor:string) {
+        this.lb.color = new  Color().fromHEX(sColor);
+        if(plus.length==0){
+            this.lb.color = new Color().fromHEX('#555555')
+        } else {
+            this.lb.color = new Color().fromHEX('#1EFD00')
+        }
         if(val == null || val == 0){
             this.lb.string = '';
         } else {
             this.lb.string = plus + GameMgr.instance.numberWithCommas(val);
         }
+        // this.lb.color = new Color().fromHEX('');
         this.lb.node.active = true;
         this.pickEff.setAnimation(0, 'bonus_poster_disappearance',false);
     }

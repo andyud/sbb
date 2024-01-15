@@ -2124,7 +2124,7 @@
     "propertyPath": [
       "gameid"
     ],
-    "value": 12
+    "value": 21
   },
   {
     "__type__": "cc.TargetInfo",

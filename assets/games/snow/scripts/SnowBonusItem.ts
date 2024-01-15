@@ -1,4 +1,4 @@
-import { _decorator, Component, Node, Label, Game, Button, tween, Vec3 } from 'cc';
+import { _decorator, Component, Node, Label, Game, Button, tween, Vec3, Collider, Color } from 'cc';
 import GameMgr from '../../../core/GameMgr';
 const { ccclass, property } = _decorator;
 
@@ -30,7 +30,8 @@ export class SnowBonusItem extends Component {
     onClick() {
         this.callback(this.idx);
     }
-    setValue(val: number,plus:string='') {
+    setValue(val: number,plus:string='',sColor:string) {
+        this.lb.color = new  Color().fromHEX(sColor);
         if(val == null || val == 0){
             this.lb.string = '';
         } else {
