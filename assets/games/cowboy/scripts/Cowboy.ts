@@ -1142,7 +1142,7 @@ export class Cowboy extends Component {
                         this.reels[i].children[startIdx - j].getComponent(CowboyItem).runJackpot(this.items);
                     }
                 }
-                this.reels[i].setPosition(this.reels[i].getPosition().x, 18);
+                this.reels[i].setPosition(this.reels[i].getPosition().x, 17);
             }
 
         } else {

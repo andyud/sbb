@@ -1154,7 +1154,7 @@ export class Kong extends Component {
                         this.reels[i].children[startIdx - j].getComponent(KongItem).runJackpot(this.items);
                     }
                 }
-                this.reels[i].setPosition(this.reels[i].getPosition().x, 18);
+                this.reels[i].setPosition(this.reels[i].getPosition().x, 17);
             }
 
         } else {
