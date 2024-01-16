@@ -1,3 +1,4 @@
+import { _decorator,sys } from 'cc';
 class GameMgr {
     private static _instance: GameMgr;
     static get instance () {
@@ -196,7 +197,18 @@ class GameMgr {
     //     }
     //     return i;
     // }
-
+    private readonly FRUIT_TUTORIAL = "FRUIT_TUTORIAL";
+    saveFruitTutorial(val:number){
+        sys.localStorage.setItem(this.FRUIT_TUTORIAL,`${val}`);
+    }
+    readFruitTutorial(){
+        let val = sys.localStorage.getItem(this.FRUIT_TUTORIAL);
+        if(val!=null){
+            let isDone = parseInt(val);
+            return isDone==1?true:false;
+        }
+        return false;
+    }
 }
 
 export default GameMgr;

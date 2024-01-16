@@ -12,7 +12,7 @@ export class FruitItem extends Component {
     bomb:Node | null = null;
     @property({type:Label})
     lbCoinEff: Label | null = null;
-    speed = 0.2;
+    speed = 0.1;
     //--control moving & avoid move douplicate
     moveCount = 0;
     isMoving = false;
@@ -90,11 +90,5 @@ export class FruitItem extends Component {
             .start();
         }
     }
-    setMove(){
-        this.moveDown();
-    }
-    // update(deltaTime: number) {
-        
-    // }
 }
 
