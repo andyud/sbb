@@ -175,7 +175,7 @@ export class Snow extends Component {
     @property({ type: Node })
     loadingBar: Node | null = null;
     private percent = 0;
-    
+
     //--option
     @property({type:Node})
     ppOption:Node | null = null;
@@ -319,11 +319,6 @@ export class Snow extends Component {
         "pid": "spinRes"
     };
     private errorMessage = { "message": "Spin Transaction - not Login:", "code": 1, "data": "{}", "currentPid": "spin" };
-    private tableMatrix = [
-        [0, 0, 0, 0, 0],
-        [1, 1, 1, 1, 1],
-        [2, 2, 2, 2, 2]
-    ];
     private serverMatrix = [
         [0, 3, 6, 9, 12],
         [1, 4, 7, 10, 13],
@@ -511,7 +506,7 @@ export class Snow extends Component {
                                 continue;
                             }
                             let currVal2 = arrTemp[ii] * this.loginRes.lineBet;
-                            this.arrPlayBonusItem[ii].getComponent(SnowBonusItem).setValue(currVal2,'','#464646');
+                            this.arrPlayBonusItem[ii].getComponent(SnowBonusItem).setValue(currVal2,'','#ffffff');
                         }
                         const timeout13 = setTimeout(() => {
                             clearTimeout(timeout13);
@@ -536,7 +531,7 @@ export class Snow extends Component {
         AudioMgr.inst.setAudioSouce('bonus', this.arrAudioClips[22]);
         AudioMgr.inst.setAudioSouce('coin', this.arrAudioClips[2]);
         AudioMgr.inst.setAudioSouce('tension', this.arrAudioClips[3]);
-        
+
         //--get jackpot pool
         GameEvent.AddEventListener("updatebalance", (balance: number) => {
             GameMgr.instance.numberTo(this.lbBalance, 0, balance, 1000);
@@ -549,7 +544,8 @@ export class Snow extends Component {
         this.reelMask.enabled = isEnable;
         for (let i = 0; i < this.reels.length; i++) {
             let reel = this.reels[i];
-            for (let j = 3; j < reel.children.length; j++) {
+            let len = reel.children.length;
+            for (let j = len-4; j >=0; j--) {
                 reel.children[j].getComponent(UIOpacity).opacity = isEnable ? 255 : 1;
             }
         }
@@ -651,6 +647,9 @@ export class Snow extends Component {
                 this.lbBalance.string = GameMgr.instance.numberWithCommas(this.loginRes.balance);
                 this.lbLevel.string = `lv: ${this.loginRes.level.level}`;
                 let maxWidth = this.levelProgress.parent.getComponent(UITransform).width; //<=>100
+                if(this.loginRes.level.maxExp<this.loginRes.level.exp){
+                    this.loginRes.level.maxExp = this.loginRes.level.exp;
+                }
                 this.levelProgress.getComponent(UITransform).width = (this.loginRes.level.exp/this.loginRes.level.maxExp)*maxWidth;
                 this.lbTotalBet.string = GameMgr.instance.numberWithCommas(this.loginRes.lineBet * this.totalLines);
                 //clear & add new
@@ -731,11 +730,10 @@ export class Snow extends Component {
                 if (this.spinRes && this.spinRes.lineKeys && this.spinRes.lineKeys.length > 0) {
                     for (let i = 0; i < this.spinRes.lineKeys.length; i++) {
                         let arr = this.spinRes.lineKeys[i];
-                        let startIdx = this.reels[i].children.length - 1;
                         for (let j = 0; j < arr.length; j++) {
                             const texId = arr[j]
                             const tex = this.icons[texId];
-                            this.reels[i].children[startIdx - j].getComponent(SnowItem).setTexture(tex, texId);
+                            this.reels[i].children[j].getComponent(SnowItem).setTexture(tex, texId);
                         }
                     }
                 }
@@ -1023,9 +1021,9 @@ export class Snow extends Component {
         let countScatter = 0;
         let countWanted = 0;
         for (let i = 0; i < this.spinRes.lineKeys[idx].length; i++) {
-            if (this.spinRes.lineKeys[idx][i] == 2) {
+            if (this.spinRes.lineKeys[idx][i] == this.ICON_MAPPING.scatter) {
                 countScatter++;
-            } else if (this.spinRes.lineKeys[idx][i] == 8) {
+            } else if (this.spinRes.lineKeys[idx][i] == this.ICON_MAPPING.coin) {
                 countWanted++;
             }
         }
@@ -1057,13 +1055,13 @@ export class Snow extends Component {
             for (let i = 0; i <= idx; i++) {
                 let line = this.spinRes.lineKeys[i];
                 for (let j = 0; j < line.length; j++) {
-                    if (line[j] == 2) {//scatter
+                    if (line[j] == this.ICON_MAPPING.scatter) {
                         counts[0]++;
-                    } else if (line[j] == 8) {//coin - bonus
+                    } else if (line[j] == this.ICON_MAPPING.coin) {
                         counts[1]++;
-                    } else if (line[j] == 9) {//jackpot
+                    } else if (line[j] == this.ICON_MAPPING.jackpot) {
                         counts[2]++;
-                    } else if (line[j] == 10) {//wild
+                    } else if (line[j] == this.ICON_MAPPING.wild) {
                         counts[3]++;
                     }
                 }
@@ -1103,17 +1101,17 @@ export class Snow extends Component {
         if (this.spinRes && this.spinRes.lineKeys && this.spinRes.lineKeys.length > 0) {
             for (let i = 0; i < this.spinRes.lineKeys.length; i++) {
                 let arr = this.spinRes.lineKeys[i];
-                let startIdx = 2;
+                let startIdx = this.reels[i].children.length - 3;
                 for (let j = 0; j < arr.length; j++) {
                     const texId = arr[j]
                     const tex = this.icons[texId];
-                    this.reels[i].children[startIdx - j].getComponent(SnowItem).setTexture(tex, texId);
+                    this.reels[i].children[startIdx + j].getComponent(SnowItem).setTexture(tex, texId);
                     if (texId == this.ICON_MAPPING.scatter && this.spinRes.freeSpin && this.spinRes.freeSpin.remain && this.spinRes.freeSpin.remain == this.spinRes.freeSpin.count) {//scatter
-                        this.reels[i].children[startIdx - j].getComponent(SnowItem).runScatter(this.items);
+                        this.reels[i].children[startIdx + j].getComponent(SnowItem).runScatter(this.items);
                     } else if (texId == this.ICON_MAPPING.coin && this.spinRes.bonusPayout && this.spinRes.bonusPayout.length > 0 && this.spinRes.bonusPayout[0].extendData) {//bonus
-                        this.reels[i].children[startIdx - j].getComponent(SnowItem).runWanted(this.items);
+                        this.reels[i].children[startIdx + j].getComponent(SnowItem).runWanted(this.items);
                     } else if (texId == this.ICON_MAPPING.jackpot && this.spinRes.winType == 'Jackpot') {//jackpot
-                        this.reels[i].children[startIdx - j].getComponent(SnowItem).runJackpot(this.items);
+                        this.reels[i].children[startIdx + j].getComponent(SnowItem).runJackpot(this.items);
                     }
                 }
                 this.reels[i].setPosition(this.reels[i].getPosition().x, 17);
@@ -1135,16 +1133,18 @@ export class Snow extends Component {
             let coord = this.spinRes.payoutList[i].winPosition;
             for (let kk = 0; kk < coord.length; kk++) {
                 let val1 = coord[kk];
+                
                 for (let ii = 0; ii < this.serverMatrix.length; ii++) {
                     let row = this.serverMatrix[ii];
                     for (let jj = 0; jj < row.length; jj++) {
+                        let startCol = this.reels[jj].children.length - 3;
                         let val2 = row[jj];
                         if (val1 == val2) {
-                            this.reels[jj].children[2 - ii].getComponent(SnowItem).zoomAnim();
+                            this.reels[jj].children[startCol+ii].getComponent(SnowItem).zoomAnim();
                             //console.log(`anim [${jj},${2 - ii} val: ${val1}]`)
-                            let texId = this.reels[jj].children[2 - ii].getComponent(SnowItem).idx;
+                            let texId = this.reels[jj].children[startCol+ii].getComponent(SnowItem).idx;
                             if (texId == this.ICON_MAPPING.wild) {//wild
-                                this.reels[jj].children[2 - ii].getComponent(SnowItem).runWild(this.items);
+                                this.reels[jj].children[startCol+ii].getComponent(SnowItem).runWild(this.items);
                             }
                         }
                     }

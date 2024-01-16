@@ -6179,7 +6179,7 @@
     "_prefab": null,
     "_lpos": {
       "__type__": "cc.Vec3",
-      "x": -351.299,
+      "x": -355.534,
       "y": 20,
       "z": 0
     },
@@ -6250,7 +6250,7 @@
     "_paddingBottom": 0,
     "_spacingX": 0,
     "_spacingY": 20,
-    "_verticalDirection": 0,
+    "_verticalDirection": 1,
     "_horizontalDirection": 0,
     "_constraint": 0,
     "_constraintNum": 2,
@@ -6292,7 +6292,7 @@
     "_prefab": null,
     "_lpos": {
       "__type__": "cc.Vec3",
-      "x": -175.666,
+      "x": -177.666,
       "y": 20,
       "z": 0
     },
@@ -6363,7 +6363,7 @@
     "_paddingBottom": 0,
     "_spacingX": 0,
     "_spacingY": 20,
-    "_verticalDirection": 0,
+    "_verticalDirection": 1,
     "_horizontalDirection": 0,
     "_constraint": 0,
     "_constraintNum": 2,
@@ -6405,7 +6405,7 @@
     "_prefab": null,
     "_lpos": {
       "__type__": "cc.Vec3",
-      "x": -0.034,
+      "x": -0.403,
       "y": 20,
       "z": 0
     },
@@ -6476,7 +6476,7 @@
     "_paddingBottom": 0,
     "_spacingX": 0,
     "_spacingY": 20,
-    "_verticalDirection": 0,
+    "_verticalDirection": 1,
     "_horizontalDirection": 0,
     "_constraint": 0,
     "_constraintNum": 2,
@@ -6518,7 +6518,7 @@
     "_prefab": null,
     "_lpos": {
       "__type__": "cc.Vec3",
-      "x": 175.599,
+      "x": 177.275,
       "y": 20,
       "z": 0
     },
@@ -6589,7 +6589,7 @@
     "_paddingBottom": 0,
     "_spacingX": 0,
     "_spacingY": 20,
-    "_verticalDirection": 0,
+    "_verticalDirection": 1,
     "_horizontalDirection": 0,
     "_constraint": 0,
     "_constraintNum": 2,
@@ -6631,7 +6631,7 @@
     "_prefab": null,
     "_lpos": {
       "__type__": "cc.Vec3",
-      "x": 351.231,
+      "x": 355.817,
       "y": 20,
       "z": 0
     },
@@ -6702,7 +6702,7 @@
     "_paddingBottom": 0,
     "_spacingX": 0,
     "_spacingY": 20,
-    "_verticalDirection": 0,
+    "_verticalDirection": 1,
     "_horizontalDirection": 0,
     "_constraint": 0,
     "_constraintNum": 2,
@@ -7398,9 +7398,9 @@
     "_dstBlendFactor": 4,
     "_color": {
       "__type__": "cc.Color",
-      "r": 255,
-      "g": 255,
-      "b": 255,
+      "r": 219,
+      "g": 219,
+      "b": 219,
       "a": 255
     },
     "_spriteFrame": null,

@@ -37,11 +37,6 @@ export class CowboyBonusItem extends Component {
     }
     setValue(val: number,plus:string='',sColor:string) {
         this.lb.color = new  Color().fromHEX(sColor);
-        if(plus.length==0){
-            this.lb.color = new Color().fromHEX('#555555')
-        } else {
-            this.lb.color = new Color().fromHEX('#1EFD00')
-        }
         if(val == null || val == 0){
             this.lb.string = '';
         } else {
