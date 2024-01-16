@@ -22,7 +22,6 @@ export class SnowReel extends Component {
             let idx = arr[i];
             let icon = instantiate(icons[idx]);
             this.node.addChild(icon);
-            icon.setSiblingIndex(arr.length-i);
         }
     }
     spin(index: number,speed: number){
