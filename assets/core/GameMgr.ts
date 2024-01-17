@@ -198,6 +198,7 @@ class GameMgr {
     //     return i;
     // }
     private readonly FRUIT_TUTORIAL = "FRUIT_TUTORIAL";
+    private readonly FRUIT_LEVEL = "FRUIT_LEVEL";
     saveFruitTutorial(val:number){
         sys.localStorage.setItem(this.FRUIT_TUTORIAL,`${val}`);
     }
@@ -208,6 +209,16 @@ class GameMgr {
             return isDone==1?true:false;
         }
         return false;
+    }
+    saveFruitLevel(val:number){
+        sys.localStorage.setItem(this.FRUIT_LEVEL,`${val}`);
+    }
+    readFruitLevel(){
+        let val = sys.localStorage.getItem(this.FRUIT_LEVEL);
+        if(val!=null){
+            return parseInt(val);
+        }
+        return 0;
     }
 }
 

@@ -1,4 +1,4 @@
-import { _decorator, Component, EventTouch, Graphics, instantiate, Node, Prefab, SpriteFrame, UITransform, Vec2, AudioClip, director, Button, Label } from 'cc';
+import { _decorator, Component, EventTouch, Graphics, instantiate, Node, Prefab, SpriteFrame, UITransform, Vec2, AudioClip, director, Button, Label, Vec3, tween, UIOpacity } from 'cc';
 import GameMgr from '../../../core/GameMgr';
 import { FruitItem } from './FruitItem';
 import { GameEvent } from '../../../core/GameEvent';
@@ -8,8 +8,10 @@ import { FruitResult } from './FruitResult';
 import { FruitQuest } from './FruitQuest';
 import { FruitOutOfMove } from './FruitOutOfMove';
 import { FruitItemTop } from './FruitItemTop';
+import {FruitPointEff } from './FruitPointEff';
 import APIMgr from '../../../core/APIMgr';
 import { FruitPause } from './FruitPause';
+import { FruitTextEffect } from './FruitTextEffect';
 const { ccclass, property } = _decorator;
 
 @ccclass('Fruit')
@@ -37,6 +39,8 @@ export class Fruit extends Component {
     graphics1: Graphics | null = null;
     @property({ type: Graphics })
     graphics2: Graphics | null = null;
+    @property({ type: Node })
+    effLayer: Node | null = null;
     @property({ type: Label })
     lbScore: Label | null = null;
     @property({type:Node})
@@ -67,6 +71,14 @@ export class Fruit extends Component {
     ppPause: Node | null = null;
     iCurrentLevel = 0;
 
+    //--effect
+    @property({type:Prefab})
+    pfPointEff:Prefab | null = null;
+    @property({type:Node})
+    textEff:Node | null = null;
+    @property({type:Prefab})
+    pfFlower:Prefab | null = null;
+
     private screenW: number = 1920;
     private screenH: number = 1080;
     private boardH: number = 800;
@@ -79,7 +91,9 @@ export class Fruit extends Component {
     //--
     arrSelectedItems = [];//selected item
     iTotalScore: number = 0;
+    SCORE_BASE = 100;
     iCountDestroy = 0;
+    isEndGame = false;
     //--define
     ItemsTypes = {
         NONE: 0,
@@ -152,9 +166,50 @@ export class Fruit extends Component {
             this.graphics1.clear();
             this.graphics2.clear();
             //--check clear line //
-            if (this.arrSelectedItems.length > 2) {
-                
-                for (let i = 0; i < this.arrSelectedItems.length; i++) {
+            let combo = this.arrSelectedItems.length;
+            if (combo > 2) {
+                //get all items can destroy
+                for (let i = 0; i < combo; i++) {
+                    let idx = this.arrSelectedItems[i];
+                    let itemInfo = this.arrItems[idx].getComponent(FruitItem);
+                    if(itemInfo.info.iBom==1){
+                        for(let j=0;j<this.arrItems.length;j++){
+                            let isExists = false;
+                            for(let k=0;k<this.arrSelectedItems.length;k++){
+                                if(j==this.arrSelectedItems[k]){
+                                    isExists = true;
+                                    break;
+                                }
+                            }
+                            if(isExists){//skip
+                                continue;
+                            } else {
+                                if(this.arrItems[j].getComponent(FruitItem).info.row == itemInfo.info.row){
+                                    this.arrSelectedItems.push(j);
+                                }
+                            }
+                        }
+                    } else if(itemInfo.info.iBom==2){
+                        for(let j=0;j<this.arrItems.length;j++){
+                            let isExists = false;
+                            for(let k=0;k<this.arrSelectedItems.length;k++){
+                                if(j==this.arrSelectedItems[k]){
+                                    isExists = true;
+                                    break;
+                                }
+                            }
+                            if(isExists){//skip
+                                continue;
+                            } else {
+                                if(this.arrItems[j].getComponent(FruitItem).info.col == itemInfo.info.col){
+                                    this.arrSelectedItems.push(j);
+                                }
+                            }
+                        }
+                    }
+                }
+                combo = this.arrSelectedItems.length;
+                for (let i = 0; i < combo; i++) {
                     let idx = this.arrSelectedItems[i];
                     let itemInfo = this.arrItems[idx].getComponent(FruitItem);
                     for(let j=0;j<this.level.COLLECT_ITEMS.length;j++){
@@ -163,20 +218,30 @@ export class Fruit extends Component {
                             iNode.getComponent(FruitItemTop).setIncreaseCount();
                         }
                     }
-                    itemInfo.playDestroy();
-                    let timeout = setTimeout(()=>{
-                        clearTimeout(timeout);
-                        AudioMgr.inst.playOneShot(this.arrAudioClips[12+i%4]);
-                    },i*50)
+                    if(this.arrItems[idx].active == true){
+                        itemInfo.playDestroy();
+                        let pointEff = instantiate(this.pfPointEff);
+                        pointEff.getComponent(FruitPointEff).playEff(itemInfo.info.type,this.SCORE_BASE);
+                        this.effLayer.addChild(pointEff);
+                        pointEff.setPosition(itemInfo.node.position);
+                        let timeout = setTimeout(()=>{
+                            clearTimeout(timeout);
+                            AudioMgr.inst.playOneShot(this.arrAudioClips[12+i%4]);
+                        },i*50)
+                    }
                 }
+                //--check combo
+                this.textEff.getComponent(FruitTextEffect).runEffect(combo);
+                
                 this.lbMoves.string = `${this.iMovesCount}`;
-                GameMgr.instance.numberTo(this.lbScore,this.iTotalScore,this.iTotalScore+this.arrSelectedItems.length*10,1000);
-                this.iTotalScore+=this.arrSelectedItems.length*10;
+                let newScore = this.iTotalScore + combo * this.SCORE_BASE;
+                GameMgr.instance.numberTo(this.lbScore,this.iTotalScore,newScore,1000);
+                this.iTotalScore = newScore;
 
                 this.iMovesCount--;
-                if(this.iMovesCount==0){
-                    this.checkEndGame();
-                }
+                // if(this.iMovesCount<0){
+                //     this.checkEndGame();
+                // }
 
                 //--update progress
                 let maxCount = 0;
@@ -187,9 +252,9 @@ export class Fruit extends Component {
                 for(let i=0;i<this.infoListItem.children.length;i++){
                     currentCount+=this.infoListItem.children[i].getComponent(FruitItemTop).currentCount;
                 }
-                if(currentCount==maxCount){
-                    this.checkEndGame();
-                }
+                // if(currentCount==maxCount){
+                //     this.checkEndGame();
+                // }
                 let maxWidth = this.progressbar.parent.getComponent(UITransform).width;
                 this.progressbar.getComponent(UITransform).width = (currentCount/maxCount)*maxWidth;
             } else {
@@ -214,26 +279,62 @@ export class Fruit extends Component {
         this.boardY = this.board.getWorldPosition().y;
         console.log(`>>>W:${this.screenW}, H:${this.screenH}`);
         //--
-        GameEvent.AddEventListener("FRUIT_DESTROY_DONE", (info: any) => {
+        GameEvent.AddEventListener("FRUIT_DESTROY_DONE", (data: any) => {
             let w = this.board.getComponent(UITransform).width;
             let h = this.board.getComponent(UITransform).height;
             //--add 1 item to top
             let texId = GameMgr.instance.getRandomInt(0, this.pfItems.length - 3);
             let newItem = instantiate(this.pfItems[texId]);
-            newItem.getComponent(FruitItem).init({ row: this.ITEM_PER_ROW + this.arrCorrectRow[info.col], col: info.col, idx: -1, type: texId });
+            newItem.getComponent(FruitItem).init({ row: this.ITEM_PER_ROW + this.arrCorrectRow[data.info.col], col: data.info.col, idx: -1, type: texId });
             //--check row col
             let x = newItem.getComponent(FruitItem).info.col * this.ITEM_SIZE;
             let y = newItem.getComponent(FruitItem).info.row * this.ITEM_SIZE;
-            newItem.getComponent(FruitItem).moveCount = this.arrCorrectRow[info.col];
+            newItem.getComponent(FruitItem).moveCount = this.arrCorrectRow[data.info.col];
             
             newItem.setPosition(x - w / 2 + 50, y - h / 2 + 50);
             this.board.addChild(newItem);
-            this.arrCorrectRow[info.col]++;
+            this.arrCorrectRow[data.info.col]++;
+
+            //--create item move to pos
+            let bIsExists = false;
+            let pos2 = new Vec3();
+            for(let i=0;i<this.infoListItem.children.length;i++){
+                if(data.info.type == this.infoListItem.children[i].getComponent(FruitItemTop).info.type){
+                    pos2 = this.infoListItem.children[i].getWorldPosition().clone();
+                    bIsExists = true;
+                    break;
+                }
+            }
+            if(bIsExists){
+                let tempItem = instantiate(this.pfItems[data.info.type]);
+                this.node.addChild(tempItem);
+                tempItem.setPosition(data.pos);
+
+                tween(tempItem)
+                .to(0.1,{scale:new Vec3(0.5,0.5,0.5),position: new Vec3(data.pos.x,data.pos.y+50)})
+                .to(0.1,{})
+                .to(0.8,{position:pos2,scale:new Vec3(0.3,0.3,0.3)},{easing:'backInOut'})
+                .delay(0.1)
+                .call(()=>{
+                    tempItem.removeFromParent();
+                })
+                .start();
+                tween(tempItem)
+                .to(0.5,{angle:360})
+                .by(0.3,{angle:720})
+                .start();
+                tween(tempItem.getComponent(UIOpacity))
+                .delay(0.8)
+                .to(0.2,{opacity:0})
+                .start();
+            }
+            
+            //--end move effect
 
             for (let i = 0; i < this.board.children.length; i++) {
                 let item = this.board.children[i];
                 let info2 = item.getComponent(FruitItem).info;
-                if (info2.col == info.col && info2.row > info.row) {
+                if (info2.col == data.info.col && info2.row > data.info.row) {
                     item.getComponent(FruitItem).moveCount++;
                 }
             }
@@ -242,7 +343,6 @@ export class Fruit extends Component {
                 //move
                 for (let i = 0; i < this.board.children.length; i++) {
                     this.board.children[i].getComponent(FruitItem).moveDown();
-                    // console.log(`# total move: ${this.board.children[i].getComponent(FruitItem).moveCount}`);
                 }
             }
             //--check can move
@@ -274,7 +374,13 @@ export class Fruit extends Component {
                 }
                 //--change info
                 console.log("moving done>>>");
-                this.clearSelectedItem();
+                if(this.isEndGame){
+                    this.showWinResult();
+                } else {
+                    this.clearSelectedItem();
+                    this.checkEndGame();
+                }
+                
             }
         })
 
@@ -295,6 +401,7 @@ export class Fruit extends Component {
                 this.backToLobby();
             } if(cmd==2){//restart game //-random new level
                 this.iCurrentLevel++;
+                GameMgr.instance.saveFruitLevel(this.iCurrentLevel);
                 this.level.LIMIT[1] = GameMgr.instance.getRandomInt(10,10 + this.iCurrentLevel*5);
                 let arr = [0,1,2,3,4,5];
                 arr = GameMgr.instance.shuffle(arr);
@@ -334,6 +441,9 @@ export class Fruit extends Component {
             this.tutorial.getComponent(FruitTutorial).isDone = true;
             this.tutorial.getComponent(FruitTutorial).clearTutorial();
         }
+        if(GameMgr.instance.readFruitLevel()){
+            this.iCurrentLevel = GameMgr.instance.readFruitLevel();
+        }
     }
     checkEndGame(){
         //--check done
@@ -343,23 +453,35 @@ export class Fruit extends Component {
             let item = this.infoListItem.children[i].getComponent(FruitItemTop);
             if(item.currentCount<item.info.count){
                 isDone = false;
-            } else {
+            }
+        }
+        for(let i=0;i<this.level.STARS.length;i++){
+            if(this.iTotalScore>=this.level.STARS[i]){
                 totalStar++;
             }
         }
         if(isDone){
-            //show game result
-            
-            APIMgr.instance.puzzleResult(this.iTotalScore,(iSuccess:boolean,res:any)=>{
-                if(iSuccess){
-                    let timeout1= setTimeout(()=>{
-                        clearTimeout(timeout1)
-                        this.ppResult.active = true;
-                        this.ppResult.getComponent(FruitResult).bg.active = true;
-                        this.ppResult.getComponent(FruitResult).show(this.iTotalScore,this.maxScore);
-                    },500);
+            this.isEndGame = true;
+            this.isEnableTouch = false;
+            let timeout4 = setTimeout(()=>{
+                clearTimeout(timeout4);
+                
+            // APIMgr.instance.puzzleResult(this.iTotalScore,(iSuccess:boolean,res:any)=>{
+            //     if(iSuccess){
+            //         if(this.iMovesCount>0){
+            //             this.runRemainEffect();
+            //         } else {
+            //             this.showWinResult();
+            //         }
+            //     }
+            // });
+
+                if(this.iMovesCount>0){
+                    this.runRemainEffect();
+                } else {
+                    this.showWinResult();
                 }
-            });
+            },1000);
             
         } else {//check num of move
             if(this.iMovesCount<=0){
@@ -372,8 +494,135 @@ export class Fruit extends Component {
             }
         }
     }
+    runRemainEffect(){
+        if(this.iMovesCount>0){
+            this.iMovesCount--;
+            this.lbMoves.string = `${this.iMovesCount}`;
+            let flower = instantiate(this.pfFlower);
+            let p1 = this.lbMoves.node.getWorldPosition();
+            let rIdx = GameMgr.instance.getRandomInt(0,this.arrItems.length-1);
+            let item = this.arrItems[rIdx];
+            let p2 = item.getWorldPosition();
+            this.node.addChild(flower);
+            flower.setPosition(p1);
+            tween(flower)
+            .to(0.2,{position:p2,scale: new Vec3(1.5,1.5,1.5)})
+            .delay(0.2)
+            .to(0.1,{scale:new Vec3(0.1,0.1,0.1)})
+            .call(()=>{
+                flower.removeFromParent();
+                item.getComponent(FruitItem).setBomSelection();
+            })
+            .start();
+            tween(flower)
+            .repeatForever(tween(flower)
+            .delay(0.01)
+            .call(()=>{
+                flower.angle = flower.angle+10;
+            }))
+            .start();
+            let timeout3 = setTimeout(()=>{
+                clearTimeout(timeout3);
+                this.runRemainEffect();
+            },500)
+        } else {
+            this.clearBoard();
+            //this.showWinResult();
+        }
+    }
+    clearBoard(){
+        this.arrSelectedItems = [];
+        for (let i = 0; i < this.arrItems.length; i++) {
+            let item = this.arrItems[i];
+            let info = item.getComponent(FruitItem).info;
+            if(info.iBom!=0){ //if bom item -> add
+                this.arrSelectedItems.push(item);
+            }
+        }
+        //--get all item same rol, col
+        for (let i = 0; i < this.arrSelectedItems.length; i++) {
+            let item = this.arrSelectedItems[i];
+            let info = item.getComponent(FruitItem).info;
+            if(info.iBom==1){ //if bom item -> add
+                for(let j=0;j<this.arrItems.length;j++){
+                    let item2 = this.arrItems[j];
+                    let info2 = item2.getComponent(FruitItem).info;
+                    if(info.row == info2.row){
+                        //--check exists
+                        let isExists = false;
+                        for(let k=0;k<this.arrSelectedItems.length;k++){
+                            let item3 = this.arrSelectedItems[k];
+                            let info3 = item3.getComponent(FruitItem).info;
+                            if(info2.idx==info3.idx){
+                                isExists = true;
+                                break;
+                            }
+                        }
+                        if(!isExists){
+                            this.arrSelectedItems.push(item2);
+                        }
+                    }
+                }
+            } else if(info.iBom==2){
+                for(let j=0;j<this.arrItems.length;j++){
+                    let item2 = this.arrItems[j];
+                    let info2 = item2.getComponent(FruitItem).info;
+                    if(info.col == info2.col){
+                        //--check exists
+                        let isExists = false;
+                        for(let k=0;k<this.arrSelectedItems.length;k++){
+                            let item3 = this.arrSelectedItems[k];
+                            let info3 = item3.getComponent(FruitItem).info;
+                            if(info2.idx==info3.idx){
+                                isExists = true;
+                                break;
+                            }
+                        }
+                        if(!isExists){
+                            this.arrSelectedItems.push(item2);
+                        }
+                    }
+                }
+            }
+        }
+        //--run destroy animation
+        for (let i = 0; i < this.arrSelectedItems.length; i++) {
+            let item = this.arrSelectedItems[i];
+            let info = item.getComponent(FruitItem).info;
+            if(this.arrSelectedItems[i].active == true){
+                this.arrSelectedItems[i].getComponent(FruitItem).playDestroy();
+                let pointEff = instantiate(this.pfPointEff);
+                pointEff.getComponent(FruitPointEff).playEff(info.type,this.SCORE_BASE);
+                this.effLayer.addChild(pointEff);
+                pointEff.setPosition(item.position);
+                let timeout = setTimeout(()=>{
+                    clearTimeout(timeout);
+                    AudioMgr.inst.playOneShot(this.arrAudioClips[12+i%4]);
+                },i*50)
+            }
+        }
+        
+        let newScore = this.iTotalScore + this.arrSelectedItems.length * this.SCORE_BASE;
+        GameMgr.instance.numberTo(this.lbScore,this.iTotalScore,newScore,1000);
+        this.iTotalScore = newScore;
+    }
+    showWinResult(){
+        let totalStar = 0;
+        for(let i=0;i<this.level.STARS.length;i++){
+            if(this.iTotalScore>=this.level.STARS[i]){
+                totalStar++;
+            }
+        }
+        let timeout1= setTimeout(()=>{
+            clearTimeout(timeout1)
+            this.ppResult.active = true;
+            this.ppResult.getComponent(FruitResult).bg.active = true;
+            this.ppResult.getComponent(FruitResult).show(this.iTotalScore,totalStar);
+        },500);
+    }
     maxScore = 0;
     restartGame(){
+        this.isEndGame = false;
         //1. show info and blocks
         this.infoNode.active = true;
         this.blockNode.active = true;
@@ -469,11 +718,14 @@ export class Fruit extends Component {
         for (let i = 0; i < this.arrSelectedItems.length; i++) {
             if (this.arrSelectedItems[i] == selectedCell) {
                 if(i==(this.arrSelectedItems.length-2)){//drag back
+                    let lastItem = this.arrSelectedItems[this.arrSelectedItems.length-1];
+                    this.arrItems[lastItem].getComponent(FruitItem).clearSelected();
                     let temp = [...this.arrSelectedItems];
                     this.arrSelectedItems = [];
                     for(let j=0;j<temp.length-1;j++){
                         this.arrSelectedItems.push(temp[j]);
                     }
+                    
                     this.drawPath();
                 }
                 return;
@@ -496,8 +748,12 @@ export class Fruit extends Component {
         if (preIdx == -1 && this.arrSelectedItems.length > 0) return;
         //--all passed
         this.arrSelectedItems.push(selectedCell);
+        
         //highlight
         this.arrItems[selectedCell].getComponent(FruitItem).setHL(true);
+        if(this.arrSelectedItems.length==5){//change to bom if index == 4
+            this.arrItems[selectedCell].getComponent(FruitItem).setBomSelection();
+        }
         if(this.arrSelectedItems.length>0){
             console.log(`play combo audio: ${this.arrSelectedItems.length}`);
             if(this.arrSelectedItems.length>10){
@@ -577,7 +833,9 @@ export class Fruit extends Component {
     }
     clearSelectedItem() {
         for (let i = 0; i < this.arrSelectedItems.length; i++) {
-            this.arrItems[this.arrSelectedItems[i]].getComponent(FruitItem).setHL(false);
+            if(this.arrItems[this.arrSelectedItems[i]]!=null){
+                this.arrItems[this.arrSelectedItems[i]].getComponent(FruitItem).clearSelected();
+            }
         }
         this.arrSelectedItems = [];
         this.iCountDestroy = 0;

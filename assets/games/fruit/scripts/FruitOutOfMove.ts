@@ -1,4 +1,4 @@
-import {_decorator, AudioClip, Component, Node, Button, Animation, Label, tween, Vec3 } from 'cc';
+import {_decorator, AudioClip, Component, Node, Button, Animation, Label, tween, Vec3, UIOpacity, UI } from 'cc';
 import { AudioMgr } from '../../../core/AudioMgr';
 import GameMgr from '../../../core/GameMgr';
 const { ccclass, property } = _decorator;
@@ -41,10 +41,26 @@ export class FruitOutOfMove extends Component {
         this.stars[0].setPosition(-1103.72,-1638.903);
         this.stars[1].setPosition(-1103.72,-1638.903);
         this.stars[2].setPosition(-1103.72,-1638.903);
+
+        for(let i=0;i<this.stars.length;i++){
+            this.stars[i].getComponent(UIOpacity).opacity = 0;
+        }
+
         GameMgr.instance.numberTo(this.lbScore,0,score, 1000);
         for(let i=0;i<totalStar;i++){
+            let posX = -200;
+            if(i==1){
+                posX = 0;
+            } else if(i==2){
+                posX = 200;
+            }
             tween(this.stars[i])
-            .to(0.4 +i*0.1,{position:new Vec3(0,0)})
+            .to(0.3 +i*0.05,{position:new Vec3(posX,0),scale:new Vec3(3,3,3)})
+            .delay(0.1)
+            .to(0.1,{scale:new Vec3(1,1,1),position:new Vec3(0,0)})
+            .start();
+            tween(this.stars[i].getComponent(UIOpacity))
+            .to(0.3 +i*0.05,{opacity:255})
             .start();
         }
     }

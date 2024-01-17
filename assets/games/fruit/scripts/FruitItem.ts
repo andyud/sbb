@@ -1,5 +1,6 @@
 import { _decorator, Animation, Component, easing, Label, Node, Sprite, SpriteFrame, Tween, tween, UIOpacity, UITransform, Vec3 } from 'cc';
 import { GameEvent } from '../../../core/GameEvent';
+import GameMgr from '../../../core/GameMgr';
 const { ccclass, property } = _decorator;
 
 @ccclass('FruitItem')
@@ -10,27 +11,68 @@ export class FruitItem extends Component {
     hl:Node | null = null;
     @property({type:Node})
     bomb:Node | null = null;
-    @property({type:Label})
-    lbCoinEff: Label | null = null;
+    @property({type:Node})
+    bomSelection:Node | null = null;
+    @property({type:Node})
+    horizontalDirect:Node | null = null;
+    @property({type:Node})
+    horizontalBom:Node | null = null;
+    @property({type:Node})
+    verticalDirect:Node | null = null;
+    @property({type:Node})
+    verticalBom:Node | null = null;
+    
     speed = 0.1;
     //--control moving & avoid move douplicate
     moveCount = 0;
     isMoving = false;
+    BOM_TYPE = {
+        NONE: 0,
+        VETICAL:1,
+        HORIZONTAL:2,
+        BOTH:3
+    }
     info = {
         row:0,
         col:0,
         idx:0,
         type:0,
+        iBom:0
     }
     start() {
         this.hl.active = false;
+        this.bomSelection.active = false;
+        this.horizontalBom.active = false;
+        this.verticalBom.active = false;
+        this.horizontalDirect.active = false;
+        this.verticalDirect.active = false;
     }
     init(info:any){
         this.info = info;
     }
+    setBomSelection(){
+        this.info.iBom = Math.random()>0.5?this.BOM_TYPE.HORIZONTAL:this.BOM_TYPE.VETICAL;
+        if(this.info.iBom==this.BOM_TYPE.HORIZONTAL){
+            this.horizontalDirect.active = true;
+        } else {
+            this.verticalDirect.active = true;
+        }
+        this.bomSelection.active = true;
+        this.bomSelection.getComponent(Animation).play('bomselection');
+    }
     setHL(isActive:boolean){
         this.sp.active = !isActive;
         this.hl.active = isActive;
+    }
+    clearSelected(){
+        this.sp.active = true;
+        this.hl.active = false;
+        this.bomSelection.active = false;
+        this.horizontalBom.active = false;
+        this.verticalBom.active = false;
+        this.horizontalDirect.active = false;
+        this.verticalDirect.active = false;
+        this.info.iBom = this.BOM_TYPE.NONE;
     }
     setScaleAnim(isActive:boolean){
         if(isActive){
@@ -50,23 +92,22 @@ export class FruitItem extends Component {
         this.sp.active = false;
         this.hl.active = true;
         this.bomb.active = false;
+        if(this.info.iBom==this.BOM_TYPE.HORIZONTAL){
+            this.bomSelection.getComponent(Animation).play('bomdestroy');
+            this.verticalDirect.active = false;
+            this.verticalBom.active = true;
+            this.verticalBom.getComponent(Animation).play('bomverticle');
+        } else if(this.info.iBom==this.BOM_TYPE.VETICAL){
+            this.bomSelection.getComponent(Animation).play('bomdestroy');
+            this.horizontalDirect.active = false;
+            this.horizontalBom.active = true;
+            this.horizontalBom.getComponent(Animation).play('bomhorizontal');
+        }
         this.node.getComponent(Animation).play('destroy');
-        this.lbCoinEff.string = `+${10}`;
-        this.lbCoinEff.node.setPosition(29,-10);
-        this.lbCoinEff.node.getComponent(UIOpacity).opacity = 0;
-        this.lbCoinEff.node.scale = new Vec3(1,1,1);
-        tween(this.lbCoinEff.node.getComponent(UIOpacity))
-        .to(0.1,{opacity:255})
-        .delay(0.2)
-        .to(0.1,{opacity:0})
-        .start()
-        tween(this.lbCoinEff.node)
-        .to(0.1,{position:new Vec3(29,20),scale:new Vec3(1.2,1.2,1.2)})
-        .start();
     }
     destroyDone(){
         this.node.active = false;
-        GameEvent.DispatchEvent("FRUIT_DESTROY_DONE",this.info);
+        GameEvent.DispatchEvent("FRUIT_DESTROY_DONE",{info:this.info,pos:this.node.getWorldPosition().clone()});
         this.node.removeFromParent();
     }
     moveDown(){
