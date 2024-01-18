@@ -198,7 +198,7 @@ class GameMgr {
     //     return i;
     // }
     private readonly FRUIT_TUTORIAL = "FRUIT_TUTORIAL";
-    private readonly FRUIT_LEVEL = "FRUIT_LEVEL";
+    private readonly FRUIT_LEVEL = "SAVE_FRUIT_LEVEL";
     saveFruitTutorial(val:number){
         sys.localStorage.setItem(this.FRUIT_TUTORIAL,`${val}`);
     }

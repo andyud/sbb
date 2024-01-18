@@ -28,11 +28,7 @@ export class FruitQuest extends Component {
         STARS:[500,1200,2100],
         COLLECT_ITEMS:[0,1,2,3],
         COLLECT_COUNT:[3,3,3,3],
-        MATRIX:[[10, 10, 10, 10, 10, 10, 10],
-                [10, 10, 10, 10, 10, 10, 10],
-                [10, 10, 10, 10, 10, 10, 10],
-                [10, 10, 10, 10, 10, 10, 10],
-                [10, 10, 10, 10, 10, 10, 10]]
+        GETSTARS:3
     };
     start() {
         this.node.active = false;
@@ -54,12 +50,20 @@ export class FruitQuest extends Component {
         this.pp.getComponent(Animation).play('showpopup');
         this.level = level;
         this.questList.removeAllChildren();
-        for(let i=0;i<this.level.COLLECT_ITEMS.length;i++){
+        if(this.level.MODE==0){//collect star
             let item = instantiate(this.pfItem);
-            let idx  = this.level.COLLECT_ITEMS[i];
-            let count= this.level.COLLECT_COUNT[i];
-            item.getComponent(FruitItemQuest).init(this.icons[idx],{idx:i, type:idx,count:count});
+            let idx  = 8;
+            let count= this.level.GETSTARS;
+            item.getComponent(FruitItemQuest).init(this.icons[idx],{idx:0, type:idx,count:count});
             this.questList.addChild(item);
+        } else if(this.level.MODE==2) {
+            for(let i=0;i<this.level.COLLECT_ITEMS.length;i++){
+                let item = instantiate(this.pfItem);
+                let idx  = this.level.COLLECT_ITEMS[i];
+                let count= this.level.COLLECT_COUNT[i];
+                item.getComponent(FruitItemQuest).init(this.icons[idx],{idx:i, type:idx,count:count});
+                this.questList.addChild(item);
+            }
         }
     }
     hide() {

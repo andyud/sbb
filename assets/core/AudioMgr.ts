@@ -172,7 +172,18 @@ export class AudioMgr {
             this.bgm.playOneShot(sound, volume);
         }
     }
-
+    playOneShot2(sound: AudioClip | string, volume: number = 1.0) {
+        if(!this.isSoundOn) return;
+        if (sound instanceof AudioClip) {
+            this.bgmSpin.playOneShot(sound, volume);
+        }
+    }
+    playOneShot3(sound: AudioClip | string, volume: number = 1.0) {
+        if(!this.isSoundOn) return;
+        if (sound instanceof AudioClip) {
+            this.bgmFreeSpin.playOneShot(sound, volume);
+        }
+    }
     /**
      play bg sound
      */

@@ -112,7 +112,7 @@ export class FruitItem extends Component {
     }
     moveDown(){
         if(this.moveCount>0 && this.isMoving==false){
-            console.log(`>>> item: ${this.info.row}:${this.info.col}-${this.moveCount}`)
+            // console.log(`>>> item: ${this.info.row}:${this.info.col}-${this.moveCount}`)
             this.isMoving = true;
             tween(this.node)
             .to(this.speed,{position:new Vec3(this.node.position.x,this.node.position.y-this.node.getComponent(UITransform).height)})

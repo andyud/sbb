@@ -12,6 +12,7 @@ import {FruitPointEff } from './FruitPointEff';
 import APIMgr from '../../../core/APIMgr';
 import { FruitPause } from './FruitPause';
 import { FruitTextEffect } from './FruitTextEffect';
+import { FruitLevels } from './FruitLevels';
 const { ccclass, property } = _decorator;
 
 @ccclass('Fruit')
@@ -70,6 +71,7 @@ export class Fruit extends Component {
     @property({type:Node})
     ppPause: Node | null = null;
     iCurrentLevel = 0;
+    levels = null;
 
     //--effect
     @property({type:Prefab})
@@ -129,13 +131,19 @@ export class Fruit extends Component {
         STARS:[500,1200,2100],
         COLLECT_ITEMS:[0,1,2,3],
         COLLECT_COUNT:[3,3,3,3],
-        MATRIX:[[10, 10, 10, 10, 10, 10, 10],
-                [10, 10, 10, 10, 10, 10, 10],
-                [10, 10, 10, 10, 10, 10, 10],
-                [10, 10, 10, 10, 10, 10, 10],
-                [10, 10, 10, 10, 10, 10, 10]]
+        GETSTARS:3
     };
+
+    //--mode 0, timer
+    isEnableTimer = false;
+    lastTimeUpdate= 0;
+
     start() {
+        if(GameMgr.instance.readFruitLevel()){
+            this.iCurrentLevel = GameMgr.instance.readFruitLevel();
+        }
+        this.levels = this.getComponent(FruitLevels).levels;
+        this.level = this.levels[this.iCurrentLevel];
         this.tutorial.on(Node.EventType.TOUCH_END, (event: EventTouch) => {
             AudioMgr.inst.playOneShot(this.arrAudioClips[11]);
             this.tutorial.getComponent(FruitTutorial).isDone = true;
@@ -161,14 +169,14 @@ export class Fruit extends Component {
         }, this);
         this.board.on(Node.EventType.TOUCH_END, (event: EventTouch) => {
             if (!this.isEnableTouch) return;
-            console.log('clear data :' + new Date().getTime()+", this.isEnableTouch="+this.isEnableTouch)
+            //1. disable touch & clear graphics
             this.isEnableTouch = false;
             this.graphics1.clear();
             this.graphics2.clear();
-            //--check clear line //
+            //2. check combo
             let combo = this.arrSelectedItems.length;
             if (combo > 2) {
-                //get all items can destroy
+                //3. get all items can destroy
                 for (let i = 0; i < combo; i++) {
                     let idx = this.arrSelectedItems[i];
                     let itemInfo = this.arrItems[idx].getComponent(FruitItem);
@@ -208,55 +216,40 @@ export class Fruit extends Component {
                         }
                     }
                 }
-                combo = this.arrSelectedItems.length;
-                for (let i = 0; i < combo; i++) {
+                //4. add new items to selectedItem, it's not on combo -> don't set to combo
+                for (let i = 0; i < this.arrSelectedItems.length; i++) {
                     let idx = this.arrSelectedItems[i];
                     let itemInfo = this.arrItems[idx].getComponent(FruitItem);
-                    for(let j=0;j<this.level.COLLECT_ITEMS.length;j++){
-                        if(itemInfo.info.type==this.level.COLLECT_ITEMS[j]){
-                            let iNode = this.infoListItem.children[j];
-                            iNode.getComponent(FruitItemTop).setIncreaseCount();
-                        }
-                    }
                     if(this.arrItems[idx].active == true){
                         itemInfo.playDestroy();
                         let pointEff = instantiate(this.pfPointEff);
                         pointEff.getComponent(FruitPointEff).playEff(itemInfo.info.type,this.SCORE_BASE);
                         this.effLayer.addChild(pointEff);
                         pointEff.setPosition(itemInfo.node.position);
-                        let timeout = setTimeout(()=>{
-                            clearTimeout(timeout);
-                            AudioMgr.inst.playOneShot(this.arrAudioClips[12+i%4]);
-                        },i*50)
+                        if(itemInfo.info.iBom>0){
+                            let timeout = setTimeout(()=>{
+                                clearTimeout(timeout);
+                                AudioMgr.inst.playOneShot2(this.arrAudioClips[28]);
+                            },i*20)
+                        } else {
+                            let timeout5 = setTimeout(()=>{
+                                clearTimeout(timeout5);
+                                AudioMgr.inst.playOneShot(this.arrAudioClips[12+i%4]);
+                            },i*50)
+                        }
+                        
                     }
                 }
-                //--check combo
-                this.textEff.getComponent(FruitTextEffect).runEffect(combo);
+                //5. show combo effect
+                this.textEff.getComponent(FruitTextEffect).runEffect(combo,this.arrAudioClips);
                 
-                this.lbMoves.string = `${this.iMovesCount}`;
-                let newScore = this.iTotalScore + combo * this.SCORE_BASE;
-                GameMgr.instance.numberTo(this.lbScore,this.iTotalScore,newScore,1000);
-                this.iTotalScore = newScore;
+                //6. update move count
+                if(this.level.MODE==0){//timer
 
-                this.iMovesCount--;
-                // if(this.iMovesCount<0){
-                //     this.checkEndGame();
-                // }
-
-                //--update progress
-                let maxCount = 0;
-                for(let i=0;i<this.level.COLLECT_COUNT.length;i++){
-                    maxCount+=this.level.COLLECT_COUNT[i];
+                } else if(this.level.MODE==2){
+                    this.iMovesCount--;
+                    this.lbMoves.string = `${this.iMovesCount}`;
                 }
-                let currentCount = 0;
-                for(let i=0;i<this.infoListItem.children.length;i++){
-                    currentCount+=this.infoListItem.children[i].getComponent(FruitItemTop).currentCount;
-                }
-                // if(currentCount==maxCount){
-                //     this.checkEndGame();
-                // }
-                let maxWidth = this.progressbar.parent.getComponent(UITransform).width;
-                this.progressbar.getComponent(UITransform).width = (currentCount/maxCount)*maxWidth;
             } else {
                 this.clearSelectedItem();
             }
@@ -277,35 +270,70 @@ export class Fruit extends Component {
         this.boardH = this.board.getComponent(UITransform).height;
         this.boardX = this.board.getWorldPosition().x;
         this.boardY = this.board.getWorldPosition().y;
-        console.log(`>>>W:${this.screenW}, H:${this.screenH}`);
+        //console.log(`>>>W:${this.screenW}, H:${this.screenH}`);
         //--
         GameEvent.AddEventListener("FRUIT_DESTROY_DONE", (data: any) => {
+            //1. Add 1 item on top: if 1 item destroy
             let w = this.board.getComponent(UITransform).width;
             let h = this.board.getComponent(UITransform).height;
             //--add 1 item to top
-            let texId = GameMgr.instance.getRandomInt(0, this.pfItems.length - 3);
+            let texId = GameMgr.instance.getRandomInt(0,this.level.COLOR_LIMIT);
             let newItem = instantiate(this.pfItems[texId]);
             newItem.getComponent(FruitItem).init({ row: this.ITEM_PER_ROW + this.arrCorrectRow[data.info.col], col: data.info.col, idx: -1, type: texId });
             //--check row col
             let x = newItem.getComponent(FruitItem).info.col * this.ITEM_SIZE;
             let y = newItem.getComponent(FruitItem).info.row * this.ITEM_SIZE;
-            newItem.getComponent(FruitItem).moveCount = this.arrCorrectRow[data.info.col];
+            newItem.getComponent(FruitItem).moveCount = this.arrCorrectRow[data.info.col]; //items need to move == num of item has destroy
             
             newItem.setPosition(x - w / 2 + 50, y - h / 2 + 50);
             this.board.addChild(newItem);
-            this.arrCorrectRow[data.info.col]++;
+            this.arrCorrectRow[data.info.col]++;//stack if more items added
 
-            //--create item move to pos
-            let bIsExists = false;
-            let pos2 = new Vec3();
-            for(let i=0;i<this.infoListItem.children.length;i++){
-                if(data.info.type == this.infoListItem.children[i].getComponent(FruitItemTop).info.type){
-                    pos2 = this.infoListItem.children[i].getWorldPosition().clone();
-                    bIsExists = true;
-                    break;
+            //2. Nhung item nam phia tren items bi destroy se duoc ++ move
+            for (let i = 0; i < this.board.children.length; i++) {
+                let item = this.board.children[i];
+                let info2 = item.getComponent(FruitItem).info;
+                if (info2.col == data.info.col && info2.row > data.info.row) {
+                    item.getComponent(FruitItem).moveCount++;
                 }
             }
-            if(bIsExists){
+
+            //3.create item move to pos
+            //check item need to move or not
+            let pos2 = new Vec3();
+            let updateCountIdx = -1;
+            if(this.level.MODE==0){
+                
+            } else if(this.level.MODE==2){
+                for(let i=0;i<this.infoListItem.children.length;i++){
+                    let itemTop = this.infoListItem.children[i].getComponent(FruitItemTop);
+                    if(data.info.type == itemTop.info.type){
+                        pos2 = this.infoListItem.children[i].getWorldPosition().clone();
+                        if(itemTop.info.count>itemTop.currentCount){//not full, if full don't move
+                            updateCountIdx = i;
+                            break;
+                        }
+                    }
+                }
+            }
+
+            if(updateCountIdx!=-1){
+                //--7. inscrease count
+                this.infoListItem.children[updateCountIdx].getComponent(FruitItemTop).setIncreaseCount();
+
+                //8. update progress bar, progress bar base on quest complete or not
+                let maxCount = 0;
+                for(let i=0;i<this.level.COLLECT_COUNT.length;i++){
+                    maxCount+=this.level.COLLECT_COUNT[i];
+                }
+                let currentCount = 0;
+                for(let i=0;i<this.infoListItem.children.length;i++){
+                    currentCount+=this.infoListItem.children[i].getComponent(FruitItemTop).currentCount;
+                }
+                let maxWidth = this.progressbar.parent.getComponent(UITransform).width;
+                this.progressbar.getComponent(UITransform).width = (currentCount/maxCount)*maxWidth;
+
+                //--move effect
                 let tempItem = instantiate(this.pfItems[data.info.type]);
                 this.node.addChild(tempItem);
                 tempItem.setPosition(data.pos);
@@ -328,18 +356,40 @@ export class Fruit extends Component {
                 .to(0.2,{opacity:0})
                 .start();
             }
-            
             //--end move effect
 
-            for (let i = 0; i < this.board.children.length; i++) {
-                let item = this.board.children[i];
-                let info2 = item.getComponent(FruitItem).info;
-                if (info2.col == data.info.col && info2.row > data.info.row) {
-                    item.getComponent(FruitItem).moveCount++;
-                }
-            }
             this.iCountDestroy++;
             if(this.iCountDestroy==this.arrSelectedItems.length){
+                //7. update total score
+                let newScore = this.iTotalScore + this.arrSelectedItems.length * this.SCORE_BASE;//score base on total item destroy
+                GameMgr.instance.numberTo(this.lbScore,this.iTotalScore,newScore,1000);
+                this.iTotalScore = newScore;
+
+                if(this.level.MODE==0){
+                    //--7. inscrease count
+                    let totalStar = 0;
+                    let maxScore  = this.level.STARS[this.level.STARS.length-1];
+                    if(this.iTotalScore>maxScore){
+                        maxScore = this.iTotalScore;
+                    }
+
+                    for(let i=0;i<this.level.STARS.length;i++){
+                        if(this.iTotalScore>this.level.STARS[i]){
+                            totalStar++;
+                        }
+                    }
+                    if(this.infoListItem.children[0].getComponent(FruitItemTop).currentCount < totalStar){
+                        this.infoListItem.children[0].getComponent(FruitItemTop).setIncreaseCount();
+                    }
+                    
+                    //8. update progress bar, progress bar base on quest complete or not
+                    let maxWidth = this.progressbar.parent.getComponent(UITransform).width;
+                    this.progressbar.getComponent(UITransform).width = (this.iTotalScore/maxScore)*maxWidth;
+
+                } else if(this.level.MODE==2){
+
+                }
+
                 //move
                 for (let i = 0; i < this.board.children.length; i++) {
                     this.board.children[i].getComponent(FruitItem).moveDown();
@@ -374,22 +424,31 @@ export class Fruit extends Component {
                 }
                 //--change info
                 console.log("moving done>>>");
-                if(this.isEndGame){
-                    this.showWinResult();
-                } else {
-                    this.clearSelectedItem();
-                    this.checkEndGame();
+                if(this.level.MODE==0){
+                    let totalStar = 0;
+                    for(let i=0;i<this.level.STARS.length;i++){
+                        if(this.iTotalScore>this.level.STARS[i]){
+                            totalStar++;
+                        }
+                    }
+                    if(totalStar>=this.level.GETSTARS){
+                        this.showWinResult();
+                    } else {
+                        this.clearSelectedItem();
+                    }
+                } else if(this.level.MODE==2){
+                    if(this.isEndGame){
+                        this.showWinResult();
+                    } else {
+                        this.clearSelectedItem();
+                        this.checkEndGame();
+                    }
                 }
-                
             }
         })
 
         //--buttons
         this.btnPause.on(Button.EventType.CLICK, this.onClick, this);
-
-        //--sound
-        AudioMgr.inst.setAudioSouce('main',this.arrAudioClips[0]);
-        AudioMgr.inst.playBgm();
 
         //--
         this.loading.active = true;
@@ -401,12 +460,11 @@ export class Fruit extends Component {
                 this.backToLobby();
             } if(cmd==2){//restart game //-random new level
                 this.iCurrentLevel++;
+                if(this.iCurrentLevel>=this.levels.length){
+                    this.iCurrentLevel = 0;
+                }
                 GameMgr.instance.saveFruitLevel(this.iCurrentLevel);
-                this.level.LIMIT[1] = GameMgr.instance.getRandomInt(10,10 + this.iCurrentLevel*5);
-                let arr = [0,1,2,3,4,5];
-                arr = GameMgr.instance.shuffle(arr);
-                this.level.COLLECT_ITEMS = [arr[0],arr[1],arr[2],arr[3]];
-                this.level.COLLECT_COUNT = [3+this.iCurrentLevel,3+this.iCurrentLevel,3+this.iCurrentLevel,3+this.iCurrentLevel];
+                this.level = this.levels[this.iCurrentLevel];
                 this.showQuest();
             }
         });
@@ -441,25 +499,34 @@ export class Fruit extends Component {
             this.tutorial.getComponent(FruitTutorial).isDone = true;
             this.tutorial.getComponent(FruitTutorial).clearTutorial();
         }
-        if(GameMgr.instance.readFruitLevel()){
-            this.iCurrentLevel = GameMgr.instance.readFruitLevel();
-        }
+        //--sound
+        AudioMgr.inst.setAudioSouce('main',this.arrAudioClips[0]);
+        AudioMgr.inst.setAudioSouce('spin',this.arrAudioClips[0]);//play other sound
+        AudioMgr.inst.setAudioSouce('freespin',this.arrAudioClips[0]);//play other sound
+        AudioMgr.inst.playBgm();
     }
     checkEndGame(){
         //--check done
         let isDone = true;
         let totalStar = 0;
-        for(let i=0;i<this.infoListItem.children.length;i++){
-            let item = this.infoListItem.children[i].getComponent(FruitItemTop);
-            if(item.currentCount<item.info.count){
-                isDone = false;
-            }
-        }
         for(let i=0;i<this.level.STARS.length;i++){
             if(this.iTotalScore>=this.level.STARS[i]){
                 totalStar++;
             }
         }
+        if(this.level.MODE==0){//star collect
+            if(totalStar<this.level.GETSTARS){
+                isDone = false;
+            } 
+        } else if(this.level.MODE==2){
+            for(let i=0;i<this.infoListItem.children.length;i++){
+                let item = this.infoListItem.children[i].getComponent(FruitItemTop);
+                if(item.currentCount<item.info.count){
+                    isDone = false;
+                }
+            }
+        }
+
         if(isDone){
             this.isEndGame = true;
             this.isEnableTouch = false;
@@ -486,9 +553,10 @@ export class Fruit extends Component {
         } else {//check num of move
             if(this.iMovesCount<=0){
                 //--game over
+                AudioMgr.inst.playOneShot3(this.arrAudioClips[24]);
                 this.ppOutOfMove.active = true;
                 this.ppOutOfMove.getComponent(FruitOutOfMove).bg.active = true;
-                this.ppOutOfMove.getComponent(FruitOutOfMove).show(this.iTotalScore,totalStar);
+                this.ppOutOfMove.getComponent(FruitOutOfMove).show(this.iTotalScore,totalStar,this.arrAudioClips);
             } else {//continue
 
             }
@@ -507,10 +575,12 @@ export class Fruit extends Component {
             flower.setPosition(p1);
             tween(flower)
             .to(0.2,{position:p2,scale: new Vec3(1.5,1.5,1.5)})
+            .call(()=>{AudioMgr.inst.playOneShot2(this.arrAudioClips[16])})
             .delay(0.2)
             .to(0.1,{scale:new Vec3(0.1,0.1,0.1)})
             .call(()=>{
                 flower.removeFromParent();
+                AudioMgr.inst.playOneShot2(this.arrAudioClips[27]);
                 item.getComponent(FruitItem).setBomSelection();
             })
             .start();
@@ -595,10 +665,12 @@ export class Fruit extends Component {
                 pointEff.getComponent(FruitPointEff).playEff(info.type,this.SCORE_BASE);
                 this.effLayer.addChild(pointEff);
                 pointEff.setPosition(item.position);
-                let timeout = setTimeout(()=>{
-                    clearTimeout(timeout);
-                    AudioMgr.inst.playOneShot(this.arrAudioClips[12+i%4]);
-                },i*50)
+                if(info.iBom>0){
+                    let timeout = setTimeout(()=>{
+                        clearTimeout(timeout);
+                        AudioMgr.inst.playOneShot(this.arrAudioClips[28]);
+                    },i*10)
+                }
             }
         }
         
@@ -607,7 +679,9 @@ export class Fruit extends Component {
         this.iTotalScore = newScore;
     }
     showWinResult(){
+        this.isEnableTimer = false;
         let totalStar = 0;
+        AudioMgr.inst.playOneShot3(this.arrAudioClips[25]);
         for(let i=0;i<this.level.STARS.length;i++){
             if(this.iTotalScore>=this.level.STARS[i]){
                 totalStar++;
@@ -617,35 +691,52 @@ export class Fruit extends Component {
             clearTimeout(timeout1)
             this.ppResult.active = true;
             this.ppResult.getComponent(FruitResult).bg.active = true;
-            this.ppResult.getComponent(FruitResult).show(this.iTotalScore,totalStar);
+            this.ppResult.getComponent(FruitResult).show(this.iTotalScore,totalStar,this.arrAudioClips);
         },500);
     }
-    maxScore = 0;
+
     restartGame(){
+        this.isEnableTimer = false;
         this.isEndGame = false;
         //1. show info and blocks
         this.infoNode.active = true;
         this.blockNode.active = true;
-        //2. update info
-        this.iMovesCount = this.level.LIMIT[1];
-        GameMgr.instance.numberTo(this.lbMoves,0,this.iMovesCount,1000);
+        
         //--
-        this.maxScore = 0;
+        let maxScore = 0;
         this.infoListItem.removeAllChildren();
-        for(let i=0;i<this.level.COLLECT_ITEMS.length;i++){
+        if(this.level.MODE==0){//collect stars
+            //2. update info
+            this.iMovesCount = this.level.LIMIT[1];
+            this.updateTimer();
             let item = instantiate(this.pfItemTop);
-            let idx  = this.level.COLLECT_ITEMS[i];
-            let count= this.level.COLLECT_COUNT[i];
-            this.maxScore+=this.level.COLLECT_COUNT[i]*10;
-            item.getComponent(FruitItemTop).init(this.icons[idx],{idx:i, type:idx,count:count});
+            let idx  = 8;
+            let count= this.level.GETSTARS;
+            maxScore+=this.level.STARS[this.level.STARS.length-1];
+            item.getComponent(FruitItemTop).init(this.icons[idx],{idx:0, type:idx,count:count});
             this.infoListItem.addChild(item);
+            this.isEnableTimer = true;
+            this.lastTimeUpdate = new Date().getTime();
+        } else if(this.level.MODE==2){//collect items
+            //2. update info
+            this.iMovesCount = this.level.LIMIT[1];
+            GameMgr.instance.numberTo(this.lbMoves,0,this.iMovesCount,1000);
+            for(let i=0;i<this.level.COLLECT_ITEMS.length;i++){
+                let item = instantiate(this.pfItemTop);
+                let idx  = this.level.COLLECT_ITEMS[i];
+                let count= this.level.COLLECT_COUNT[i];
+                maxScore+=this.level.COLLECT_COUNT[i]*this.SCORE_BASE;
+                item.getComponent(FruitItemTop).init(this.icons[idx],{idx:i, type:idx,count:count});
+                this.infoListItem.addChild(item);
+            }
         }
+        
         //--score
         this.iTotalScore = 0;
         this.lbScore.string  = `${this.iTotalScore}`;
         //level
         let maxWidth = this.progressbar.parent.getComponent(UITransform).width; //<=>100
-        this.progressbar.getComponent(UITransform).width = (this.iTotalScore/this.maxScore)*maxWidth;
+        this.progressbar.getComponent(UITransform).width = (this.iTotalScore/maxScore)*maxWidth;
         //--
         this.initTables();
         this.arrSelectedItems = [];
@@ -654,6 +745,13 @@ export class Fruit extends Component {
         this.tutorial.getComponent(FruitTutorial).clearTutorial();
         //--Auto suggest
         this.suggestLinkItems();
+    }
+    updateTimer(){
+        let minutes = Math.floor(this.iMovesCount/60);
+        let strMinutes = minutes<10?`0${minutes}`:`${minutes}`;
+        let second  = this.iMovesCount - minutes*60;
+        let strSeconds = second<10?`0${second}`:`${second}`;
+        this.lbMoves.string = `${strMinutes}:${strSeconds}`;
     }
     initTables() {
         console.log(">>>initTables");
@@ -665,7 +763,7 @@ export class Fruit extends Component {
         let w = this.board.getComponent(UITransform).width;
         let h = this.board.getComponent(UITransform).height;
         for (let i = 0; i < this.ITEM_PER_ROW * this.ITEM_PER_COL; i++) {
-            let texId = GameMgr.instance.getRandomInt(0, this.pfItems.length - 2);
+            let texId = GameMgr.instance.getRandomInt(0, this.level.COLOR_LIMIT);
             let item = instantiate(this.pfItems[texId]);
             item.getComponent(FruitItem).init({ row: row, col: col, idx: i, type: texId });
 
@@ -751,7 +849,8 @@ export class Fruit extends Component {
         
         //highlight
         this.arrItems[selectedCell].getComponent(FruitItem).setHL(true);
-        if(this.arrSelectedItems.length==5){//change to bom if index == 4
+        if(this.arrSelectedItems.length==6){//change to bom if index == 4
+            AudioMgr.inst.playOneShot2(this.arrAudioClips[27]);
             this.arrItems[selectedCell].getComponent(FruitItem).setBomSelection();
         }
         if(this.arrSelectedItems.length>0){
@@ -945,6 +1044,7 @@ export class Fruit extends Component {
         director.loadScene('lobby');
     }
     showQuest(){
+        AudioMgr.inst.playOneShot3(this.arrAudioClips[26]);
         this.infoNode.active = false;
         this.blockNode.active = false;
         this.ppQuest.active = true;
@@ -971,6 +1071,37 @@ export class Fruit extends Component {
             this.percent++;
             this.updateProgress()
         }
+        //
+        if(this.isEnableTimer){
+            let currentTime = new Date().getTime();
+            if(currentTime - this.lastTimeUpdate>1000){
+                this.lastTimeUpdate = currentTime;
+                this.iMovesCount--;
+                this.updateTimer();
+                if(this.iMovesCount==3){
+                    AudioMgr.inst.playOneShot3(this.arrAudioClips[29])
+                }
+                if(this.iMovesCount<=0){
+                    this.isEnableTimer = false;//end game
+                    this.checkEndGame();
+                }
+            }
+        }
     }
 }
 
+/*  DEV NOTE
+1. Load level
+2. Load board
+3. Process gameplay
+    |__1. Check combo > 2
+    |__2. Check all combo, all items from bom if have 1
+    |__3. show combo effect
+    |__4. update score
+    |__5. update progress bar
+    |__6. update star
+    |__7. check end game
+4. Restart new game
+    |__new level
+    |__play again
+*/

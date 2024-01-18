@@ -1,4 +1,5 @@
 import { _decorator, Component, Node, Animation, UIOpacity, tween, Vec3 } from 'cc';
+import { AudioMgr } from '../../../core/AudioMgr';
 const { ccclass, property } = _decorator;
 
 @ccclass('FruitTextEffect')
@@ -6,24 +7,21 @@ export class FruitTextEffect extends Component {
     start() {
 
     }
-    runEffect(combo:number){
+    runEffect(combo:number,audios:any){
         this.node.getComponent(UIOpacity).opacity = 0;
         this.node.scale = new Vec3(3,3,3);
         for(let i=0;i<this.node.children.length;i++){
             this.node.children[i].active = false;
         }
-        if (combo>=8) {
-            // gratzWords[2].SetActive(true);
-            // SoundBase.Instance.PlaySound(SoundBase.Instance.soundText[2]);
+        if (combo>=10) {
+            AudioMgr.inst.playOneShot2(audios[22]);
             this.node.children[2].active = true;
-        }else if (combo >= 6) {
-            // gratzWords[1].SetActive(true);
-            // SoundBase.Instance.PlaySound(SoundBase.Instance.soundText[1]);
+        }else if (combo >= 7) {
+            AudioMgr.inst.playOneShot2(audios[21])
             this.node.children[1].active = true;
         }
-        else if (combo >= 4) {
-            // gratzWords[0].SetActive(true);
-            // SoundBase.Instance.PlaySound(SoundBase.Instance.soundText[0]);
+        else if (combo >= 5) {
+            AudioMgr.inst.playOneShot2(audios[20])
             this.node.children[0].active = true;
         } else {
             return;

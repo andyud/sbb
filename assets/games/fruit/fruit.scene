@@ -21,7 +21,7 @@
     "_active": true,
     "_components": [],
     "_prefab": {
-      "__id__": 597
+      "__id__": 599
     },
     "_lpos": {
       "__type__": "cc.Vec3",
@@ -52,7 +52,7 @@
     },
     "autoReleaseAssets": false,
     "_globals": {
-      "__id__": 598
+      "__id__": 600
     },
     "_id": "405759fd-c60e-485d-9dbc-3267878b214e"
   },
@@ -107,13 +107,13 @@
     "_active": true,
     "_components": [
       {
-        "__id__": 594
-      },
-      {
-        "__id__": 595
-      },
-      {
         "__id__": 596
+      },
+      {
+        "__id__": 597
+      },
+      {
+        "__id__": 598
       }
     ],
     "_prefab": null,
@@ -985,7 +985,7 @@
     "__prefab": null,
     "_contentSize": {
       "__type__": "cc.Size",
-      "width": 94.64,
+      "width": 150,
       "height": 108.8
     },
     "_anchorPoint": {
@@ -1017,11 +1017,11 @@
     "_string": "99",
     "_horizontalAlign": 1,
     "_verticalAlign": 1,
-    "_actualFontSize": 80,
-    "_fontSize": 80,
+    "_actualFontSize": 66,
+    "_fontSize": 65,
     "_fontFamily": "Arial",
-    "_lineHeight": 80,
-    "_overflow": 0,
+    "_lineHeight": 60,
+    "_overflow": 2,
     "_enableWrapText": true,
     "_font": {
       "__uuid__": "96943bce-af61-4fb8-be3a-16e7ac5e0db5",
@@ -1227,7 +1227,7 @@
     "__prefab": null,
     "_contentSize": {
       "__type__": "cc.Size",
-      "width": 334,
+      "width": 49.2,
       "height": 52
     },
     "_anchorPoint": {
@@ -1260,7 +1260,7 @@
       "__uuid__": "c9ec33f1-167b-435d-8bd2-11251730bb49@f9941",
       "__expectedType__": "cc.SpriteFrame"
     },
-    "_type": 1,
+    "_type": 2,
     "_fillType": 0,
     "_sizeMode": 0,
     "_fillCenter": {
@@ -1269,7 +1269,7 @@
       "y": 0
     },
     "_fillStart": 0,
-    "_fillRange": 0,
+    "_fillRange": 1,
     "_isTrimmedMode": true,
     "_useGrayscale": false,
     "_atlas": null,
@@ -11558,7 +11558,7 @@
         "__id__": 326
       }
     ],
-    "_active": false,
+    "_active": true,
     "_components": [
       {
         "__id__": 349
@@ -20163,6 +20163,12 @@
       },
       {
         "__id__": 593
+      },
+      {
+        "__id__": 594
+      },
+      {
+        "__id__": 595
       }
     ],
     "_prefab": null,
@@ -20289,6 +20295,10 @@
       {
         "__uuid__": "337f213e-ada3-45bb-91e8-fe7dad0623d6@f9941",
         "__expectedType__": "cc.SpriteFrame"
+      },
+      {
+        "__uuid__": "24f915e1-be40-4a2c-a432-bf4d4d7dbd5f@f9941",
+        "__expectedType__": "cc.SpriteFrame"
       }
     ],
     "infoListItem": {
@@ -20362,19 +20372,75 @@
         "__expectedType__": "cc.AudioClip"
       },
       {
-        "__uuid__": "4cddb22f-8432-48db-952c-5fd99634d0ae",
+        "__uuid__": "16efd456-b61b-40dc-86bf-8681cc47b10d",
         "__expectedType__": "cc.AudioClip"
       },
       {
-        "__uuid__": "8944fab9-8c58-4a44-9e5c-7268bf8a13a7",
+        "__uuid__": "5081d2a3-01bf-489f-9e38-7c1a4e25e024",
         "__expectedType__": "cc.AudioClip"
       },
       {
-        "__uuid__": "63300057-dca9-40c6-8003-1782a9b726b4",
+        "__uuid__": "5e693735-fd5c-4167-86bb-157558652aaa",
         "__expectedType__": "cc.AudioClip"
       },
       {
-        "__uuid__": "3edd2f07-9d3d-4365-9f06-72e4323761e7",
+        "__uuid__": "8736473a-074e-4a76-a2a1-e4398eea731b",
+        "__expectedType__": "cc.AudioClip"
+      },
+      {
+        "__uuid__": "9be9e1d3-7d01-4bfb-900a-fcb78c44b0e3",
+        "__expectedType__": "cc.AudioClip"
+      },
+      {
+        "__uuid__": "b5d26f2e-b931-4a16-8372-53ef8b3105c1",
+        "__expectedType__": "cc.AudioClip"
+      },
+      {
+        "__uuid__": "8393a367-d3c2-411f-82f4-199425b87b23",
+        "__expectedType__": "cc.AudioClip"
+      },
+      {
+        "__uuid__": "f17f7edd-cc2c-40de-87ca-d393ebd713d0",
+        "__expectedType__": "cc.AudioClip"
+      },
+      {
+        "__uuid__": "90fab01d-ffed-46e0-bad5-dfda4d75fb05",
+        "__expectedType__": "cc.AudioClip"
+      },
+      {
+        "__uuid__": "29a2dc78-14c4-4a75-944d-793a0bdcee40",
+        "__expectedType__": "cc.AudioClip"
+      },
+      {
+        "__uuid__": "eeb60acc-3e2d-4bd5-9b63-393ea778c32b",
+        "__expectedType__": "cc.AudioClip"
+      },
+      {
+        "__uuid__": "281a65b6-c219-4c98-83d4-63fbb06e104e",
+        "__expectedType__": "cc.AudioClip"
+      },
+      {
+        "__uuid__": "987be11f-9486-499d-bb48-ad9e99dc64a5",
+        "__expectedType__": "cc.AudioClip"
+      },
+      {
+        "__uuid__": "ef50a142-1d27-4e7a-bf1f-c22937fb469f",
+        "__expectedType__": "cc.AudioClip"
+      },
+      {
+        "__uuid__": "a82a20f2-d447-44e5-8431-9186ef531245",
+        "__expectedType__": "cc.AudioClip"
+      },
+      {
+        "__uuid__": "2cf8fa0e-beff-43fd-8d98-4b6bb529077d",
+        "__expectedType__": "cc.AudioClip"
+      },
+      {
+        "__uuid__": "56d476ee-19a6-4340-8045-6d2609a62669",
+        "__expectedType__": "cc.AudioClip"
+      },
+      {
+        "__uuid__": "87dd8e9a-2679-4802-8500-466a8f0b76b8",
         "__expectedType__": "cc.AudioClip"
       }
     ],
@@ -20458,6 +20524,28 @@
     "_alignMode": 2,
     "_lockFlags": 0,
     "_id": "eaF6H2pxVKIpVnTHIptnhA"
+  },
+  {
+    "__type__": "52b30g+wH9F2YOdTr2e8V3y",
+    "_name": "",
+    "_objFlags": 0,
+    "node": {
+      "__id__": 590
+    },
+    "_enabled": true,
+    "__prefab": null,
+    "_id": "89NS184MRIDq39WuWUu0xQ"
+  },
+  {
+    "__type__": "52b30g+wH9F2YOdTr2e8V3y",
+    "_name": "",
+    "_objFlags": 0,
+    "node": {
+      "__id__": 590
+    },
+    "_enabled": true,
+    "__prefab": null,
+    "_id": "2fvenGsH1IWYiePZV0YRiC"
   },
   {
     "__type__": "cc.UITransform",
@@ -20552,22 +20640,22 @@
   {
     "__type__": "cc.SceneGlobals",
     "ambient": {
-      "__id__": 599
-    },
-    "shadows": {
-      "__id__": 600
-    },
-    "_skybox": {
       "__id__": 601
     },
-    "fog": {
+    "shadows": {
       "__id__": 602
     },
-    "octree": {
+    "_skybox": {
       "__id__": 603
     },
-    "lightProbeInfo": {
+    "fog": {
       "__id__": 604
+    },
+    "octree": {
+      "__id__": 605
+    },
+    "lightProbeInfo": {
+      "__id__": 606
     },
     "bakedWithStationaryMainLight": false,
     "bakedWithHighpLightmap": false

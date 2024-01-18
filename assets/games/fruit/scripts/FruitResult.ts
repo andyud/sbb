@@ -33,7 +33,7 @@ export class FruitResult extends Component {
         this.audioClip = audioClip;
         this.callback = cb;
     }
-    show(score:number,totalStar:number) {
+    show(score:number,totalStar:number,audios:any) {
         this.node.active = true;
         this.bg.active = true;
         this.pp.getComponent(Animation).play('showpopup');
@@ -46,13 +46,23 @@ export class FruitResult extends Component {
         GameMgr.instance.numberTo(this.lbScore,0,score, 1000);
         for(let i=0;i<totalStar;i++){
             let posX = -200;
-            if(i==1){
+            if(i==0){
+                AudioMgr.inst.playOneShot2(audios[17]);
+            } else if(i==1){
                 posX = 0;
+                let timeout1 = setTimeout(()=>{
+                    clearTimeout(timeout1);
+                    AudioMgr.inst.playOneShot2(audios[18]);
+                },400)
             } else if(i==2){
                 posX = 200;
+                let timeout2 = setTimeout(()=>{
+                    clearTimeout(timeout2);
+                    AudioMgr.inst.playOneShot2(audios[19]);
+                },800)
             }
             tween(this.stars[i])
-            .to(0.3 +i*0.05,{position:new Vec3(posX,0),scale:new Vec3(3,3,3)})
+            .to(0.4 +i*0.2,{position:new Vec3(posX,0),scale:new Vec3(3,3,3)})
             .delay(0.1)
             .to(0.1,{scale:new Vec3(1,1,1),position:new Vec3(0,0)})
             .start();
