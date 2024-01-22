@@ -22,7 +22,7 @@ export class FruitItem extends Component {
     @property({type:Node})
     verticalBom:Node | null = null;
     
-    speed = 0.1;
+    speed = 0.05;
     //--control moving & avoid move douplicate
     moveCount = 0;
     isMoving = false;

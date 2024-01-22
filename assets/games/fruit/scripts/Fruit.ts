@@ -244,11 +244,13 @@ export class Fruit extends Component {
                 this.textEff.getComponent(FruitTextEffect).runEffect(combo,this.arrAudioClips);
                 
                 //6. update move count
-                if(this.level.MODE==0){//timer
-
-                } else if(this.level.MODE==2){
-                    this.iMovesCount--;
-                    this.lbMoves.string = `${this.iMovesCount}`;
+                switch(this.level.LIMIT[0]){
+                    case 0: //move
+                        this.iMovesCount--;
+                        this.lbMoves.string = `${this.iMovesCount}`;
+                        break;
+                    case 1: //time
+                        break;
                 }
             } else {
                 this.clearSelectedItem();
@@ -302,9 +304,9 @@ export class Fruit extends Component {
             //check item need to move or not
             let pos2 = new Vec3();
             let updateCountIdx = -1;
-            if(this.level.MODE==0){
+            if(this.level.MODE==0){//star
                 
-            } else if(this.level.MODE==2){
+            } else if(this.level.MODE==2){//collect item
                 for(let i=0;i<this.infoListItem.children.length;i++){
                     let itemTop = this.infoListItem.children[i].getComponent(FruitItemTop);
                     if(data.info.type == itemTop.info.type){
@@ -518,7 +520,7 @@ export class Fruit extends Component {
             if(totalStar<this.level.GETSTARS){
                 isDone = false;
             } 
-        } else if(this.level.MODE==2){
+        } else if(this.level.MODE==2){//collect item
             for(let i=0;i<this.infoListItem.children.length;i++){
                 let item = this.infoListItem.children[i].getComponent(FruitItemTop);
                 if(item.currentCount<item.info.count){
@@ -530,6 +532,7 @@ export class Fruit extends Component {
         if(isDone){
             this.isEndGame = true;
             this.isEnableTouch = false;
+            this.isEnableTimer = false;
             let timeout4 = setTimeout(()=>{
                 clearTimeout(timeout4);
                 
@@ -564,8 +567,15 @@ export class Fruit extends Component {
     }
     runRemainEffect(){
         if(this.iMovesCount>0){
-            this.iMovesCount--;
-            this.lbMoves.string = `${this.iMovesCount}`;
+            switch(this.level.LIMIT[0]){
+                case 0: //move
+                    this.iMovesCount--;
+                    this.lbMoves.string = `${this.iMovesCount}`;
+                    break;
+                case 1: //time
+                    this.iMovesCount-=20;
+                    break;
+            }
             let flower = instantiate(this.pfFlower);
             let p1 = this.lbMoves.node.getWorldPosition();
             let rIdx = GameMgr.instance.getRandomInt(0,this.arrItems.length-1);
@@ -705,22 +715,26 @@ export class Fruit extends Component {
         //--
         let maxScore = 0;
         this.infoListItem.removeAllChildren();
+        //--LIMIT: time or moves
+        this.iMovesCount = this.level.LIMIT[1];
+        if(this.level.LIMIT[0]==0){//move
+            GameMgr.instance.numberTo(this.lbMoves,0,this.iMovesCount,1000);
+        } else if(this.level.LIMIT[0]==1){//timer
+            this.updateTimer();
+            this.isEnableTimer = true;
+            this.lastTimeUpdate = new Date().getTime();
+        }
+
         if(this.level.MODE==0){//collect stars
             //2. update info
-            this.iMovesCount = this.level.LIMIT[1];
-            this.updateTimer();
             let item = instantiate(this.pfItemTop);
             let idx  = 8;
             let count= this.level.GETSTARS;
             maxScore+=this.level.STARS[this.level.STARS.length-1];
             item.getComponent(FruitItemTop).init(this.icons[idx],{idx:0, type:idx,count:count});
             this.infoListItem.addChild(item);
-            this.isEnableTimer = true;
-            this.lastTimeUpdate = new Date().getTime();
         } else if(this.level.MODE==2){//collect items
             //2. update info
-            this.iMovesCount = this.level.LIMIT[1];
-            GameMgr.instance.numberTo(this.lbMoves,0,this.iMovesCount,1000);
             for(let i=0;i<this.level.COLLECT_ITEMS.length;i++){
                 let item = instantiate(this.pfItemTop);
                 let idx  = this.level.COLLECT_ITEMS[i];
